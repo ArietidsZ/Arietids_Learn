@@ -1,0 +1,18 @@
+---
+/**
+ * A title set to break only between phrases (see lib/typeset.ts): Han titles take <wbr> between
+ * phrases and `word-break: keep-all` (styles/content.css). Runs that must not break (a hyphenated
+ * compound, a number and its measure word) sit in a no-break span, with their text as written.
+ */
+import { segments } from '../lib/typeset';
+
+interface Props {
+  text: string;
+}
+const parts = segments(Astro.props.text).map((s) => {
+  const text = s.text.replaceAll(' ', ' ');
+  return { kind: s.kind === 'text' && text !== s.text ? 'nobr' : s.kind, text };
+});
+---
+
+{parts.map((s) => (s.kind === 'wbr' ? <wbr /> : s.kind === 'nobr' ? <span class="nobr">{s.text}</span> : s.text))}

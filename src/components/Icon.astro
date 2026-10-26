@@ -1,0 +1,38 @@
+---
+/** Inline stroke icons (24×24 grid), drawn like the family's icons on arietids.net and the blog. */
+interface Props {
+  name: keyof typeof paths;
+  size?: number;
+  class?: string;
+}
+
+const paths = {
+  'arrow-up-right': '<path d="M7 17 17 7"/><path d="M8 7h9v9"/>',
+  'chevron-left': '<path d="m14.5 6.5-5.5 5.5 5.5 5.5"/>',
+  download: '<path d="M12 4.5v10"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M5.5 19.5h13"/>',
+} as const;
+
+const { name, size = 16, class: className } = Astro.props;
+---
+
+<svg
+  class:list={['icon', className]}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={paths[name]}
+/>
+
+<style>
+  .icon {
+    flex: none;
+    display: inline-block;
+    vertical-align: -0.15em;
+  }
+</style>

@@ -29,6 +29,26 @@ DEMO_SOURCES = [
 ]
 
 
+DEMO_BAR = (
+    '<nav class="al-bar" aria-label="Arietids Learn"><style>'
+    '.al-bar{all:initial;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;height:44px;padding:0 16px;'
+    'background:#070c19;box-shadow:inset 0 -1px 0 rgba(234,238,248,.1);'
+    'font:500 13px/1 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;'
+    '-webkit-font-smoothing:antialiased}'
+    '.al-bar a{all:unset;display:inline-flex;align-items:center;gap:4px;height:28px;margin-left:-8px;padding:0 10px 0 6px;'
+    'border-radius:999px;color:#81d9d8;cursor:pointer;transition:background-color .2s}'
+    '.al-bar a:hover{background:rgba(129,217,216,.14)}.al-bar a:focus-visible{outline:2px solid #81d9d8;outline-offset:2px}'
+    '.al-bar svg{display:block;flex:none;width:15px;height:15px}'
+    '.al-bar span{margin-left:auto;color:#8a93a1;letter-spacing:.01em}'
+    '@media (prefers-color-scheme:light){.al-bar{background:#faf6ef;box-shadow:inset 0 -1px 0 rgba(13,21,40,.12)}'
+    '.al-bar a{color:#006b74}.al-bar a:hover{background:rgba(0,107,116,.1)}.al-bar a:focus-visible{outline-color:#006b74}'
+    '.al-bar span{color:#626978}}'
+    '</style><a href="/explore/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 6.5-5.5 5.5 5.5 5.5"/></svg>交互演示</a>'
+    '<span>Arietids Learn</span></nav>'
+)
+
+
 def natural(value):
     return [int(s) if s.isdigit() else s.lower() for s in re.split(r"(\d+)", value)]
 
@@ -112,7 +132,9 @@ def export(source):
         raw = re.sub(r"<!--.*?-->", "", raw, flags=re.S)
         if '<meta name="viewport"' not in raw and "<meta name='viewport'" not in raw:
             raw = raw.replace('</head>', '<meta name="viewport" content="width=device-width,initial-scale=1"></head>')
-        back = '<div style="padding:10px 16px;background:#153a43;color:#fff;font:14px/1.6 system-ui"><a style="color:#fff;text-decoration:none" href="/explore/">← Arietids Learn · 交互演示目录</a></div>'
+        # A slim bar in the site's own colours (night or day, after the reader's system) leads back
+        # to the demo index. Its styles are reset and scoped, so a demo's CSS cannot reach it.
+        back = DEMO_BAR
         raw = re.sub(r'(<body\b[^>]*>)', r'\1' + back, raw, count=1, flags=re.I)
         write(public / f'demos/{identifier}.html', raw)
         manifest['demos'].append(dict(id=identifier, title=title, course=course_id, description=description, url=f'/demos/{identifier}.html', source=relative))

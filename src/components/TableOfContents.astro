@@ -1,0 +1,35 @@
+---
+/**
+ * The page outline on wide screens, with a mark that glides along its hairline rail to the section
+ * being read. Starlight's outline decides which section that is (it gives the link
+ * aria-current="true"); the mark follows it on the compositor, by translate and scale only.
+ */
+import Default from '@astrojs/starlight/components/TableOfContents.astro';
+---
+
+<div class="toc-rail" data-toc-rail>
+  <Default />
+  <span class="toc-mark" aria-hidden="true"></span>
+</div>
+
+<script>
+  /** The mark's drawn height, scaled to each link's height. */
+  const UNIT = 16;
+
+  for (const rail of document.querySelectorAll<HTMLElement>('[data-toc-rail]')) {
+    const mark = rail.querySelector<HTMLElement>('.toc-mark');
+    const nav = rail.querySelector('starlight-toc nav');
+    if (!mark || !nav) continue;
+    const place = () => {
+      const a = nav.querySelector<HTMLElement>('a[aria-current="true"]');
+      rail.toggleAttribute('data-marked', !!a);
+      if (!a) return;
+      mark.style.translate = `0 ${a.offsetTop}px`;
+      mark.style.scale = `1 ${a.offsetHeight / UNIT}`;
+      // The first placement lands without gliding in from the top.
+      if (!rail.hasAttribute('data-settled')) requestAnimationFrame(() => rail.toggleAttribute('data-settled', true));
+    };
+    new MutationObserver(place).observe(nav, { subtree: true, attributeFilter: ['aria-current'] });
+    new ResizeObserver(place).observe(rail);
+  }
+</script>

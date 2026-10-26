@@ -1,0 +1,716 @@
+/*
+ * Chrome: header, sidebar, outline, search, previous/next and the page transitions. Starlight's
+ * components keep their markup and behaviour; these rules set them on the shared tokens.
+ * Unlayered, so they win over Starlight's cascade layers without raising specificity.
+ */
+
+:root {
+  --thumb: oklch(0.3 0.03 264);
+  /* Lets disclosures (sidebar groups, folded code) animate to their natural height. */
+  interpolate-size: allow-keywords;
+}
+:root[data-theme='light'] {
+  --thumb: var(--surface-solid);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+:focus-visible {
+  outline: 2px solid var(--tint);
+  outline-offset: 2px;
+}
+#starlight__sidebar,
+.right-sidebar,
+mobile-starlight-toc .dropdown,
+site-search .dialog-frame {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+/* ---------- header: a material bar with a hairline, as on the family's other sites ---------- */
+.page > header.header {
+  border-bottom: 0;
+  background: var(--material);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+  box-shadow: 0 var(--hairline) 0 var(--line);
+}
+
+.site-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  border-radius: var(--r-small);
+  color: var(--text);
+  font-size: 1.1rem;
+  text-decoration: none;
+}
+.site-title .mark {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.site-title .mark-star {
+  fill: var(--star);
+  filter: drop-shadow(0 0 3px color-mix(in oklch, var(--star) 45%, transparent));
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: scale var(--bouncy-dur) var(--spring-bouncy);
+}
+.site-title .wordmark {
+  flex: none;
+  /* One em of the wordmark is 16 units; the box is 13 units tall. */
+  height: calc(13em / 16);
+  width: auto;
+  fill: currentColor;
+}
+.site-title .wordmark-product {
+  fill: var(--text-muted);
+  transition: fill 0.3s;
+}
+@media (hover: hover) {
+  .site-title:hover .mark-star {
+    scale: 1.2;
+  }
+  .site-title:hover .wordmark-product {
+    fill: var(--text);
+  }
+}
+
+/* Header controls: round 2.25rem targets with a hover wash, pressed slightly in. */
+.header .right-group,
+.header .social-icons {
+  gap: 0.125rem;
+}
+.header .social-icons::after {
+  display: none;
+}
+.header .social-icons a,
+.header starlight-theme-select label {
+  display: grid;
+  place-items: center;
+  width: var(--control);
+  height: var(--control);
+  margin: 0;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    scale var(--snappy-dur) var(--spring-snappy);
+}
+.header .social-icons a:active,
+.header starlight-theme-select label:active {
+  scale: 0.92;
+}
+@media (hover: hover) {
+  .header .social-icons a:hover,
+  .header starlight-theme-select label:hover {
+    background: var(--wash);
+    color: var(--text);
+  }
+}
+/* The theme menu is a native select laid invisibly over its icon: one tap opens the system menu. */
+.header starlight-theme-select label {
+  position: relative;
+}
+.header starlight-theme-select .label-icon {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.0625rem;
+}
+.header starlight-theme-select .caret {
+  display: none;
+}
+.header starlight-theme-select select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.header starlight-theme-select label:has(select:focus-visible) {
+  outline: 2px solid var(--tint);
+  outline-offset: 2px;
+}
+
+/* Search: a capsule field on wide screens, a round control on phones. */
+site-search button[data-open-modal] {
+  border: 0;
+  border-radius: 999px;
+  color: var(--text-muted);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    scale var(--snappy-dur) var(--spring-snappy);
+}
+site-search button[data-open-modal]:active {
+  scale: 0.97;
+}
+@media not all and (min-width: 50rem) {
+  site-search button[data-open-modal] {
+    justify-content: center;
+    width: var(--control);
+    height: var(--control);
+    font-size: 1.125rem;
+  }
+}
+@media (min-width: 50rem) {
+  site-search button[data-open-modal] {
+    height: var(--control);
+    max-width: 17rem;
+    gap: 0.5rem;
+    padding-inline: 0.9rem 0.45rem;
+    background: var(--wash);
+    box-shadow: var(--edge);
+    color: var(--text-faint);
+    font-size: 0.875rem;
+  }
+  site-search button[data-open-modal]:hover {
+    background: var(--wash-strong);
+    color: var(--text-muted);
+  }
+  /* On paper, the faint label would fall just short of 4.5:1 against the wash. */
+  :root[data-theme='light'] site-search button[data-open-modal] {
+    color: var(--text-muted);
+  }
+  site-search button[data-open-modal] > kbd {
+    align-items: center;
+    padding: 0.125rem 0.45rem;
+    border-radius: 0.45rem;
+    background: none;
+    box-shadow: var(--edge);
+    color: inherit;
+    font-size: 0.6875rem;
+    line-height: 1.2;
+  }
+}
+
+/* Menu button (phones): one more round control, not a floating disc. */
+.sl-menu-button {
+  top: calc((var(--sl-nav-height) - var(--control)) / 2);
+  width: var(--control);
+  height: var(--control);
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  color: var(--text);
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s,
+    scale var(--snappy-dur) var(--spring-snappy);
+}
+.sl-menu-button svg {
+  font-size: 1.25rem;
+}
+.sl-menu-button:active {
+  scale: 0.92;
+}
+.sl-menu-button:has(~ :popover-open) {
+  background: var(--wash-strong);
+  box-shadow: none;
+}
+
+/* ---------- sidebar ---------- */
+@media (min-width: 50rem) {
+  .sidebar-pane {
+    border-inline-end: 0;
+    background: var(--bg);
+    box-shadow: inset calc(-1 * var(--hairline)) 0 0 var(--line);
+  }
+}
+.sidebar-content {
+  gap: 0.75rem;
+  padding: 1.25rem var(--sl-sidebar-pad-x) 2.5rem;
+}
+.sidebar-content ul {
+  --sl-sidebar-item-padding-inline: 0.625rem;
+}
+.sidebar-content .top-level > li + li {
+  margin-top: 0.125rem;
+}
+/* The site's own pages after the courses: set apart by a hairline. */
+.sidebar-content .top-level > li:has(> details) + li:not(:has(> details)) {
+  margin-top: 0.625rem;
+  padding-top: 0.625rem;
+  border-top: var(--hairline) solid var(--line);
+}
+.sidebar-content .top-level > li:first-child {
+  margin-bottom: 0.375rem;
+}
+.sidebar-content a,
+.sidebar-content summary {
+  border-radius: var(--r-small);
+  corner-shape: var(--corner);
+  padding: 0.4rem var(--sl-sidebar-item-padding-inline);
+  line-height: 1.4;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
+}
+.sidebar-content a {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+.sidebar-content .large {
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.sidebar-content ul ul {
+  margin-block: 0.125rem 0.5rem;
+  padding-inline-start: 0.625rem;
+}
+.sidebar-content ul ul li {
+  margin-inline-start: 0;
+  border-inline-start: 0;
+  padding-inline-start: 0;
+}
+.sidebar-content ul ul li + li {
+  margin-top: 1px;
+}
+@media (hover: hover) {
+  .sidebar-content a:hover,
+  .sidebar-content summary:hover {
+    background: var(--wash);
+    color: var(--text);
+  }
+}
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover,
+.sidebar-content a[aria-current='page']:focus {
+  background: var(--tint-soft);
+  color: var(--tint);
+  font-weight: 600;
+}
+.sidebar-content summary .caret {
+  font-size: 1rem;
+  color: var(--text-faint);
+  transition: transform var(--spring-dur) var(--spring);
+}
+@media not all and (min-width: 50rem) {
+  .sidebar-content a,
+  .sidebar-content summary,
+  .sidebar-content .large {
+    font-size: 1rem;
+  }
+  .sidebar-content a,
+  .sidebar-content summary {
+    padding-block: 0.55rem;
+  }
+}
+
+/* Disclosures open to their natural height on a spring (where ::details-content is supported). */
+.sidebar-content details::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition:
+    block-size 0.5s var(--spring),
+    content-visibility 0.5s allow-discrete;
+}
+.sidebar-content details[open]::details-content {
+  block-size: auto;
+}
+
+/* The phone menu: the page's own ground, settling in from just above. */
+@media not all and (min-width: 50rem) {
+  #starlight__sidebar {
+    background: var(--bg);
+    transition:
+      opacity 0.25s,
+      translate 0.5s var(--spring),
+      display 0.5s allow-discrete,
+      overlay 0.5s allow-discrete;
+  }
+  #starlight__sidebar:not(:popover-open) {
+    opacity: 0;
+    translate: 0 -0.5rem;
+  }
+  @starting-style {
+    #starlight__sidebar:popover-open {
+      opacity: 0;
+      translate: 0 -0.5rem;
+    }
+  }
+}
+.mobile-preferences {
+  margin-top: 0.5rem;
+  border-top: var(--hairline) solid var(--line);
+  padding-block: 0.5rem;
+}
+.mobile-preferences .social-icons a {
+  color: var(--text-muted);
+}
+
+/* ---------- outline: a hairline rail and a mark that follows the reader ---------- */
+.right-sidebar {
+  border-inline-start: 0;
+}
+.right-sidebar-panel {
+  padding: 2rem var(--sl-sidebar-pad-x) 2rem;
+}
+.right-sidebar-panel h2 {
+  margin-bottom: 0.75rem;
+  color: var(--text-faint);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.toc-rail {
+  position: relative;
+}
+.toc-rail starlight-toc nav > ul {
+  box-shadow: inset var(--hairline) 0 0 var(--line);
+}
+.right-sidebar-panel starlight-toc a {
+  --pad-inline: 0.75rem;
+  padding-block: 0.3rem;
+  color: var(--text-faint);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+  transition: color 0.2s;
+}
+.right-sidebar-panel starlight-toc a:hover,
+.right-sidebar-panel starlight-toc a[aria-current='true'] {
+  color: var(--text);
+}
+.toc-mark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 16px;
+  background: var(--tint);
+  transform-origin: 0 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.toc-rail[data-marked] .toc-mark {
+  opacity: 1;
+}
+.toc-rail[data-settled] .toc-mark {
+  transition:
+    translate var(--spring-dur) var(--spring),
+    scale var(--spring-dur) var(--spring),
+    opacity 0.3s;
+}
+
+/* The phone outline: a material bar under the header, and a sheet that drops from it. */
+mobile-starlight-toc nav {
+  border-top: 0;
+  background: var(--material);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+}
+mobile-starlight-toc summary {
+  border-bottom: 0;
+  box-shadow: 0 var(--hairline) 0 var(--line);
+  padding-inline: var(--sl-nav-pad-x);
+  font-size: 0.8125rem;
+  -webkit-tap-highlight-color: transparent;
+}
+mobile-starlight-toc .toggle {
+  gap: 0.35rem;
+  padding: 0.45rem 0.55rem 0.45rem 0.85rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--wash);
+  color: var(--text-muted);
+  transition: background-color 0.2s;
+}
+mobile-starlight-toc details[open] .toggle,
+mobile-starlight-toc details .toggle:hover {
+  background: var(--wash-strong);
+  color: var(--text);
+}
+mobile-starlight-toc .caret {
+  transition: transform var(--spring-dur) var(--spring);
+}
+mobile-starlight-toc .display-current {
+  color: var(--text-muted);
+}
+mobile-starlight-toc .dropdown {
+  margin: 0.375rem var(--sl-nav-pad-x) 0;
+  border: 0;
+  border-radius: var(--r-card);
+  corner-shape: var(--corner);
+  background: var(--material-thick);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+  box-shadow: var(--edge), var(--edge-lit), var(--elev-3);
+}
+mobile-starlight-toc details[open] .dropdown {
+  animation: drop-in 0.45s var(--spring) both;
+  transform-origin: 50% 0;
+}
+mobile-starlight-toc .dropdown a {
+  border-top-color: var(--line);
+  color: var(--text-muted);
+}
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    translate: 0 -0.375rem;
+    scale: 0.985;
+  }
+}
+
+/* ---------- previous / next, and the family line under them ---------- */
+.pagination-links {
+  gap: 0.75rem;
+}
+.pagination-links a {
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border: 0;
+  border-radius: var(--r-card);
+  corner-shape: var(--corner);
+  background: var(--plate);
+  box-shadow: var(--edge), var(--edge-lit), var(--elev-1);
+  color: var(--text-faint);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    translate var(--spring-dur) var(--spring),
+    scale var(--snappy-dur) var(--spring-snappy),
+    box-shadow 0.3s;
+}
+.pagination-links br {
+  display: none;
+}
+.pagination-links .link-title {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.pagination-links svg {
+  font-size: 1.125rem;
+  color: var(--text-faint);
+  transition: translate var(--spring-dur) var(--spring);
+}
+@media (hover: hover) {
+  .pagination-links a:hover {
+    translate: 0 -2px;
+    box-shadow: var(--edge), var(--edge-lit), var(--elev-2);
+  }
+  .pagination-links a[rel='prev']:hover svg {
+    translate: -3px 0;
+  }
+  .pagination-links a[rel='next']:hover svg {
+    translate: 3px 0;
+  }
+}
+.pagination-links a:active {
+  scale: 0.985;
+}
+
+.site-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: var(--hairline) solid var(--line);
+  color: var(--text-faint);
+  font-size: 0.8125rem;
+}
+.site-foot nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+.site-foot a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.site-foot a:hover {
+  color: var(--text);
+}
+
+/* ---------- search: a material sheet over a dimmed, softened page ---------- */
+site-search dialog {
+  border: 0;
+  background: var(--material-thick);
+  -webkit-backdrop-filter: var(--material-filter);
+  backdrop-filter: var(--material-filter);
+  box-shadow: var(--edge), var(--edge-lit), var(--elev-3);
+}
+site-search dialog[open] {
+  animation: sheet-in 0.5s var(--spring) both;
+}
+site-search dialog::backdrop {
+  /* Older engines do not pass custom properties to ::backdrop: fall back to the night ground. */
+  background: color-mix(in oklch, var(--bg-deep, oklch(0.12 0.028 268)) 55%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+site-search dialog[open]::backdrop {
+  animation: fade-in 0.3s ease-out both;
+}
+@media (min-width: 50rem) {
+  site-search dialog {
+    margin-top: 11vh;
+    max-width: 42rem;
+    max-height: calc(100% - 22vh);
+    border-radius: var(--r-plate);
+    corner-shape: var(--corner);
+  }
+}
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    translate: 0 -0.5rem;
+    scale: 0.98;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+#starlight__search {
+  --pagefind-ui-border: var(--line);
+  --pagefind-ui-border-radius: 0.75rem;
+  --pagefind-ui-background: transparent;
+  --sl-search-corners: var(--r-control);
+}
+#starlight__search .pagefind-ui__search-input {
+  height: 3rem;
+  border: 0;
+  border-radius: var(--r-control);
+  corner-shape: var(--corner);
+  background: var(--wash);
+  box-shadow: var(--edge);
+  font-size: 1rem;
+}
+#starlight__search input:focus {
+  outline: 2px solid var(--tint);
+  outline-offset: 0;
+}
+#starlight__search .pagefind-ui__message {
+  color: var(--text-faint);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+#starlight__search .pagefind-ui__result-title:not(:where(.pagefind-ui__result-nested *)),
+#starlight__search .pagefind-ui__result-nested {
+  background: color-mix(in oklch, var(--text) 4%, transparent);
+  transition: background-color 0.2s;
+}
+#starlight__search .pagefind-ui__result-title:not(:where(.pagefind-ui__result-nested *)):hover,
+#starlight__search .pagefind-ui__result-nested:hover {
+  outline: 0;
+  background: var(--wash-strong);
+}
+#starlight__search .pagefind-ui__result-title:not(:where(.pagefind-ui__result-nested *)):focus-within,
+#starlight__search .pagefind-ui__result-nested:focus-within {
+  outline: 2px solid var(--tint);
+  outline-offset: -2px;
+  background: var(--tint-soft);
+}
+#starlight__search .pagefind-ui__result-excerpt {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+#starlight__search mark {
+  padding-inline: 0.1em;
+  border-radius: 0.2em;
+  background: color-mix(in oklch, var(--tint) 24%, transparent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---------- moving between pages ---------- */
+/* The header and sidebar stay put while the page changes under them; the version switch's thumb
+   slides to the other version. Off for readers who ask for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+}
+.page > header.header {
+  view-transition-name: site-header;
+}
+@media (min-width: 50rem) {
+  #starlight__sidebar {
+    view-transition-name: site-sidebar;
+  }
+}
+.note-thumb {
+  view-transition-name: note-mode;
+}
+:root::view-transition-group(note-mode) {
+  animation-duration: var(--spring-dur);
+  animation-timing-function: var(--spring);
+}
+:root:not([data-theme-switch])::view-transition-old(root) {
+  animation: 0.16s ease-out both vt-out;
+}
+:root:not([data-theme-switch])::view-transition-new(root) {
+  animation: 0.38s var(--ease-out) both vt-in;
+}
+:root[data-theme-switch]::view-transition-old(*),
+:root[data-theme-switch]::view-transition-new(*) {
+  animation-duration: 0.45s;
+  animation-timing-function: ease;
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  ::before,
+  ::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}

@@ -1,0 +1,408 @@
+/*
+ * Page types: the home page (hero, figures, course cards), course indexes, the demo and download
+ * pages, the 404 page and print.
+ */
+
+/* ---------- home: Starlight's hero, at the family's display scale ---------- */
+[data-has-hero] .hero {
+  padding-block: clamp(3rem, 2rem + 6vw, 6.5rem) clamp(2rem, 1.5rem + 2vw, 3rem);
+}
+[data-has-hero] .hero h1 {
+  color: var(--text);
+  font-size: clamp(2.25rem, 1.1rem + 4.4vw, 4.25rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: 0.005em;
+  word-break: keep-all;
+  text-wrap: balance;
+}
+[data-has-hero] .hero .tagline {
+  max-width: 34em;
+  color: var(--text-muted);
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  line-height: 1.7;
+  text-wrap: balance;
+}
+[data-has-hero] .hero .actions {
+  gap: 0.75rem;
+}
+.sl-link-button {
+  height: 2.75rem;
+  padding: 0 1.35rem;
+  border: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s,
+    scale var(--snappy-dur) var(--spring-snappy);
+}
+.sl-link-button:active {
+  scale: 0.96;
+}
+.sl-link-button.primary,
+.sl-link-button.primary:hover {
+  background: var(--tint-fill);
+  box-shadow: var(--edge-lit), var(--elev-1);
+  color: var(--tint-ink);
+}
+.sl-link-button.primary:hover {
+  background: color-mix(in oklch, var(--tint-fill) 90%, var(--text));
+}
+.sl-link-button.secondary {
+  background: var(--wash);
+  box-shadow: var(--edge);
+  color: var(--text);
+}
+.sl-link-button.secondary:hover {
+  background: var(--wash-strong);
+}
+.sl-link-button svg {
+  transition: translate var(--spring-dur) var(--spring);
+}
+.sl-link-button:hover svg {
+  translate: 2px 0;
+}
+@media not all and (min-width: 50rem) {
+  [data-has-hero] .hero .actions {
+    justify-content: flex-start;
+  }
+  [data-has-hero] .hero .stack {
+    text-align: start;
+  }
+  [data-has-hero] .hero .copy {
+    align-items: flex-start;
+  }
+}
+
+/* The line of figures under the hero (integrations/typography.mjs): numerals over their units. */
+.sl-markdown-content p.figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem clamp(2rem, 1rem + 4vw, 4rem);
+  padding-block: 1.5rem;
+  border-block: var(--hairline) solid var(--line);
+}
+.figure {
+  display: grid;
+  gap: 0.15rem;
+}
+.figure-num {
+  color: var(--text);
+  font-size: clamp(1.875rem, 1.5rem + 1.5vw, 2.5rem);
+  font-weight: 650;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.figure-unit {
+  color: var(--text-faint);
+  font-size: 0.8125rem;
+}
+
+/* ---------- course and demo cards ---------- */
+.sl-markdown-content .course-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-block: 1.25rem 2.5rem;
+}
+/* An odd card out spans the row rather than leaving a hole. */
+.sl-markdown-content .course-grid > .course-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+.sl-markdown-content .course-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.375rem 1.5rem 1.25rem;
+  border: 0;
+  border-radius: var(--r-card);
+  corner-shape: var(--corner);
+  background: var(--plate);
+  box-shadow: var(--edge), var(--edge-lit), var(--elev-1);
+  color: var(--text-body);
+  /* The summary line takes the card's size; the code, name and footnote set their own. */
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    translate var(--spring-dur) var(--spring),
+    scale var(--snappy-dur) var(--spring-snappy);
+}
+/* The lifted shadow is its own layer, faded in: hovering repaints nothing. */
+.sl-markdown-content .course-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  corner-shape: inherit;
+  box-shadow: var(--elev-3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s var(--ease-out);
+}
+@media (hover: hover) {
+  .sl-markdown-content .course-card:hover {
+    translate: 0 -3px;
+  }
+  .sl-markdown-content .course-card:hover::after {
+    opacity: 1;
+  }
+}
+.sl-markdown-content .course-card:active {
+  scale: 0.985;
+}
+.sl-markdown-content .course-card .course-code {
+  color: var(--text-faint);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: var(--track-caps);
+}
+.sl-markdown-content .course-card strong {
+  color: var(--text);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+/* A small arrow after the course name that moves toward its page on hover. */
+.sl-markdown-content .course-card:not([href^='/demos/']) strong::after {
+  content: '';
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-inline-start: 0.35em;
+  vertical-align: -0.08em;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+  opacity: 0.4;
+  transition:
+    translate var(--spring-dur) var(--spring),
+    opacity 0.2s;
+}
+@media (hover: hover) {
+  .sl-markdown-content .course-card:hover strong::after {
+    translate: 3px 0;
+    opacity: 0.9;
+  }
+}
+.sl-markdown-content .course-card small {
+  margin-top: auto;
+  padding-top: 0.6rem;
+  color: var(--text-faint);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+@media (max-width: 40rem) {
+  .sl-markdown-content .course-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  .sl-markdown-content .course-card {
+    padding: 1.15rem 1.25rem 1.1rem;
+  }
+}
+
+/* ---------- a course's index (integrations/typography.mjs names the parts) ---------- */
+.sl-markdown-content p.lede {
+  color: var(--text);
+  font-size: 1.1875rem;
+  line-height: 1.7;
+}
+.sl-markdown-content p.course-meta {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+.sl-markdown-content p.course-meta strong {
+  color: var(--text-muted);
+}
+.sl-markdown-content table.chapters {
+  display: table;
+  width: 100%;
+  margin-top: 1.75rem;
+}
+.sl-markdown-content table.chapters th:not(:first-child),
+.sl-markdown-content table.chapters td:not(:first-child) {
+  width: 5.5rem;
+  padding-inline: 0.25rem;
+  text-align: center;
+  white-space: nowrap;
+}
+.sl-markdown-content table.chapters th:first-child,
+.sl-markdown-content table.chapters td:first-child {
+  padding-inline: 0 1rem;
+}
+.sl-markdown-content table.chapters td {
+  vertical-align: middle;
+}
+.sl-markdown-content table.chapters td:first-child {
+  color: var(--text);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.sl-markdown-content table.chapters td.none {
+  color: var(--text-faint);
+}
+.sl-markdown-content table.chapters a.pill {
+  display: inline-grid;
+  place-items: center;
+  min-width: 3.75rem;
+  height: 1.875rem;
+  padding-inline: 0.8rem;
+  border-radius: 999px;
+  background: var(--tint-soft);
+  color: var(--tint);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s,
+    scale var(--snappy-dur) var(--spring-snappy);
+}
+@media (hover: hover) {
+  .sl-markdown-content table.chapters a.pill:hover {
+    background: color-mix(in oklch, var(--tint-fill) 26%, transparent);
+    color: var(--tint);
+  }
+}
+.sl-markdown-content table.chapters a.pill:active {
+  scale: 0.95;
+}
+
+/* ---------- downloads: the archive links in the table are buttons ---------- */
+.sl-markdown-content td > a[href$='.zip']:only-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1.875rem;
+  padding-inline: 0.7rem 0.8rem;
+  border-radius: 999px;
+  background: var(--tint-soft);
+  color: var(--tint);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+.sl-markdown-content td > a[href$='.zip']:only-child::before {
+  content: '';
+  width: 0.95rem;
+  height: 0.95rem;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4.5v10M7.5 10.5l4.5 4.5 4.5-4.5M5.5 19.5h13'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4.5v10M7.5 10.5l4.5 4.5 4.5-4.5M5.5 19.5h13'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+@media (hover: hover) {
+  .sl-markdown-content td > a[href$='.zip']:only-child:hover {
+    background: color-mix(in oklch, var(--tint-fill) 26%, transparent);
+    color: var(--tint);
+  }
+}
+
+/* ---------- 404: the number, faded into the page ---------- */
+h1#_top.not-found {
+  margin-top: clamp(2rem, 1rem + 6vh, 5rem);
+}
+h1#_top.not-found::before {
+  content: '404';
+  display: block;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(var(--text-faint), transparent 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: clamp(4.5rem, 3rem + 7vw, 8rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 37.5rem) {
+  :root {
+    --sl-text-h1: 1.75rem;
+  }
+}
+
+/* ---------- print ---------- */
+@media print {
+  :root,
+  :root[data-theme='light'],
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --bg: white;
+    --surface-solid: white;
+    --plate: white;
+    --text: #111;
+    --text-body: #111;
+    --text-muted: #333;
+    --text-faint: #555;
+    --tint: #111;
+    --line: #ccc;
+    --line-strong: #999;
+  }
+  header,
+  nav,
+  .sidebar,
+  .sidebar-pane,
+  .right-sidebar-container,
+  .pagination-links,
+  .note-bar,
+  .title-back,
+  .site-foot,
+  .note-meta,
+  starlight-menu-button {
+    display: none !important;
+  }
+  .main-frame,
+  .main-pane {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  .content-panel {
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  .sl-markdown-content {
+    font-size: 10.5pt;
+    line-height: 1.6;
+  }
+  /* On paper the panels lose their padding: the title keeps its distance, and sizes step in points. */
+  .sl-container > h1#_top {
+    margin-bottom: 14pt;
+    font-size: 20pt;
+  }
+  .sl-markdown-content h2 {
+    font-size: 14pt;
+  }
+  .sl-markdown-content h3 {
+    font-size: 12pt;
+  }
+  .sl-markdown-content h4 {
+    font-size: 11pt;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+  table,
+  pre,
+  .katex-display {
+    overflow: visible !important;
+  }
+  a {
+    color: inherit !important;
+  }
+  .src-ref {
+    font-size: 0.85em;
+  }
+}

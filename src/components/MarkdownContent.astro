@@ -1,0 +1,27 @@
+---
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+---
+
+<Default><slot /></Default>
+
+<script>
+  const content = document.querySelector('.sl-markdown-content');
+  if (content) {
+    const formulas = content.querySelectorAll<HTMLElement>('.katex-display');
+    const update = () => {
+      for (const formula of formulas) {
+        if (formula.scrollWidth > formula.clientWidth + 1) {
+          formula.tabIndex = 0;
+          formula.setAttribute('role', 'group');
+          formula.setAttribute('aria-label', '数学公式，可横向滚动');
+        } else {
+          formula.removeAttribute('tabindex');
+          formula.removeAttribute('role');
+          formula.removeAttribute('aria-label');
+        }
+      }
+    };
+    new ResizeObserver(update).observe(content);
+    document.fonts.ready.then(update);
+  }
+</script>

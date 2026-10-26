@@ -1,0 +1,18 @@
+---
+/**
+ * Starlight's footer (previous and next pages), closed by a single quiet line that ties the site
+ * to the rest of the family: the homepage, the blog and where to report a mistake.
+ */
+import Default from '@astrojs/starlight/components/Footer.astro';
+import Icon from './Icon.astro';
+---
+
+<Default />
+<div class="site-foot">
+  <span class="site-foot-name">Arietids Learn · 个人课程复习笔记</span>
+  <nav aria-label="站外链接">
+    <a href="https://arietids.net/">个人主页<Icon name="arrow-up-right" size={11} /></a>
+    <a href="https://blog.arietids.net/">博客<Icon name="arrow-up-right" size={11} /></a>
+    <a href="/about/#纠错">纠错</a>
+  </nav>
+</div>

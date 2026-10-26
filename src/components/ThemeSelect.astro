@@ -1,0 +1,36 @@
+---
+/**
+ * Starlight's theme menu (dark, light, auto: a native select, so each system shows its own menu),
+ * drawn as a round icon control in the header. Switching cross-fades the whole page through a view
+ * transition instead of snapping every colour at once.
+ */
+import Default from '@astrojs/starlight/components/ThemeSelect.astro';
+---
+
+<Default />
+
+<script>
+  // Starlight applies the theme from the select's own change listener. A capture listener on the
+  // picker runs first: it holds the event back and replays it inside a view transition, so the
+  // browser snapshots the old colours, Starlight swaps them, and the two cross-fade.
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  let replaying = false;
+  for (const picker of document.querySelectorAll('starlight-theme-select')) {
+    picker.addEventListener(
+      'change',
+      (e) => {
+        if (replaying || still.matches || !document.startViewTransition) return;
+        const select = e.target as HTMLSelectElement;
+        e.stopPropagation();
+        document.documentElement.toggleAttribute('data-theme-switch', true);
+        const vt = document.startViewTransition(() => {
+          replaying = true;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          replaying = false;
+        });
+        vt.finished.finally(() => document.documentElement.removeAttribute('data-theme-switch'));
+      },
+      { capture: true },
+    );
+  }
+</script>

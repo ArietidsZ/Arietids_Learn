@@ -1,0 +1,68 @@
+---
+/**
+ * The page title, placed in the catalog: a chapter is headed by a link back to its course, its
+ * name (set to break between phrases) and a bar with the detailed/quick switch and the Markdown
+ * download, which replace the links the importer writes at the top of each note. The switch keeps
+ * one thumb across both pages, so a view transition slides it from one version to the other.
+ */
+import Icon from './Icon.astro';
+import Typeset from './Typeset.astro';
+import { chapterName, href, placeOf, versions } from '../lib/catalog';
+
+const { entry, id } = Astro.locals.starlightRoute;
+const place = placeOf(id);
+const note = place?.note;
+const pair = place && note ? versions(place.course, note) : undefined;
+const title = note ? chapterName(note) : entry.data.title;
+const back = place
+  ? note
+    ? { href: `/courses/${place.course.id}/`, label: place.course.title }
+    : { href: '/#课程目录', label: '全部课程' }
+  : undefined;
+const modes = pair?.quick
+  ? [
+      { note: pair.detailed, label: '详版' },
+      { note: pair.quick, label: '速览' },
+    ]
+  : [];
+// Search results take the full name: the course and the version, which the page shows around it.
+// (Pagefind reads commas in the attribute as separators between fields.)
+const searchTitle =
+  place && note ? `${place.course.title} · ${chapterName(note)}${note.quick ? ' · 速览' : ''}`.replaceAll(',', '，') : undefined;
+---
+
+{
+  back && (
+    <a class="title-back" href={back.href} data-pagefind-ignore>
+      <Icon name="chevron-left" size={15} />
+      {back.label}
+    </a>
+  )
+}
+<h1 id="_top" class:list={{ 'not-found': id === '404' }} data-pagefind-meta={searchTitle && `title:${searchTitle}`}>
+  <Typeset text={title} />
+</h1>
+{
+  note && (
+    <div class="note-bar" data-pagefind-ignore>
+      {modes.length > 0 && (
+        <nav class="note-modes" aria-label="笔记版本">
+          {modes.map((m) =>
+            m.note.slug === note.slug ? (
+              <a href={href(m.note)} aria-current="page">
+                <span class="note-thumb" aria-hidden="true" />
+                {m.label}
+              </a>
+            ) : (
+              <a href={href(m.note)}>{m.label}</a>
+            ),
+          )}
+        </nav>
+      )}
+      <a class="note-download" href={note.download} download>
+        <Icon name="download" size={15} />
+        下载 Markdown
+      </a>
+    </div>
+  )
+}

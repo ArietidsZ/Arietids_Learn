@@ -1,0 +1,12 @@
+---
+import Default from '@astrojs/starlight/components/Search.astro';
+---
+
+<Default {...Astro.props} />
+
+<script>
+  // The shortcut is already exposed by aria-keyshortcuts; keep it out of the button label.
+  document.querySelectorAll('site-search button[data-open-modal] > kbd').forEach((hint) => {
+    hint.setAttribute('aria-hidden', 'true');
+  });
+</script>

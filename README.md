@@ -55,6 +55,37 @@ Vercel 项目 `arietids-learn` 连接本仓库，生产分支为 `main`，构建
 
 简化选择：课程阅读由 Markdown 生成；全文检索使用 Starlight 内置 Pagefind；下载使用静态文件。验证这些流程后，不另加 CMS、服务器、数据库或第二套搜索。导航和正文在关闭 JavaScript 后仍应可读，交互演示及搜索需要 JavaScript。
 
+## 视觉与排版
+
+视觉与 [arietids.net](https://arietids.net/) 和[博客](https://blog.arietids.net/)一致：深色墨蓝、浅色纸色，强调色为青绿。沿用 Starlight 的导航、搜索和主题控件，在 `src/components/` 中定制标题与外观；样式在 `src/styles/` 中按层覆盖：
+
+- `tokens.css`：颜色、细线、阴影、材质、圆角、动效和字号；Starlight 的 `--sl-*` 变量由这些变量推出。
+- `chrome.css`：页眉、侧栏、目录、搜索、上一页/下一页和页面过渡。
+- `content.css`：正文、标题区、代码、折叠块、表格和公式。
+- `pages.css`：首页、课程卡片、课程目录、下载页、404 和打印。
+
+正文用读者设备自带的字体（Apple 设备上为 SF 与苹方）。页眉的字样是 Fraunces 的轮廓路径，不需要下载字体。
+
+构建时的排版在 `integrations/typography.mjs`：
+
+- 中文标题在词组之间换行（`src/lib/typeset.ts`）。
+- “[来源：…]” 标记保留原文，以小字弱化显示。
+- 公式在搜索摘要、目录和标题锚点中只读一次；标题 id 先由 Astro 按原文算出，排版不会改变任何锚点。
+- 课程目录页的“阅读”链接按列命名为“详版”“速览”。
+
+标题区由 `src/components/PageTitle.astro` 生成：课程返回链接、章节名、详版/速览切换和 Markdown 下载。导入脚本写在笔记开头的链接行在构建时去掉。侧栏每章只列一次；在速览页中，本课程的章节链接和上一页/下一页都指向速览版（`src/route-data.ts`）。
+
+交互演示顶部的返回条由 `scripts/import_archive.py` 的 `DEMO_BAR` 注入，同时写入课程 ZIP。
+
+`scripts/build-search.mjs` 使用 Pagefind 原生 Node API，在索引输入中对齐中文分词，修复“洛伦兹”“绪论”等查询漏检。这个步骤不改动发布的 HTML 或下载笔记，也不替换浏览器中的搜索组件。索引页数与输入页数不符时构建会失败。
+
+宽公式只有在实际溢出时才加入键盘焦点，可用方向键横向滚动；打印始终使用白底黑字。减少动态效果的系统设置会关闭页面动效。
+
+维护时注意：
+
+- 选择器以标签或类名结尾，不要只用 `:is()`、`:not()`、`::selection` 或 `::backdrop`。长章节有三万多个元素，这类选择器会对每个元素逐一尝试。
+- 构建使用 Astro 原生 `--force` 刷新内容缓存，确保排版插件的修改在本地和 Vercel 都生效，无需手动删除缓存。开发时修改排版插件后，可用 `npm run dev -- --force` 重启。
+
 ## 纠错
 
 请通过 [GitHub Issues](https://github.com/ArietidsZ/Arietids_Learn/issues) 提供页面链接、具体位置及建议。涉及内容权利的问题也可在此说明。

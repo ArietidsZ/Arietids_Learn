@@ -1,0 +1,383 @@
+/*
+ * Reading: notes set for long study, on the night sky or day paper. The text is a step larger and
+ * a step dimmer than the headings; structure comes from spacing and weight rather than rules and
+ * colour; code, formulas and folded blocks sit on quiet raised plates.
+ */
+
+/* ---------- the title block (components/PageTitle.astro) ---------- */
+.content-panel + .content-panel {
+  padding-top: 2.25rem;
+  border-top: var(--hairline) solid var(--line);
+}
+.title-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  margin-inline-start: -0.35rem;
+  padding: 0.2rem 0.6rem 0.2rem 0.3rem;
+  border-radius: 999px;
+  color: var(--tint);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s;
+}
+.title-back .icon {
+  transition: translate var(--spring-dur) var(--spring);
+}
+@media (hover: hover) {
+  .title-back:hover {
+    background: var(--tint-soft);
+  }
+  .title-back:hover .icon {
+    translate: -2px 0;
+  }
+}
+.sl-container > .title-back + h1 {
+  margin-top: 0.5rem;
+}
+.sl-container > h1#_top {
+  color: var(--text);
+  font-size: var(--sl-text-h1);
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.nobr {
+  white-space: nowrap;
+}
+
+/* The version switch: a segmented control whose thumb slides between pages. */
+.note-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+.sl-container > h1 + .note-bar {
+  margin-top: 1.25rem;
+}
+.note-modes {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--wash);
+  box-shadow: inset 0 0 0 var(--hairline) var(--line);
+}
+.note-modes a {
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  place-items: center;
+  min-width: 4.25rem;
+  height: 1.875rem;
+  padding-inline: 0.9rem;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color 0.2s,
+    scale var(--snappy-dur) var(--spring-snappy);
+}
+.note-modes a:hover,
+.note-modes a[aria-current='page'] {
+  color: var(--text);
+}
+.note-modes a:active {
+  scale: 0.96;
+}
+.note-thumb {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--thumb);
+  box-shadow: var(--edge-lit), var(--elev-1);
+}
+.note-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.25rem;
+  margin-inline-start: auto;
+  padding-inline: 0.8rem 0.95rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 var(--hairline) var(--line-strong);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    scale var(--snappy-dur) var(--spring-snappy);
+}
+/* Alone (a chapter with one version), the download sits where the switch would start. */
+.note-bar:not(:has(.note-modes)) .note-download {
+  margin-inline-start: 0;
+}
+@media (hover: hover) {
+  .note-download:hover {
+    background: var(--wash);
+    color: var(--text);
+  }
+}
+.note-download:active {
+  scale: 0.96;
+}
+
+/* ---------- running text ---------- */
+.sl-markdown-content {
+  color: var(--text-body);
+  font-size: var(--text-read);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+  hanging-punctuation: first allow-end;
+}
+.sl-markdown-content p {
+  text-wrap: pretty;
+}
+.sl-markdown-content strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.sl-markdown-content a:not(:where(.not-content *)) {
+  color: var(--tint);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in oklch, var(--tint) 38%, transparent);
+  text-underline-offset: 0.22em;
+  transition:
+    color 0.2s,
+    text-decoration-color 0.2s;
+}
+.sl-markdown-content a:hover:not(:where(.not-content *)) {
+  color: var(--tint-strong);
+  text-decoration-color: currentColor;
+}
+
+/* Headings: weight and space, not size, carry the hierarchy; Han titles break between phrases.
+   Rules here end in a tag or class, never :is() or :not() alone, so the browser tries each only
+   against the elements it can match: a long chapter has some 35,000 of them. */
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5 {
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.38;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.sl-markdown-content .sl-heading-wrapper {
+  --sl-anchor-icon-size: 0.72em;
+  line-height: 1.38;
+}
+.sl-markdown-content .sl-heading-wrapper.level-h2 {
+  margin-top: 2.4em;
+}
+.sl-markdown-content .sl-heading-wrapper.level-h3 {
+  margin-top: 1.9em;
+}
+.sl-markdown-content .sl-heading-wrapper.level-h4 {
+  margin-top: 1.7em;
+}
+.sl-markdown-content .sl-heading-wrapper:first-child {
+  margin-top: 0;
+}
+.sl-markdown-content .sl-heading-wrapper + .sl-heading-wrapper {
+  margin-top: 1rem;
+}
+.sl-markdown-content .sl-anchor-link {
+  color: var(--text-faint);
+  transition:
+    opacity 0.2s,
+    color 0.2s;
+}
+.sl-markdown-content .sl-anchor-link:hover {
+  color: var(--tint);
+}
+@media (hover: none) {
+  .sl-markdown-content .sl-anchor-link {
+    opacity: 0.35;
+  }
+}
+
+.sl-markdown-content hr:not(:where(.not-content *)) {
+  margin-block: 2.25rem;
+  border: 0;
+  border-top: var(--hairline) solid var(--line);
+}
+.sl-markdown-content hr + .sl-heading-wrapper {
+  margin-top: 0;
+}
+
+.sl-markdown-content ul,
+.sl-markdown-content ol {
+  padding-inline-start: 1.4em;
+}
+.sl-markdown-content li::marker {
+  color: var(--text-faint);
+}
+.sl-markdown-content ol > li::marker {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.sl-markdown-content li + li:not(:where(.not-content *)) {
+  margin-top: 0.4rem;
+}
+
+.sl-markdown-content blockquote:not(:where(.not-content *)) {
+  padding: 0.1rem 0 0.1rem 1.1rem;
+  border-inline-start: 2px solid color-mix(in oklch, var(--tint) 45%, transparent);
+  color: var(--text-muted);
+}
+
+/* Source marks ("[来源：p3，定义]", integrations/typography.mjs): kept, but read last. */
+.src-ref {
+  color: var(--text-faint);
+  font-size: 0.78em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- inline code, code blocks and folded code ---------- */
+.sl-markdown-content code:not(:where(.not-content *)) {
+  margin-block: 0;
+  padding: 0.12em 0.38em;
+  border-radius: 0.35em;
+  background: var(--wash);
+  color: var(--text);
+  font-size: 0.875em;
+}
+.sl-markdown-content .expressive-code {
+  margin-block: 1.25rem;
+}
+.expressive-code .frame,
+.expressive-code pre {
+  corner-shape: var(--corner);
+}
+.expressive-code pre {
+  scrollbar-width: thin;
+}
+
+.sl-markdown-content details {
+  padding: 0;
+  overflow: clip;
+  border: 0;
+  border-radius: var(--r-control);
+  corner-shape: var(--corner);
+  background: var(--plate);
+  box-shadow: var(--edge), var(--edge-lit);
+}
+.sl-markdown-content summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.6rem 1rem;
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s;
+}
+@media (hover: hover) {
+  .sl-markdown-content summary:hover {
+    background: var(--wash);
+  }
+}
+.sl-markdown-content summary::before {
+  --sl-details-marker-size: 1.1rem;
+  margin: 0;
+  color: var(--text-faint);
+  background-color: var(--text-faint);
+  transition: transform var(--spring-dur) var(--spring);
+}
+.sl-markdown-content details[open] > summary {
+  margin-bottom: 0;
+  box-shadow: inset 0 calc(-1 * var(--hairline)) 0 var(--line);
+}
+/* The disclosure is the frame: text inside is set in from its edges, folded code fills it. */
+.sl-markdown-content details > p,
+.sl-markdown-content details > ul,
+.sl-markdown-content details > ol,
+.sl-markdown-content details > table,
+.sl-markdown-content details > blockquote,
+.sl-markdown-content details > pre {
+  margin: 0.875rem 1rem;
+}
+.sl-markdown-content details > .expressive-code {
+  margin: 0;
+}
+.sl-markdown-content details .expressive-code .frame,
+.sl-markdown-content details .expressive-code pre {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.sl-markdown-content details::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition:
+    block-size 0.5s var(--spring),
+    content-visibility 0.5s allow-discrete;
+}
+.sl-markdown-content details[open]::details-content {
+  block-size: auto;
+}
+
+/* ---------- tables ---------- */
+.sl-markdown-content table:not(:where(.not-content *)) {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+.sl-markdown-content th,
+.sl-markdown-content td {
+  padding: 0.6rem 0.9rem;
+  border-bottom: var(--hairline) solid var(--line);
+  vertical-align: top;
+  /* Cells keep their words whole ("(10)" never splits); a table too wide scrolls instead. */
+  overflow-wrap: break-word;
+}
+.sl-markdown-content th:first-child,
+.sl-markdown-content td:first-child {
+  padding-inline-start: 0;
+}
+.sl-markdown-content th:last-child,
+.sl-markdown-content td:last-child {
+  padding-inline-end: 0;
+}
+.sl-markdown-content th {
+  border-bottom-color: var(--line-strong);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sl-markdown-content tbody tr:last-child > td {
+  border-bottom: 0;
+}
+
+/* ---------- formulas ---------- */
+.katex {
+  font-size: 1.05em;
+}
+.katex-display {
+  margin-block: 1.1em;
+  padding: 0.35em 0.1em;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
