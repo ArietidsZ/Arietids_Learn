@@ -1,0 +1,2166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Schr&ouml;der&ndash;Bernstein | Visual Proof Lab</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e4f7f3'/%3E%3Cpath d='M18 20h22m0 0-6-6m6 6-6 6M46 44H24m0 0 6 6m-6-6 6-6' fill='none' stroke='%23009b88' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --ink: #101936;
+      --ink-2: #25304e;
+      --muted: #69748f;
+      --quiet: #8b95aa;
+      --line: #dfe5ef;
+      --line-strong: #c1ccdc;
+      --surface: rgba(255, 255, 255, .9);
+      --surface-2: #f7faff;
+      --teal: #009b88;
+      --teal-soft: #e4f7f3;
+      --blue: #176fd3;
+      --blue-soft: #e8f1ff;
+      --purple: #7437c9;
+      --purple-soft: #f0e8ff;
+      --amber: #e98313;
+      --amber-soft: #fff3df;
+      --rose: #eb3f73;
+      --rose-soft: #ffedf4;
+      --green: #1d9b59;
+      --green-soft: #e7f7ee;
+      --shadow: 0 18px 48px rgba(22, 35, 68, .09);
+      --soft-shadow: 0 10px 28px rgba(22, 35, 68, .07);
+      --radius: 8px;
+      --wrap: 1400px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(16, 25, 54, .035) 1px, transparent 1px) 0 0 / 44px 44px,
+        linear-gradient(0deg, rgba(16, 25, 54, .035) 1px, transparent 1px) 0 0 / 44px 44px,
+        linear-gradient(180deg, #fff 0%, #fbfdff 48%, #fff 100%);
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+
+    button {
+      font: inherit;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(223, 229, 239, .92);
+      background: rgba(255, 255, 255, .92);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar-inner {
+      width: min(var(--wrap), calc(100% - 36px));
+      min-height: 58px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 820;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(0, 155, 136, .28);
+      border-radius: 8px;
+      color: var(--teal);
+      background: #f7fffd;
+      box-shadow: inset 0 -1px 0 rgba(0, 155, 136, .16);
+    }
+
+    .brand-mark svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .nav a {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 760;
+      white-space: nowrap;
+      transition: color .16s var(--ease), background .16s var(--ease);
+    }
+
+    .nav a:hover {
+      color: var(--ink);
+      background: #f3f7fc;
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink-2);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 8px 18px rgba(16, 25, 54, .05);
+    }
+
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .page {
+      width: min(var(--wrap), calc(100% - 36px));
+      margin: 0 auto;
+      padding: 22px 0 42px;
+    }
+
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(260px, 330px) minmax(0, 1fr) minmax(280px, 368px);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .theorem-panel {
+      padding: 26px 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      min-width: 0;
+    }
+
+    .theorem-title {
+      margin: 0;
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: clamp(42px, 3.6vw, 52px);
+      line-height: .9;
+      font-weight: 760;
+      letter-spacing: 0;
+      color: var(--ink);
+      max-width: 100%;
+    }
+
+    .section-kicker {
+      margin: 26px 0 8px;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 860;
+      text-transform: uppercase;
+    }
+
+    .statement {
+      margin: 0;
+      color: var(--ink-2);
+      font-size: 16px;
+      line-height: 1.68;
+    }
+
+    .statement-formulas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 8px 0;
+    }
+
+    .formula-token {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 9px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .map-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .map-chip {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 10px;
+      border: 1px solid color-mix(in srgb, var(--chip-color) 28%, var(--line));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--chip-color) 7%, #fff);
+      color: var(--ink-2);
+      font-size: 12px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .map-chip i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--chip-color);
+    }
+
+    .glance {
+      margin-top: auto;
+      padding-top: 24px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .glance h2 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+    }
+
+    .glance-item {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 11px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .glance-icon {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 1px solid color-mix(in srgb, var(--item-color) 38%, var(--line));
+      background: color-mix(in srgb, var(--item-color) 9%, #fff);
+      color: var(--item-color);
+    }
+
+    .glance-icon svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .glance-item strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .glance-item > div > span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .glance-item > div > span .mathish {
+      display: inline;
+      margin-top: 0;
+      color: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      overflow-wrap: normal;
+    }
+
+    .main-column {
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .panel-head {
+      min-height: 54px;
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .panel-head h2,
+    .section-head h2 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.2;
+      font-weight: 860;
+      color: var(--ink);
+    }
+
+    .head-note {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 680;
+    }
+
+    .chase-panel {
+      overflow: hidden;
+    }
+
+    .chase-board {
+      padding: 20px 22px 18px;
+    }
+
+    .board-axis {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) minmax(110px, 158px) minmax(160px, 1fr);
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 8px;
+    }
+
+    .axis-label {
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      color: var(--axis-color);
+      font-size: 34px;
+      font-weight: 760;
+      text-align: center;
+    }
+
+    .axis-rule {
+      align-self: center;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .chase-track {
+      display: grid;
+      gap: 8px;
+    }
+
+    .track-step {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) minmax(110px, 158px) minmax(160px, 1fr);
+      gap: 16px;
+      align-items: center;
+      padding: 4px;
+      border-radius: 8px;
+      transition: background .18s var(--ease), opacity .18s var(--ease);
+    }
+
+    .track-step:not(.is-active) {
+      opacity: .54;
+    }
+
+    .track-step.is-active {
+      background: color-mix(in srgb, var(--step-color) 7%, transparent);
+    }
+
+    .chain-node {
+      min-height: 68px;
+      display: grid;
+      align-content: center;
+      gap: 3px;
+      padding: 12px 14px;
+      border: 1px solid color-mix(in srgb, var(--node-color) 42%, var(--line));
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .chain-node.empty {
+      border-color: transparent;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .chain-node small {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .chain-node strong {
+      color: var(--ink);
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 760;
+    }
+
+    .map-arrow {
+      display: grid;
+      justify-items: center;
+      gap: 3px;
+      color: var(--arrow-color);
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: 17px;
+      font-weight: 760;
+    }
+
+    .arrow-svg {
+      width: 100%;
+      height: 26px;
+      min-width: 90px;
+      display: block;
+      overflow: visible;
+    }
+
+    .arrow-svg path {
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .board-legend {
+      margin: 14px auto 0;
+      width: max-content;
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--dot-color);
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .ledger {
+      border-top: 1px solid var(--line);
+      padding: 16px 18px 18px;
+      background: rgba(247, 250, 255, .66);
+    }
+
+    .ledger-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .ledger-title h3 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 860;
+      color: var(--ink);
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+
+    .ledger-title span {
+      color: var(--muted);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .ledger-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .ledger-row {
+      display: grid;
+      grid-template-columns: 28px minmax(100px, .7fr) minmax(112px, .8fr) minmax(150px, 1fr) minmax(170px, 1.15fr);
+      gap: 10px;
+      align-items: center;
+      min-height: 44px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .86);
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+
+    .ledger-row strong {
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    .row-dot {
+      width: 18px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--row-color);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .inspector {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      overflow: hidden;
+    }
+
+    .proof-map {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .map-step {
+      position: relative;
+      display: grid;
+      gap: 7px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .map-step::after {
+      content: "";
+      position: absolute;
+      top: 17px;
+      right: calc(-50% + 20px);
+      width: calc(100% - 24px);
+      border-top: 2px dotted var(--line-strong);
+    }
+
+    .map-step:last-child::after {
+      display: none;
+    }
+
+    .map-step b {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--step-color);
+      font-size: 14px;
+      box-shadow: 0 8px 18px color-mix(in srgb, var(--step-color) 24%, transparent);
+      z-index: 1;
+    }
+
+    .map-step strong {
+      min-height: 30px;
+      color: var(--ink);
+      font-size: 11px;
+      line-height: 1.25;
+      font-weight: 820;
+    }
+
+    .layer-picker {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 10px;
+    }
+
+    .layer-picker-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .layer-picker-head h2 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 860;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+
+    .layer-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .layer-button,
+    .branch-button,
+    .proof-button {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink-2);
+      transition: background .16s var(--ease), border-color .16s var(--ease), box-shadow .16s var(--ease), transform .16s var(--ease);
+    }
+
+    .layer-button {
+      min-height: 36px;
+      font-size: 12px;
+      font-weight: 820;
+    }
+
+    .layer-button:hover,
+    .layer-button.is-active,
+    .branch-button:hover,
+    .branch-button.is-active,
+    .proof-button:hover,
+    .proof-button.is-active {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--active-color, var(--teal)) 42%, var(--line));
+      background: color-mix(in srgb, var(--active-color, var(--teal)) 8%, #fff);
+      box-shadow: 0 12px 26px color-mix(in srgb, var(--active-color, var(--teal)) 14%, transparent);
+    }
+
+    .layer-button:focus-visible,
+    .branch-button:focus-visible,
+    .proof-button:focus-visible {
+      outline: 3px solid rgba(23, 111, 211, .22);
+      outline-offset: 2px;
+    }
+
+    .inspector-body {
+      padding: 18px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .inspector-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .inspector-card h3 {
+      margin: 0;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .inspector-card .card-body {
+      padding: 13px 14px;
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .formula-block {
+      overflow-x: auto;
+      padding: 12px;
+      border: 1px solid color-mix(in srgb, var(--formula-color, var(--blue)) 28%, var(--line));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--formula-color, var(--blue)) 7%, #fff);
+      color: var(--ink);
+    }
+
+    .key-fact {
+      border: 1px solid rgba(23, 111, 211, .28);
+      border-radius: 8px;
+      background: var(--blue-soft);
+      padding: 14px;
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    .content-section {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, .9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .study-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      padding: 18px;
+    }
+
+    .study-card,
+    .formal-card,
+    .checkpoint-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--soft-shadow);
+    }
+
+    .study-card {
+      padding: 15px;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .study-card h3,
+    .formal-card h3,
+    .checkpoint-card h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.25;
+      font-weight: 860;
+    }
+
+    .study-card p,
+    .formal-card p,
+    .checkpoint-card p {
+      margin: 0;
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    .study-badge {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--badge-color);
+      font-size: 13px;
+      font-weight: 860;
+      box-shadow: 0 8px 18px color-mix(in srgb, var(--badge-color) 22%, transparent);
+    }
+
+    .formal-strip {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      gap: 14px;
+      padding: 0 18px 18px;
+    }
+
+    .formal-card,
+    .checkpoint-card {
+      overflow: hidden;
+    }
+
+    .formal-card h3,
+    .checkpoint-card h3 {
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .formal-body,
+    .checkpoint-body {
+      padding: 15px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .definition-stack {
+      display: grid;
+      gap: 9px;
+    }
+
+    .definition-line {
+      display: grid;
+      grid-template-columns: 116px minmax(0, 1fr);
+      gap: 12px;
+      align-items: baseline;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .definition-line strong {
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .checkpoint-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0 18px 18px;
+    }
+
+    .checkpoint-card ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.58;
+    }
+
+    .section-head {
+      min-height: 58px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .section-number {
+      width: 30px;
+      height: 30px;
+      display: inline-grid;
+      place-items: center;
+      margin-right: 9px;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--section-color);
+      font-size: 13px;
+      font-weight: 860;
+      vertical-align: middle;
+    }
+
+    .definition-grid {
+      display: grid;
+      grid-template-columns: minmax(230px, .72fr) minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      padding: 18px;
+    }
+
+    .definition-card,
+    .proof-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--soft-shadow);
+      overflow: hidden;
+    }
+
+    .definition-card h3,
+    .proof-card h3 {
+      margin: 0;
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+      font-weight: 860;
+      color: var(--ink);
+    }
+
+    .definition-card-body,
+    .proof-card-body {
+      padding: 15px;
+      color: var(--ink-2);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .reason-stack {
+      display: grid;
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .reason-line {
+      display: grid;
+      grid-template-columns: 24px minmax(0, 1fr);
+      gap: 9px;
+      align-items: start;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .reason-line b {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--reason-color);
+      font-size: 11px;
+    }
+
+    .reason-line strong {
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .branch-card {
+      border-color: color-mix(in srgb, var(--branch-color) 42%, var(--line));
+    }
+
+    .branch-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .branch-index {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--branch-color);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .branch-buttons,
+    .proof-buttons {
+      display: inline-grid;
+      grid-auto-flow: column;
+      gap: 5px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f4f7fb;
+    }
+
+    .branch-button,
+    .proof-button {
+      min-height: 34px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .branch-visual {
+      min-height: 112px;
+      margin-top: 14px;
+      padding: 13px;
+      border: 1px solid color-mix(in srgb, var(--branch-color) 28%, var(--line));
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(16, 25, 54, .035) 1px, transparent 1px) 0 0 / 28px 28px,
+        linear-gradient(0deg, rgba(16, 25, 54, .035) 1px, transparent 1px) 0 0 / 28px 28px,
+        color-mix(in srgb, var(--branch-color) 5%, #fff);
+    }
+
+    .branch-line {
+      display: grid;
+      grid-template-columns: minmax(76px, 1fr) 74px minmax(76px, 1fr);
+      gap: 10px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .branch-point {
+      min-height: 50px;
+      display: grid;
+      place-items: center;
+      border: 1px solid color-mix(in srgb, var(--branch-color) 45%, var(--line));
+      border-radius: 8px;
+      background: #fff;
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-size: 17px;
+      font-weight: 760;
+      color: var(--ink);
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      padding: 18px;
+    }
+
+    .case-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .case-row {
+      display: grid;
+      grid-template-columns: 23px minmax(0, 1fr);
+      gap: 9px;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      transition: background .16s var(--ease), border-color .16s var(--ease), transform .16s var(--ease);
+    }
+
+    .case-row.is-emph {
+      border-color: color-mix(in srgb, var(--case-color) 38%, var(--line));
+      background: color-mix(in srgb, var(--case-color) 7%, #fff);
+      transform: translateY(-1px);
+    }
+
+    .case-icon {
+      width: 21px;
+      height: 21px;
+      display: grid;
+      place-items: center;
+      color: var(--case-color);
+    }
+
+    .case-icon svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .case-row strong {
+      display: block;
+      font-size: 13px;
+      color: var(--ink);
+      line-height: 1.25;
+    }
+
+    .case-row span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .proof-note {
+      margin-top: 13px;
+      padding: 12px 13px;
+      border: 1px solid color-mix(in srgb, var(--note-color) 30%, var(--line));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--note-color) 7%, #fff);
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .final-strip {
+      margin: 0 18px 18px;
+      min-height: 64px;
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border: 1px solid rgba(29, 155, 89, .32);
+      border-radius: 8px;
+      background: linear-gradient(90deg, rgba(29, 155, 89, .09), rgba(255, 255, 255, .96));
+    }
+
+    .final-strip svg {
+      width: 30px;
+      height: 30px;
+      color: var(--green);
+    }
+
+    .final-strip strong {
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.35;
+    }
+
+    .final-line {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 6px;
+      color: var(--ink);
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 820;
+    }
+
+    .final-map {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 9px;
+      border: 1px solid rgba(29, 155, 89, .28);
+      border-radius: 8px;
+      background: rgba(29, 155, 89, .08);
+      color: var(--ink);
+      font-weight: 760;
+    }
+
+    .mathish {
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      font-style: italic;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .final-strip span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .source-note {
+      padding: 0 18px 20px;
+      color: var(--quiet);
+      text-align: right;
+      font-size: 11px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .001ms !important;
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    @media (max-width: 1160px) {
+      .workspace {
+        grid-template-columns: minmax(260px, .82fr) minmax(0, 1.18fr);
+      }
+
+      .inspector {
+        grid-column: 1 / -1;
+        grid-template-columns: 1fr 1.1fr;
+        grid-template-rows: auto;
+      }
+
+      .proof-map {
+        border-right: 1px solid var(--line);
+        border-bottom: 0;
+      }
+
+      .layer-picker {
+        border-bottom: 0;
+      }
+
+      .inspector-body {
+        grid-column: 1 / -1;
+        border-top: 1px solid var(--line);
+      }
+
+      .definition-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .definition-grid .definition-card:first-child {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .topbar-inner,
+      .page {
+        width: min(100% - 28px, var(--wrap));
+      }
+
+      .topbar-inner {
+        min-height: 56px;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 10px 0;
+      }
+
+      .nav {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .nav a {
+        flex: 0 0 auto;
+      }
+
+      .nav a[href="#exam-skeleton"] {
+        order: -1;
+      }
+
+      .top-actions {
+        display: none;
+      }
+
+      .page {
+        padding-top: 14px;
+      }
+
+      .workspace,
+      .inspector,
+      .study-grid,
+      .formal-strip,
+      .checkpoint-grid,
+      .definition-grid,
+      .proof-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .theorem-panel {
+        padding: 22px 18px;
+      }
+
+      .theorem-title {
+        font-size: clamp(42px, 12.2vw, 54px);
+      }
+
+      .glance {
+        margin-top: 22px;
+      }
+
+      .panel-head,
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .chase-board {
+        padding: 16px 14px 14px;
+      }
+
+      .board-axis {
+        display: none;
+      }
+
+      .track-step {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, .72);
+      }
+
+      .track-step:not(.is-active) {
+        opacity: 1;
+      }
+
+      .track-step .chain-node.empty {
+        display: none;
+      }
+
+      .map-arrow {
+        grid-row: auto;
+      }
+
+      .arrow-svg {
+        max-width: 190px;
+        justify-self: center;
+      }
+
+      .ledger-row {
+        grid-template-columns: 26px minmax(0, 1fr);
+        gap: 6px 9px;
+      }
+
+      .ledger-row > :nth-child(n+3) {
+        grid-column: 2;
+      }
+
+      .proof-map {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .proof-map,
+      .layer-buttons {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .map-step::after {
+        display: none;
+      }
+
+      .branch-buttons,
+      .proof-buttons {
+        width: 100%;
+        grid-auto-flow: row;
+      }
+
+      .branch-button,
+      .proof-button {
+        width: 100%;
+      }
+
+      .branch-line {
+        grid-template-columns: 1fr;
+      }
+
+      .definition-line {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+
+      .final-strip {
+        grid-template-columns: 34px minmax(0, 1fr);
+      }
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f131a;
+        --ink: #eef3fb;
+        --ink-2: #cbd5e4;
+        --muted: #9aa7ba;
+        --quiet: #7f8da1;
+        --line: #2c3545;
+        --line-strong: #45546a;
+        --surface: rgba(17, 23, 34, .94);
+        --surface-2: #151b24;
+        --teal: #4bc6b8;
+        --teal-soft: #112a2b;
+        --blue: #83a8ff;
+        --blue-soft: #18233b;
+        --purple: #b995ff;
+        --purple-soft: #241c37;
+        --amber: #e8b85d;
+        --amber-soft: #302619;
+        --rose: #ff7f9f;
+        --rose-soft: #321a27;
+        --green: #62d595;
+        --green-soft: #14291f;
+        --shadow: none;
+        --soft-shadow: none;
+      }
+
+      body {
+        background:
+          linear-gradient(90deg, rgba(154, 167, 186, .08) 1px, transparent 1px) 0 0 / 44px 44px,
+          linear-gradient(0deg, rgba(154, 167, 186, .08) 1px, transparent 1px) 0 0 / 44px 44px,
+          linear-gradient(180deg, #0f131a 0%, #111722 52%, #0f131a 100%);
+      }
+
+      .topbar,
+      .panel,
+      .inspector,
+      .stage,
+      .study-card,
+      .formal-strip,
+      .checkpoint,
+      .content-section,
+      .ledger,
+      .definition-card,
+      .formal-card,
+      .checkpoint-card,
+      .proof-card,
+      .case-row,
+      .proof-note,
+      .final-strip {
+        border-color: var(--line) !important;
+        background: rgba(17, 23, 34, .94) !important;
+      }
+
+      .brand-mark,
+      .icon-button,
+      .top-actions a,
+      .mode-button,
+      .formula-token,
+      .map-chip,
+      .glance-item,
+      .layer-button,
+      .branch-button,
+      .proof-button,
+      .track-step,
+      .chain-node,
+      .board-legend,
+      .inspector-card,
+      .formula-box,
+      .formula-block,
+      .key-fact,
+      .ledger-row,
+      .definition-line,
+      .branch-buttons,
+      .proof-buttons,
+      .reason-line,
+      .branch-point,
+      .source-note,
+      input,
+      button {
+        border-color: var(--line) !important;
+        background-color: #151b24 !important;
+        color: var(--ink-2);
+      }
+
+      .nav a:hover,
+      .icon-button:hover,
+      .top-actions a:hover,
+      .mode-button:hover {
+        background: #1b2330 !important;
+      }
+
+      .is-active,
+      .mode-button[aria-pressed="true"],
+      .layer-button.is-active,
+      .branch-button.is-active,
+      .proof-button.is-active,
+      .track-step.is-active {
+        background: var(--teal-soft) !important;
+        color: var(--ink);
+      }
+
+      .formula-token {
+        color: var(--ink) !important;
+        box-shadow: inset 0 -1px 0 rgba(75, 198, 184, .16);
+      }
+
+      .map-chip {
+        background: color-mix(in srgb, var(--chip-color, var(--teal)) 12%, #151b24) !important;
+        border-color: color-mix(in srgb, var(--chip-color, var(--teal)) 40%, var(--line)) !important;
+      }
+
+      .formula-block {
+        background: color-mix(in srgb, var(--formula-color, var(--blue)) 12%, #151b24) !important;
+        border-color: color-mix(in srgb, var(--formula-color, var(--blue)) 42%, var(--line)) !important;
+        color: var(--ink) !important;
+      }
+
+      .key-fact {
+        background: color-mix(in srgb, var(--blue) 16%, #151b24) !important;
+        border-color: color-mix(in srgb, var(--blue) 42%, var(--line)) !important;
+        color: var(--ink-2) !important;
+      }
+
+      .chain-node {
+        background: color-mix(in srgb, var(--node-color, var(--teal)) 13%, #151b24) !important;
+        border-color: color-mix(in srgb, var(--node-color, var(--teal)) 42%, var(--line)) !important;
+        color: var(--ink) !important;
+      }
+
+      .chain-node.empty {
+        background: transparent !important;
+        border-color: transparent !important;
+      }
+
+      .chain-node small,
+      .ledger-title span,
+      .definition-line span,
+      .reason-line span,
+      .case-row span,
+      .proof-note,
+      .source-note {
+        color: var(--muted) !important;
+      }
+
+      .chain-node strong,
+      .ledger-row strong,
+      .definition-line strong,
+      .reason-line strong,
+      .branch-point,
+      .formal-card h3,
+      .checkpoint-card h3 {
+        color: var(--ink) !important;
+      }
+
+      .board-legend,
+      .branch-buttons,
+      .proof-buttons {
+        box-shadow: inset 0 0 0 1px var(--line);
+      }
+
+      .branch-point {
+        background: color-mix(in srgb, var(--branch-color, var(--teal)) 12%, #151b24) !important;
+        border-color: color-mix(in srgb, var(--branch-color, var(--teal)) 38%, var(--line)) !important;
+      }
+
+      .reason-line {
+        background: color-mix(in srgb, var(--reason-color, var(--teal)) 10%, #151b24) !important;
+        border-color: color-mix(in srgb, var(--reason-color, var(--teal)) 34%, var(--line)) !important;
+      }
+
+      .formal-card p,
+      .checkpoint-card p,
+      .checkpoint-card li,
+      .content-section p {
+        color: var(--ink-2) !important;
+      }
+
+      mjx-container,
+      mjx-container svg {
+        color: var(--ink) !important;
+        fill: currentColor !important;
+      }
+
+      svg text {
+        fill: var(--ink-2);
+      }
+    }
+  </style>
+</head>
+<body><div style="padding:10px 16px;background:#153a43;color:#fff;font:14px/1.6 system-ui"><a style="color:#fff;text-decoration:none" href="/explore/">← Arietids Learn · 交互演示目录</a></div>
+  <header class="topbar" aria-label="Top navigation">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="Schroder-Bernstein visual proof lab">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M6.2 7.5c2.8-2.9 8.8-2.9 11.6 0M17.8 16.5c-2.8 2.9-8.8 2.9-11.6 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M16 5h3v3M8 19H5v-3M8 5H5v3M16 19h3v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>Schr&ouml;der&ndash;Bernstein</span>
+      </a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#visualization">总览</a>
+        <a href="#foundations">基础</a>
+        <a href="#definition">定义 h</a>
+        <a href="#proof">验证</a>
+        <a href="#exam-skeleton">Exam</a>
+      </nav>
+      <div class="top-actions" aria-hidden="true">
+        <button class="icon-button" type="button" title="Reset view" id="resetView">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 13.7-5.7M20 12a8 8 0 0 1-13.7 5.7M17 3v4h-4M7 21v-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="page" id="top">
+    <section class="workspace" id="visualization" aria-label="Schroder-Bernstein visualization workspace">
+      <aside class="panel theorem-panel">
+        <h1 class="theorem-title">Schr&ouml;der&ndash;<br>Bernstein</h1>
+        <div class="section-kicker">Theorem / 定理目标</div>
+        <p class="statement">
+          If there exist injections
+          <span class="statement-formulas">
+            <span class="formula-token">f:A→B</span>
+            <span class="formula-token">g:B→A</span>
+          </span>
+          then there exists a bijection <span class="formula-token">h:A→B</span>.
+        </p>
+        <p class="statement">中文抓法：两个方向都能单射嵌入，就能构造一个真正的一一对应。</p>
+        <div class="map-chips" aria-label="Function roles">
+          <span class="map-chip" style="--chip-color: var(--teal)"><i></i><span class="mathish">f:A→B</span></span>
+          <span class="map-chip" style="--chip-color: var(--blue)"><i></i><span class="mathish">g:B→A</span></span>
+          <span class="map-chip" style="--chip-color: var(--green)"><i></i><span class="mathish">h:A→B</span></span>
+        </div>
+        <div class="glance">
+          <h2>最快读法</h2>
+          <div class="glance-item" style="--item-color: var(--teal)">
+            <span class="glance-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <div><strong>先找缺口</strong><span><span class="mathish">C<sub>0</sub>=A∖g[B]</span>：这些点不能用 <span class="mathish">g<sup>-1</sup></span>。</span></div>
+          </div>
+          <div class="glance-item" style="--item-color: var(--purple)">
+            <span class="glance-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M8 4v16M16 4v16M4 8h16M4 16h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            <div><strong>追出链 <span class="mathish">U</span></strong><span>沿 <span class="mathish">f</span> 到 <span class="mathish">B</span>，再沿 <span class="mathish">g</span> 回 <span class="mathish">A</span>，得到 <span class="mathish">U=⋃<sub>i</sub>C<sub>i</sub></span>。</span></div>
+          </div>
+          <div class="glance-item" style="--item-color: var(--amber)">
+            <span class="glance-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <div><strong>分两支定义 <span class="mathish">h</span></strong><span><span class="mathish">U</span> 上用 <span class="mathish">f</span>，外面用唯一的 <span class="mathish">g<sup>-1</sup></span>。</span></div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main-column">
+        <article class="panel chase-panel" aria-label="Alternating chase board">
+          <div class="panel-head">
+            <h2>追链板</h2>
+            <span class="head-note">沿 <span class="mathish">f</span> 前进，再沿 <span class="mathish">g</span> 回来</span>
+          </div>
+          <div class="chase-board">
+            <div class="board-axis" aria-hidden="true">
+              <div class="axis-label" style="--axis-color: var(--teal)">A</div>
+              <div class="axis-rule"></div>
+              <div class="axis-label" style="--axis-color: var(--blue)">B</div>
+            </div>
+            <div class="chase-track" id="chaseTrack">
+              <div class="track-step is-active" data-step="seed" style="--step-color: var(--teal)">
+                <div class="chain-node" style="--node-color: var(--teal)">
+                  <small><span class="mathish">g</span> 没打到的缺口</small>
+                  <strong><span class="mathish">C<sub>0</sub>=A∖g[B]</span></strong>
+                </div>
+                <div class="map-arrow" style="--arrow-color: var(--teal)">
+                  <span class="mathish">f</span>
+                  <svg class="arrow-svg" viewBox="0 0 160 30" aria-hidden="true"><path d="M8 15H145M134 6l12 9-12 9"/></svg>
+                </div>
+                <div class="chain-node" style="--node-color: var(--teal)">
+                  <small>用 <span class="mathish">f</span> 推到 <span class="mathish">B</span></small>
+                  <strong><span class="mathish">D<sub>0</sub>=f[C<sub>0</sub>]</span></strong>
+                </div>
+              </div>
+              <div class="track-step" data-step="return1" style="--step-color: var(--blue)">
+                <div class="chain-node" style="--node-color: var(--blue)">
+                  <small>再用 <span class="mathish">g</span> 拉回 <span class="mathish">A</span></small>
+                  <strong><span class="mathish">C<sub>1</sub>=g[D<sub>0</sub>]</span></strong>
+                </div>
+                <div class="map-arrow" style="--arrow-color: var(--blue)">
+                  <span class="mathish">g</span>
+                  <svg class="arrow-svg" viewBox="0 0 160 30" aria-hidden="true"><path d="M152 15H15M26 6l-12 9 12 9"/></svg>
+                </div>
+                <div class="chain-node" style="--node-color: var(--teal)">
+                  <small>上一层 <span class="mathish">B</span></small>
+                  <strong><span class="mathish">D<sub>0</sub></span></strong>
+                </div>
+              </div>
+              <div class="track-step" data-step="return1" style="--step-color: var(--purple)">
+                <div class="chain-node" style="--node-color: var(--blue)">
+                  <small>新的 <span class="mathish">A</span> 层</small>
+                  <strong><span class="mathish">C<sub>1</sub></span></strong>
+                </div>
+                <div class="map-arrow" style="--arrow-color: var(--teal)">
+                  <span class="mathish">f</span>
+                  <svg class="arrow-svg" viewBox="0 0 160 30" aria-hidden="true"><path d="M8 15H145M134 6l12 9-12 9"/></svg>
+                </div>
+                <div class="chain-node" style="--node-color: var(--purple)">
+                  <small>再推到 <span class="mathish">B</span></small>
+                  <strong><span class="mathish">D<sub>1</sub>=f[C<sub>1</sub>]</span></strong>
+                </div>
+              </div>
+              <div class="track-step" data-step="continue" style="--step-color: var(--amber)">
+                <div class="chain-node" style="--node-color: var(--amber)">
+                  <small>下一次拉回</small>
+                  <strong><span class="mathish">C<sub>2</sub>=g[D<sub>1</sub>]</span></strong>
+                </div>
+                <div class="map-arrow" style="--arrow-color: var(--blue)">
+                  <span class="mathish">g</span>
+                  <svg class="arrow-svg" viewBox="0 0 160 30" aria-hidden="true"><path d="M152 15H15M26 6l-12 9 12 9"/></svg>
+                </div>
+                <div class="chain-node" style="--node-color: var(--purple)">
+                  <small>上一层 <span class="mathish">B</span></small>
+                  <strong><span class="mathish">D<sub>1</sub></span></strong>
+                </div>
+              </div>
+              <div class="track-step" data-step="continue" style="--step-color: var(--rose)">
+                <div class="chain-node" style="--node-color: var(--amber)">
+                  <small>不断重复</small>
+                  <strong><span class="mathish">C<sub>n+1</sub>=g[D<sub>n</sub>]</span></strong>
+                </div>
+                <div class="map-arrow" style="--arrow-color: var(--teal)">
+                  <span class="mathish">f</span>
+                  <svg class="arrow-svg" viewBox="0 0 160 30" aria-hidden="true"><path d="M8 15H145M134 6l12 9-12 9"/></svg>
+                </div>
+                <div class="chain-node" style="--node-color: var(--rose)">
+                  <small>对应的 <span class="mathish">B</span> 层</small>
+                  <strong><span class="mathish">D<sub>n+1</sub>=f[C<sub>n+1</sub>]</span></strong>
+                </div>
+              </div>
+            </div>
+            <div class="board-legend">
+              <span class="legend-item"><i class="legend-dot" style="--dot-color: var(--teal)"></i>用 <span class="mathish">f</span></span>
+              <span class="legend-item"><i class="legend-dot" style="--dot-color: var(--blue)"></i>用 <span class="mathish">g</span></span>
+              <span class="legend-item"><i class="legend-dot" style="--dot-color: var(--purple)"></i>互不重叠的新层</span>
+            </div>
+          </div>
+          <div class="ledger" aria-label="Construction ledger">
+            <div class="ledger-title">
+              <h3>构造账本</h3>
+              <span>链是怎样生成的</span>
+            </div>
+            <div class="ledger-list">
+              <div class="ledger-row">
+                <span class="row-dot" style="--row-color: var(--teal)">0</span>
+                <strong>从 <span class="mathish">A</span> 的缺口开始</strong>
+                <span class="mathish">C<sub>0</sub>=A∖g[B]</span>
+                <span class="mathish">D<sub>0</sub>=f[C<sub>0</sub>]</span>
+                <span>只取 <span class="mathish">g</span> 没打到的点。</span>
+              </div>
+              <div class="ledger-row">
+                <span class="row-dot" style="--row-color: var(--blue)">1</span>
+                <strong>从 <span class="mathish">B</span> 拉回</strong>
+                <span class="mathish">C<sub>1</sub>=g[D<sub>0</sub>]</span>
+                <span class="mathish">D<sub>1</sub>=f[C<sub>1</sub>]</span>
+                <span>先经 <span class="mathish">g</span> 回到 <span class="mathish">A</span>，再经 <span class="mathish">f</span> 推出去。</span>
+              </div>
+              <div class="ledger-row">
+                <span class="row-dot" style="--row-color: var(--amber)">n</span>
+                <strong>继续迭代</strong>
+                <span class="mathish">C<sub>n+1</sub>=g[D<sub>n</sub>]</span>
+                <span class="mathish">D<sub>n+1</sub>=f[C<sub>n+1</sub>]</span>
+                <span>每一层都与前面层分开。</span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <aside class="panel inspector" aria-label="Proof map and inspector">
+        <div class="proof-map" aria-label="Proof map">
+          <div class="map-step" style="--step-color: var(--teal)"><b>1</b><strong>造链</strong></div>
+          <div class="map-step" style="--step-color: var(--purple)"><b>2</b><strong>定义 <span class="mathish">h</span></strong></div>
+          <div class="map-step" style="--step-color: var(--amber)"><b>3</b><strong>证单射</strong></div>
+          <div class="map-step" style="--step-color: var(--rose)"><b>4</b><strong>证满射</strong></div>
+        </div>
+        <div class="layer-picker">
+          <div class="layer-picker-head">
+            <h2>解释器</h2>
+            <span class="head-note" id="activeLayerName">起点</span>
+          </div>
+          <div class="layer-buttons" aria-label="Layer inspector controls">
+            <button class="layer-button is-active" type="button" data-layer="seed" style="--active-color: var(--teal)">起点</button>
+            <button class="layer-button" type="button" data-layer="return1" style="--active-color: var(--blue)">拉回</button>
+            <button class="layer-button" type="button" data-layer="continue" style="--active-color: var(--amber)">迭代</button>
+            <button class="layer-button" type="button" data-layer="split" style="--active-color: var(--purple)">分支</button>
+          </div>
+        </div>
+        <div class="inspector-body">
+          <div class="inspector-card">
+            <h3 id="inspectorTitle">从缺口开始</h3>
+            <div class="card-body">
+              <div class="formula-block" id="inspectorFormula" style="--formula-color: var(--teal)">
+                <span class="mathish">C<sub>0</sub>=A∖g[B]</span>, <span class="mathish">D<sub>0</sub>=f[C<sub>0</sub>]</span>
+              </div>
+              <p id="inspectorText">这是 <span class="mathish">A</span> 中没有 <span class="mathish">g</span>-preimage 的部分，不能用 <span class="mathish">g<sup>-1</sup></span>，只能用 <span class="mathish">f</span> 送到 <span class="mathish">B</span>。</p>
+            </div>
+          </div>
+          <div class="key-fact">
+            <strong>关键事实。</strong>
+            <span class="mathish">C<sub>0</sub>,C<sub>1</sub>,...</span> 标出 <span class="mathish">h</span> 必须使用 <span class="mathish">f</span> 的区域；在它们之外，<span class="mathish">g<sup>-1</sup></span> 存在且唯一。
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="content-section" id="foundations" aria-labelledby="foundations-title">
+      <div class="section-head">
+        <h2 id="foundations-title"><span class="section-number" style="--section-color: var(--blue)">1</span>基础：只保留证明必需概念</h2>
+        <span class="head-note">若上面的符号不顺，先读这里。</span>
+      </div>
+      <div class="study-grid">
+        <article class="study-card">
+          <span class="study-badge" style="--badge-color: var(--teal)">A</span>
+          <h3>单射就是不撞车</h3>
+          <p>若 <span class="mathish">f(a<sub>1</sub>)=f(a<sub>2</sub>)</span> 必推出 <span class="mathish">a<sub>1</sub>=a<sub>2</sub></span>，则 <span class="mathish">f</span> 是单射。后面证明 <span class="mathish">h</span> 单射时就靠这一步回推。</p>
+        </article>
+        <article class="study-card">
+          <span class="study-badge" style="--badge-color: var(--blue)">B</span>
+          <h3>像集记号</h3>
+          <p>若 <span class="mathish">X⊆A</span>，则 <span class="mathish">f[X]={f(x) | x∈X}</span>。<span class="mathish">g[B]</span> 是 <span class="mathish">g:B→A</span> 打到的那部分 <span class="mathish">A</span>。</p>
+        </article>
+        <article class="study-card">
+          <span class="study-badge" style="--badge-color: var(--purple)">C</span>
+          <h3>为什么从 <span class="mathish">C<sub>0</sub></span> 开始</h3>
+          <p><span class="mathish">C<sub>0</sub>=A∖g[B]</span> 正是没有 <span class="mathish">g</span>-原像的点。它们不能用 <span class="mathish">g<sup>-1</sup></span>，所以 <span class="mathish">h</span> 必须用 <span class="mathish">f</span>。</p>
+        </article>
+        <article class="study-card">
+          <span class="study-badge" style="--badge-color: var(--amber)">D</span>
+          <h3>最后要证什么</h3>
+          <p>定义 <span class="mathish">h:A→B</span> 后，只需证明它既单射又满射。这样 <span class="mathish">h</span> 就是双射，故 <span class="mathish">A</span> 与 <span class="mathish">B</span> 等势。</p>
+        </article>
+      </div>
+      <div class="formal-strip">
+        <article class="formal-card">
+          <h3>正式构造</h3>
+          <div class="formal-body">
+            <div class="formula-block" style="--formula-color: var(--blue)">
+              <span class="mathish">C<sub>0</sub>=A∖g[B]</span>,
+              <span class="mathish">D<sub>n</sub>=f[C<sub>n</sub>]</span>,
+              <span class="mathish">C<sub>n+1</sub>=g[D<sub>n</sub>]</span>.
+            </div>
+            <div class="formula-block" style="--formula-color: var(--purple)">
+              <span class="mathish">U=⋃<sub>n≥0</sub>C<sub>n</sub></span>;
+              <span class="mathish">h(a)=f(a)</span> if <span class="mathish">a∈U</span>,
+              and <span class="mathish">h(a)=g<sup>-1</sup>(a)</span> if <span class="mathish">a∉U</span>.
+            </div>
+            <p>记住一个动作：从 <span class="mathish">C<sub>0</sub></span> 出发，反复做 <span class="mathish">C<sub>n</sub> --f→ D<sub>n</sub> --g→ C<sub>n+1</sub></span>。</p>
+          </div>
+        </article>
+        <article class="formal-card">
+          <h3>始终记住的事实</h3>
+          <div class="formal-body">
+            <div class="definition-stack">
+              <div class="definition-line"><strong>位置</strong><span>每个 <span class="mathish">C<sub>i</sub>⊆A</span>，每个 <span class="mathish">D<sub>i</sub>⊆B</span>。</span></div>
+              <div class="definition-line"><strong>配对</strong><span><span class="mathish">D<sub>i</sub>=f[C<sub>i</sub>]</span>，所以 <span class="mathish">D<sub>i</sub></span> 由 <span class="mathish">C<sub>i</sub></span> 通过 <span class="mathish">h=f</span> 命中。</span></div>
+              <div class="definition-line"><strong>互斥</strong><span>各层互不重叠，因此 <span class="mathish">a∈U=⋃<sub>i</sub>C<sub>i</sub></span> 这一分支没有歧义。</span></div>
+              <div class="definition-line"><strong>补集</strong><span>若 <span class="mathish">a∉U</span>，则 <span class="mathish">a∈g[B]</span>，且 <span class="mathish">g</span> 的单射性保证原像唯一。</span></div>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="checkpoint-grid">
+        <article class="checkpoint-card">
+          <h3>阅读路线</h3>
+          <div class="checkpoint-body">
+            <ul>
+              <li>先把 <span class="mathish">C<sub>0</sub></span> 理解成 <span class="mathish">g<sup>-1</sup></span> 失败的地方。</li>
+              <li>再追 <span class="mathish">C<sub>0</sub>→D<sub>0</sub>→C<sub>1</sub>→D<sub>1</sub>→...</span>。</li>
+              <li>最后把 <span class="mathish">A</span> 分成 <span class="mathish">U</span> 与 <span class="mathish">A∖U</span> 来定义 <span class="mathish">h</span>。</li>
+            </ul>
+          </div>
+        </article>
+        <article class="checkpoint-card">
+          <h3>透彻自检</h3>
+          <div class="checkpoint-body">
+            <ul>
+              <li>为什么 <span class="mathish">a∉U</span> 能保证存在 <span class="mathish">b</span> 使 <span class="mathish">g(b)=a</span>？</li>
+              <li>为什么这个 <span class="mathish">b</span> 唯一？</li>
+              <li>为什么混合分支相撞会把 <span class="mathish">A∖U</span> 的点推回 <span class="mathish">U</span>？</li>
+            </ul>
+          </div>
+        </article>
+        <article class="checkpoint-card">
+          <h3>常见误区</h3>
+          <div class="checkpoint-body">
+            <p>不要以为 <span class="mathish">h</span> 全部等于 <span class="mathish">f</span> 或全部等于 <span class="mathish">g<sup>-1</sup></span>。<span class="mathish">U</span> 标出必须用 <span class="mathish">f</span> 的区域，补集才是安全使用 <span class="mathish">g<sup>-1</sup></span> 的区域。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" id="definition" aria-labelledby="definition-title">
+      <div class="section-head">
+        <h2 id="definition-title"><span class="section-number" style="--section-color: var(--purple)">2</span>定义 <span class="mathish">h</span></h2>
+        <div class="branch-buttons" role="tablist" aria-label="Branch selector">
+          <button class="branch-button is-active" type="button" role="tab" aria-selected="true" data-branch="inside" style="--active-color: var(--teal)"><span class="mathish">a∈U</span></button>
+          <button class="branch-button" type="button" role="tab" aria-selected="false" data-branch="outside" style="--active-color: var(--rose)"><span class="mathish">a∉U</span></button>
+        </div>
+      </div>
+      <div class="definition-grid">
+        <article class="definition-card">
+          <h3>把 <span class="mathish">A</span> 分成两块</h3>
+          <div class="definition-card-body">
+            <div class="formula-block" style="--formula-color: var(--purple)">
+              <span class="mathish">U=⋃<sub>i=0</sub><sup>∞</sup>C<sub>i</sub></span>,
+              <span class="mathish">A=U∪(A∖U)</span>.
+            </div>
+            <p><span class="mathish">U</span> 是从 <span class="mathish">g</span> 没打到的点追出来的链；补集里的每个点都等于唯一的 <span class="mathish">g(b)</span>。</p>
+            <div class="reason-stack" aria-label="Why the split is legal">
+              <div class="reason-line" style="--reason-color: var(--purple)">
+                <b>1</b>
+                <span><strong>存在。</strong> 若 <span class="mathish">a∉U</span>，则 <span class="mathish">a∉C<sub>0</sub></span>，所以 <span class="mathish">a∈g[B]</span>。</span>
+              </div>
+              <div class="reason-line" style="--reason-color: var(--blue)">
+                <b>2</b>
+                <span><strong>唯一。</strong> 因为 <span class="mathish">g</span> 单射，满足 <span class="mathish">g(b)=a</span> 的 <span class="mathish">b</span> 至多一个。</span>
+              </div>
+              <div class="reason-line" style="--reason-color: var(--rose)">
+                <b>3</b>
+                <span><strong>不抢 <span class="mathish">D<sub>i</sub></span>。</strong> 若这个 <span class="mathish">b∈D<sub>n</sub></span>，则 <span class="mathish">a=g(b)∈C<sub>n+1</sub>⊆U</span>，矛盾。</span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="definition-card branch-card" id="insideBranch" style="--branch-color: var(--teal)">
+          <h3><span class="branch-index">1</span>在 <span class="mathish">U</span> 内</h3>
+          <div class="definition-card-body">
+            <div class="formula-block" style="--formula-color: var(--teal)"><span class="mathish">h(a)=f(a)</span></div>
+            <p>若 <span class="mathish">a∈C<sub>i</sub></span>，直接送到 <span class="mathish">D<sub>i</sub>=f[C<sub>i</sub>]</span>。这正是从 <span class="mathish">C<sub>0</sub></span> 追出的那条链。</p>
+            <div class="branch-visual">
+              <div class="branch-line">
+                <span class="branch-point"><span class="mathish">a∈C<sub>i</sub></span></span>
+                <span class="map-arrow" style="--arrow-color: var(--teal)">
+                  <span class="mathish">f</span>
+                  <svg class="arrow-svg" viewBox="0 0 100 30" aria-hidden="true"><path d="M8 15H86M76 7l11 8-11 8"/></svg>
+                </span>
+                <span class="branch-point"><span class="mathish">f(a)∈D<sub>i</sub></span></span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="definition-card branch-card" id="outsideBranch" style="--branch-color: var(--rose)">
+          <h3><span class="branch-index">2</span>在 <span class="mathish">U</span> 外</h3>
+          <div class="definition-card-body">
+            <div class="formula-block" style="--formula-color: var(--rose)"><span class="mathish">h(a)=b</span>, where <span class="mathish">g(b)=a</span></div>
+            <p>若 <span class="mathish">a∉U</span>，则 <span class="mathish">a</span> 在 <span class="mathish">g</span> 的像里；又因 <span class="mathish">g</span> 单射，这个 <span class="mathish">b</span> 唯一。</p>
+            <div class="branch-visual">
+              <div class="branch-line">
+                <span class="branch-point"><span class="mathish">b∈B</span></span>
+                <span class="map-arrow" style="--arrow-color: var(--blue)">
+                  <span class="mathish">g</span>
+                  <svg class="arrow-svg" viewBox="0 0 100 30" aria-hidden="true"><path d="M86 15H14M24 7l-11 8 11 8"/></svg>
+                </span>
+                <span class="branch-point"><span class="mathish">a=g(b)</span></span>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-section" id="proof" aria-labelledby="proof-title">
+      <div class="section-head">
+        <h2 id="proof-title"><span class="section-number" style="--section-color: var(--amber)">3</span>验证 <span class="mathish">h</span> 是双射</h2>
+        <div class="proof-buttons" role="tablist" aria-label="Proof focus selector">
+          <button class="proof-button is-active" type="button" role="tab" aria-selected="true" data-proof="injective" style="--active-color: var(--amber)">单射</button>
+          <button class="proof-button" type="button" role="tab" aria-selected="false" data-proof="surjective" style="--active-color: var(--rose)">满射</button>
+        </div>
+      </div>
+      <div class="proof-grid">
+        <article class="proof-card" id="injectiveCard">
+          <h3>单射：两个 <span class="mathish">A</span> 点不会撞到同一个 <span class="mathish">B</span> 点</h3>
+          <div class="proof-card-body">
+            <p>假设 <span class="mathish">h(a<sub>1</sub>)=h(a<sub>2</sub>)</span>。按 <span class="mathish">a<sub>1</sub>,a<sub>2</sub></span> 是否在 <span class="mathish">U</span> 中，只剩三种情况。</p>
+            <div class="case-list">
+              <div class="case-row is-emph" style="--case-color: var(--teal)">
+                <span class="case-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><strong>都在 <span class="mathish">U</span> 内</strong><span><span class="mathish">f(a<sub>1</sub>)=f(a<sub>2</sub>)</span>，由 <span class="mathish">f</span> 单射得 <span class="mathish">a<sub>1</sub>=a<sub>2</sub></span>。</span></div>
+              </div>
+              <div class="case-row" style="--case-color: var(--blue)">
+                <span class="case-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><strong>都在 <span class="mathish">U</span> 外</strong><span><span class="mathish">g(h(a<sub>1</sub>))=a<sub>1</sub></span>，<span class="mathish">g(h(a<sub>2</sub>))=a<sub>2</sub></span>，所以 <span class="mathish">a<sub>1</sub>=a<sub>2</sub></span>。</span></div>
+              </div>
+              <div class="case-row" style="--case-color: var(--rose)">
+                <span class="case-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+                <div><strong>一内一外不可能相撞</strong><span>若 <span class="mathish">a<sub>2</sub>∈C<sub>n</sub></span>，则 <span class="mathish">g(f(a<sub>2</sub>))∈C<sub>n+1</sub>⊆U</span>，与外侧分支矛盾。</span></div>
+              </div>
+            </div>
+            <div class="proof-note" style="--note-color: var(--amber)">
+              <span class="mathish">a<sub>1</sub>∉U</span>, <span class="mathish">a<sub>2</sub>∈C<sub>n</sub></span>, <span class="mathish">h(a<sub>1</sub>)=h(a<sub>2</sub>)</span>
+              ⇒ <span class="mathish">a<sub>1</sub>=g(f(a<sub>2</sub>))∈C<sub>n+1</sub></span>.
+            </div>
+          </div>
+        </article>
+        <article class="proof-card" id="surjectiveCard">
+          <h3>满射：每个 <span class="mathish">b∈B</span> 都被命中</h3>
+          <div class="proof-card-body">
+            <p>任取 <span class="mathish">b∈B</span>。它要么在某个 <span class="mathish">D<sub>i</sub></span> 中，要么不在任何 <span class="mathish">D<sub>i</sub></span> 中。</p>
+            <div class="case-list">
+              <div class="case-row" style="--case-color: var(--teal)">
+                <span class="case-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><strong>若 <span class="mathish">b∈D<sub>n</sub></span></strong><span>则 <span class="mathish">b=f(a)</span> 对某个 <span class="mathish">a∈C<sub>n</sub></span> 成立，所以 <span class="mathish">h(a)=b</span>。</span></div>
+              </div>
+              <div class="case-row" style="--case-color: var(--rose)">
+                <span class="case-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div><strong>若 <span class="mathish">b∉⋃<sub>i</sub>D<sub>i</sub></span></strong><span>令 <span class="mathish">a=g(b)</span>。此时 <span class="mathish">a∉U</span>，补集分支给出 <span class="mathish">h(a)=b</span>。</span></div>
+              </div>
+            </div>
+            <div class="proof-note" style="--note-color: var(--rose)">
+              <span class="mathish">b∉⋃<sub>i</sub>D<sub>i</sub></span>, <span class="mathish">a=g(b)</span>
+              ⇒ <span class="mathish">a∉U</span>
+              ⇒ <span class="mathish">h(a)=g<sup>-1</sup>(a)=b</span>.
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="checkpoint-grid" id="exam-skeleton">
+        <article class="checkpoint-card">
+          <h3>English exam skeleton</h3>
+          <div class="checkpoint-body">
+            <ul>
+              <li>Let <span class="mathish">C<sub>0</sub>=A∖g[B]</span>, <span class="mathish">D<sub>n</sub>=f[C<sub>n</sub>]</span>, and <span class="mathish">C<sub>n+1</sub>=g[D<sub>n</sub>]</span>.</li>
+              <li>Let <span class="mathish">U=⋃<sub>n≥0</sub>C<sub>n</sub></span>.</li>
+              <li>Define <span class="mathish">h(a)=f(a)</span> if <span class="mathish">a∈U</span>, and <span class="mathish">h(a)=g<sup>-1</sup>(a)</span> if <span class="mathish">a∉U</span>.</li>
+              <li>For injectivity, split into three cases: both in <span class="mathish">U</span>, both outside <span class="mathish">U</span>, and mixed.</li>
+              <li>For surjectivity, each <span class="mathish">b∈B</span> is either in some <span class="mathish">D<sub>n</sub></span>, or has <span class="mathish">g(b)∉U</span>.</li>
+              <li>Mastery standard / 透彻掌握: the answer is complete only if it justifies the two-branch definition, proves injectivity, and proves surjectivity.</li>
+            </ul>
+          </div>
+        </article>
+        <article class="checkpoint-card">
+          <h3>Key English terms</h3>
+          <div class="checkpoint-body">
+            <ul>
+              <li>injection: no two inputs have the same image.</li>
+              <li>image: <span class="mathish">f[X]={f(x):x∈X}</span>.</li>
+              <li>preimage under <span class="mathish">g</span>: the unique <span class="mathish">b</span> such that <span class="mathish">g(b)=a</span>.</li>
+              <li>partition of <span class="mathish">A</span>: the split <span class="mathish">A=U∪(A∖U)</span>.</li>
+              <li>10-second final check: define <span class="mathish">U</span>, write the two-branch formula for <span class="mathish">h</span>, then prove injective and surjective separately.</li>
+            </ul>
+          </div>
+        </article>
+        <article class="checkpoint-card">
+          <h3>Grading checkpoints</h3>
+          <div class="checkpoint-body">
+            <ul>
+              <li>Explain why <span class="mathish">g<sup>-1</sup>(a)</span> is legal when <span class="mathish">a∉U</span>: then <span class="mathish">a∈g[B]</span>, and injectivity of <span class="mathish">g</span> gives uniqueness.</li>
+              <li>In the mixed injectivity case, show the collision would force an outside point into <span class="mathish">C<sub>n+1</sub>⊆U</span>, a contradiction.</li>
+              <li>For surjectivity, split <span class="mathish">b∈B</span> into <span class="mathish">b∈D<sub>n</sub></span> or <span class="mathish">b∉⋃<sub>n</sub>D<sub>n</sub></span>.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+      <div class="final-strip">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" fill="currentColor" opacity=".14"/><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div>
+          <div class="final-line">
+            <strong>因此</strong>
+            <span class="final-map"><span class="mathish">h : A &rarr; B</span></span>
+            <strong>既单射又满射。</strong>
+          </div>
+          <span>两个单射 <span class="mathish">A &le; B</span> 与 <span class="mathish">B &le; A</span> 迫使 <span class="mathish">A &asymp; B</span>。</span>
+        </div>
+        <div aria-hidden="true">QED</div>
+      </div>
+      <div class="source-note">Source: local notes <code>DM_C3.md</code>, section 6；本页重构为交互式证明可视化。</div>
+    </section>
+  </main>
+
+  <script>
+    const layerData = {
+      seed: {
+        name: '起点',
+        title: '从缺口开始',
+        color: 'var(--teal)',
+        formula: '<span class="mathish">C<sub>0</sub>=A∖g[B]</span>, <span class="mathish">D<sub>0</sub>=f[C<sub>0</sub>]</span>',
+        text: '这里是 <span class="mathish">A</span> 中没有 <span class="mathish">g</span>-preimage 的部分，不能用 <span class="mathish">g<sup>-1</sup></span>，必须用 <span class="mathish">f</span> 送到 <span class="mathish">B</span>。'
+      },
+      return1: {
+        name: '拉回',
+        title: '先拉回，再推出去',
+        color: 'var(--blue)',
+        formula: '<span class="mathish">C<sub>1</sub>=g[D<sub>0</sub>]</span>, <span class="mathish">D<sub>1</sub>=f[C<sub>1</sub>]</span>',
+        text: '<span class="mathish">D<sub>0</sub></span> 在 <span class="mathish">B</span> 中，经过 <span class="mathish">g</span> 回到 <span class="mathish">A</span> 得到 <span class="mathish">C<sub>1</sub></span>，再经过 <span class="mathish">f</span> 得到 <span class="mathish">D<sub>1</sub></span>。'
+      },
+      continue: {
+        name: '迭代',
+        title: '继续交替追链',
+        color: 'var(--amber)',
+        formula: '<span class="mathish">C<sub>n+1</sub>=g[D<sub>n</sub>]</span>, <span class="mathish">D<sub>n+1</sub>=f[C<sub>n+1</sub>]</span>',
+        text: '不断重复得到整条链 <span class="mathish">C<sub>0</sub>,C<sub>1</sub>,...</span>。这些点组成 <span class="mathish">U</span>，也就是 <span class="mathish">h</span> 必须使用 <span class="mathish">f</span> 的地方。'
+      },
+      split: {
+        name: '分支',
+        title: '分两支定义 h',
+        color: 'var(--purple)',
+        formula: '<span class="mathish">h(a)=f(a)</span> if <span class="mathish">a∈U</span>; <span class="mathish">h(a)=b</span> where <span class="mathish">g(b)=a</span> if <span class="mathish">a∉U</span>.',
+        text: '造链后令 <span class="mathish">U=⋃<sub>i</sub>C<sub>i</sub></span>。在 <span class="mathish">U</span> 上用 <span class="mathish">f</span>，在补集上用唯一的 preimage under <span class="mathish">g</span>。'
+      }
+    };
+
+    const layerButtons = Array.from(document.querySelectorAll('[data-layer]'));
+    const trackSteps = Array.from(document.querySelectorAll('[data-step]'));
+    const activeLayerName = document.querySelector('#activeLayerName');
+    const inspectorTitle = document.querySelector('#inspectorTitle');
+    const inspectorFormula = document.querySelector('#inspectorFormula');
+    const inspectorText = document.querySelector('#inspectorText');
+
+    function setLayer(layer) {
+      const data = layerData[layer];
+      layerButtons.forEach((button) => {
+        const active = button.dataset.layer === layer;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+      trackSteps.forEach((step) => {
+        step.classList.toggle('is-active', step.dataset.step === layer || (layer === 'split' && step.dataset.step === 'continue'));
+      });
+      activeLayerName.textContent = data.name;
+      inspectorTitle.textContent = data.title;
+      inspectorFormula.style.setProperty('--formula-color', data.color);
+      inspectorFormula.innerHTML = data.formula;
+      inspectorText.innerHTML = data.text;
+    }
+
+    layerButtons.forEach((button) => {
+      button.addEventListener('click', () => setLayer(button.dataset.layer));
+    });
+
+    const branchButtons = Array.from(document.querySelectorAll('[data-branch]'));
+    const insideBranch = document.querySelector('#insideBranch');
+    const outsideBranch = document.querySelector('#outsideBranch');
+
+    function setBranch(branch) {
+      branchButtons.forEach((button) => {
+        const active = button.dataset.branch === branch;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-selected', String(active));
+      });
+      insideBranch.style.opacity = branch === 'inside' ? '1' : '.86';
+      outsideBranch.style.opacity = branch === 'outside' ? '1' : '.86';
+      insideBranch.style.transform = branch === 'inside' ? 'translateY(-1px)' : 'none';
+      outsideBranch.style.transform = branch === 'outside' ? 'translateY(-1px)' : 'none';
+    }
+
+    branchButtons.forEach((button) => {
+      button.addEventListener('click', () => setBranch(button.dataset.branch));
+    });
+
+    const proofButtons = Array.from(document.querySelectorAll('[data-proof]'));
+    const injectiveCard = document.querySelector('#injectiveCard');
+    const surjectiveCard = document.querySelector('#surjectiveCard');
+
+    function setProof(proof) {
+      proofButtons.forEach((button) => {
+        const active = button.dataset.proof === proof;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-selected', String(active));
+      });
+      injectiveCard.style.opacity = proof === 'injective' ? '1' : '.88';
+      surjectiveCard.style.opacity = proof === 'surjective' ? '1' : '.88';
+      injectiveCard.style.transform = proof === 'injective' ? 'translateY(-1px)' : 'none';
+      surjectiveCard.style.transform = proof === 'surjective' ? 'translateY(-1px)' : 'none';
+      injectiveCard.querySelectorAll('.case-row').forEach((row, index) => row.classList.toggle('is-emph', proof === 'injective' && index === 0));
+      surjectiveCard.querySelectorAll('.case-row').forEach((row) => row.classList.toggle('is-emph', proof === 'surjective'));
+    }
+
+    proofButtons.forEach((button) => {
+      button.addEventListener('click', () => setProof(button.dataset.proof));
+    });
+
+    document.querySelector('#resetView').addEventListener('click', () => {
+      setLayer('seed');
+      setBranch('inside');
+      setProof('injective');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    window.addEventListener('load', () => {
+      setBranch('inside');
+      setProof('injective');
+    });
+  </script>
+</body>
+</html>

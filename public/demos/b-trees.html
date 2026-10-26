@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B 树 / B+ 树 · 定义与操作可视化</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --ink:#1d2733; --ink2:#52606d; --line:#e2e6ec;
+  --indigo:#4f46e5; --indigo-s:#eef0fe; --teal:#0d9488; --teal-s:#e7f6f4;
+  --amber:#f59e0b; --amber-s:#fff5e0; --green:#16a34a; --green-s:#e7f7ec;
+  --red:#dc2626; --red-s:#fdeaea; --purple:#7c3aed; --purple-s:#f1ebfe; --slate:#475569; --slate-s:#eef1f5;
+  --shadow:0 1px 3px rgba(20,30,50,.06),0 8px 24px rgba(20,30,50,.06);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.7;-webkit-font-smoothing:antialiased;font-size:15.5px}
+a{color:var(--indigo);text-decoration:none}
+code,.mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,"Liberation Mono",monospace}
+
+/* layout */
+.topbar{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,#4f46e5,#0d9488);
+  color:#fff;padding:18px 28px;box-shadow:var(--shadow)}
+.topbar h1{margin:0;font-size:20px;font-weight:700;letter-spacing:.3px}
+.topbar p{margin:4px 0 0;font-size:13px;opacity:.92}
+.wrap{display:flex;gap:0;max-width:1240px;margin:0 auto;padding:0}
+nav.toc{position:sticky;top:74px;align-self:flex-start;width:210px;flex:0 0 210px;
+  padding:20px 10px 40px 18px;height:calc(100vh - 74px);overflow:auto}
+nav.toc ol{list-style:none;margin:0;padding:0;counter-reset:s}
+nav.toc li{counter-increment:s;margin:1px 0}
+nav.toc a{display:block;padding:6px 10px;border-radius:7px;color:var(--ink2);font-size:13.5px;border-left:2px solid transparent}
+nav.toc a::before{content:counter(s) ". ";color:var(--indigo);font-weight:600;font-variant-numeric:tabular-nums}
+nav.toc a:hover{background:var(--indigo-s);color:var(--ink)}
+nav.toc a.active{background:var(--indigo-s);color:var(--indigo);font-weight:600;border-left-color:var(--indigo)}
+main{flex:1 1 auto;min-width:0;padding:24px 30px 90px}
+
+section.block{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:24px 26px;margin:0 0 26px;box-shadow:var(--shadow);scroll-margin-top:84px}
+section.block>h2{margin:0 0 6px;font-size:19px;display:flex;align-items:center;gap:10px}
+section.block>h2 .num{display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;
+  border-radius:8px;background:var(--indigo);color:#fff;font-size:14px;font-weight:700;flex:0 0 auto}
+section.block.bp>h2 .num{background:var(--teal)}
+.sub{color:var(--ink2);font-size:13px;margin:0 0 14px}
+
+/* prose */
+.prose h3{font-size:15.5px;margin:18px 0 8px;color:var(--ink);border-left:3px solid var(--indigo);padding-left:9px}
+.bp .prose h3{border-left-color:var(--teal)}
+.prose p{margin:9px 0}
+.prose ul,.prose ol{margin:9px 0;padding-left:22px}
+.prose li{margin:4px 0}
+.prose code{background:#f1f3f7;border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:13px;color:#334}
+.prose .kw{color:var(--indigo);font-weight:600;background:var(--indigo-s);border-radius:4px;padding:0 4px}
+.bp .prose .kw{color:var(--teal);background:var(--teal-s)}
+.prose .loading{color:var(--ink2);font-style:italic}
+.callout{border-radius:10px;padding:11px 14px 11px 16px;margin:12px 0;border-left:4px solid;font-size:14.5px}
+.callout p:first-child{margin-top:0}.callout p:last-child{margin-bottom:0}
+.callout.def{background:var(--indigo-s);border-color:var(--indigo)}
+.callout.motiv{background:var(--purple-s);border-color:var(--purple)}
+.callout.warn{background:var(--amber-s);border-color:var(--amber)}
+.callout.tip{background:var(--green-s);border-color:var(--green)}
+.callout.cmp{background:var(--slate-s);border-color:var(--slate)}
+.callout::before{font-weight:700;font-size:12.5px;display:inline-block;margin-right:6px;opacity:.85}
+.callout.def::before{content:"定义";color:var(--indigo)}
+.callout.motiv::before{content:"动机";color:var(--purple)}
+.callout.warn::before{content:"易错";color:var(--red)}
+.callout.tip::before{content:"要点";color:var(--green)}
+.callout.cmp::before{content:"对比";color:var(--slate)}
+.formula{background:#0f172a;color:#e2e8f0;border-radius:9px;padding:11px 15px;margin:12px 0;
+  font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:14px;overflow-x:auto;line-height:1.9}
+.formula b,.formula strong{color:#7dd3fc;font-weight:600}
+table.props{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+table.props th,table.props td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+table.props thead th{background:var(--indigo-s);color:var(--indigo);font-weight:600}
+.bp table.props thead th{background:var(--teal-s);color:var(--teal)}
+table.props tbody tr:nth-child(even){background:#fafbfd}
+
+/* legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:16px 0 0;padding:12px 14px;background:#fbfcfe;
+  border:1px dashed var(--line);border-radius:10px;font-size:12.5px;color:var(--ink2)}
+.legend b{color:var(--ink);font-weight:600}
+.swatch{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-2px;margin-right:5px;border:1px solid rgba(0,0,0,.12)}
+
+/* anatomy */
+.anatomy{margin:14px 0}
+.anode{display:flex;flex-wrap:wrap;align-items:stretch;border:2px solid #c7cbe8;border-radius:8px;overflow:hidden;
+  width:max-content;max-width:100%;box-shadow:var(--shadow);font-size:14px}
+.acell{padding:9px 12px;border-right:1px solid #d7daf0;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.acell:last-child{border-right:none}
+.acell.n{background:#1e293b;color:#fff;font-weight:600}
+.acell.ptr{background:#eef0fe;color:#4f46e5;font-weight:600}
+.acell.key{background:#fff;color:#1d2733;font-weight:600}
+.acell.rec{background:#e7f7ec;color:#16a34a;font-size:12px}
+.acell sub{font-size:.72em}
+.anote{font-size:13px;color:var(--ink2);margin-top:8px}
+
+/* demo */
+.demo{border:1px solid var(--line);border-radius:12px;margin:16px 0;background:#fcfdff;overflow:hidden}
+.demo-head{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:9px 14px;background:#f3f5f9;border-bottom:1px solid var(--line)}
+.demo-cap{font-size:13px;font-weight:600;color:var(--ink)}
+.demo-counter{font-size:12.5px;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.demo-stage{overflow-x:auto;padding:14px 12px;display:flex;justify-content:center;min-height:120px;background:
+  radial-gradient(circle at 1px 1px, #e8ebf1 1px, transparent 0) 0 0/22px 22px}
+.demo-info{padding:8px 16px;border-top:1px solid var(--line);font-size:13.5px;min-height:42px}
+.demo-title{display:inline-block;font-weight:700;color:#fff;background:var(--indigo);border-radius:6px;
+  padding:1px 9px;margin-right:9px;font-size:12.5px;white-space:nowrap}
+.demo-note{color:var(--ink2)}
+.demo-ctrls{display:flex;gap:7px;flex-wrap:wrap;padding:11px 14px;border-top:1px solid var(--line);background:#f8f9fc}
+.demo-btn{border:1px solid #cfd5e0;background:#fff;color:var(--ink);border-radius:8px;padding:6px 12px;
+  font-size:13px;cursor:pointer;font-family:inherit;transition:.12s}
+.demo-btn:hover:not(:disabled){border-color:var(--indigo);color:var(--indigo)}
+.demo-btn:disabled{opacity:.4;cursor:default}
+.demo-btn.play{font-weight:600}
+.demo-btn.play.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+
+/* svg tree */
+.tree-svg{display:block;margin:0 auto;font-family:"SF Mono",ui-monospace,Menlo,monospace}
+.node-box{fill:#fff;stroke:#9aa3c4;stroke-width:1.4}
+.node-box.leaf{fill:#fcfcff;stroke:#b6bcd6}
+.node.bp-leaf .node-box{fill:#effaf8;stroke:#7fcabf}
+.node.on-path .node-box{stroke:var(--indigo);stroke-width:2.4}
+.cell{fill:transparent}
+.cell.empty{fill:#f4f5f9}
+.cell.flash{fill:#ffe7b3}
+.cell.found{fill:#c7f0d2}
+.cell-sep{stroke:#d4d9ea;stroke-width:1}
+.key{fill:#222b45;font-size:14px;font-weight:600}
+.key.flash{fill:#b45309}
+.edge{fill:none;stroke:#aab2c8;stroke-width:1.4}
+.edge-path{stroke:var(--indigo);stroke-width:2.4}
+.edge-fail{stroke:var(--red);stroke-dasharray:4 3;stroke-width:1.8}
+.ptr{fill:#cbd2e6}
+.ptr-path{fill:var(--indigo)}
+.leaf-link{fill:none;stroke:#0d9488;stroke-width:1.6;stroke-dasharray:5 3;opacity:.55}
+.leaf-link.lit{opacity:1;stroke-width:2.4;stroke-dasharray:none}
+.leaf-arrow{fill:#0d9488;opacity:.55}
+.leaf-arrow.lit{opacity:1}
+.head-label{fill:#0d9488;font-size:11px;font-weight:600}
+.fail-box{fill:var(--red-s);stroke:var(--red);stroke-width:1.6}
+.fail-text{fill:var(--red);font-size:14px;font-weight:700}
+
+/* search + traverse */
+.search-ctrls,.trav-ctrls{display:flex;gap:7px;flex-wrap:wrap;padding:11px 14px;background:#f8f9fc;border-bottom:1px solid var(--line)}
+.search-ctrls .lbl{font-size:13px;color:var(--ink2);align-self:center;margin-right:4px}
+.trace{padding:9px 16px;font-size:13px;color:var(--ink2);border-top:1px solid var(--line);background:#fff;
+  font-family:"SF Mono",ui-monospace,Menlo,monospace;overflow-x:auto;white-space:nowrap}
+.trace b{color:var(--green)}.trace .f{color:var(--red)}
+.trav-out{padding:9px 16px;font-size:13px;border-top:1px solid var(--line);background:#fff;font-family:"SF Mono",ui-monospace,Menlo,monospace;overflow-x:auto;white-space:nowrap;min-height:38px}
+.trav-out .got{color:var(--teal);font-weight:600}
+
+footer{max-width:1240px;margin:0 auto;padding:10px 30px 50px;color:var(--ink2);font-size:12.5px;text-align:center}
+@media(max-width:880px){nav.toc{display:none}main{padding:18px 14px 70px}section.block{padding:18px 16px}}
+</style>
+</head>
+<body><div style="padding:10px 16px;background:#153a43;color:#fff;font:14px/1.6 system-ui"><a style="color:#fff;text-decoration:none" href="/explore/">← Arietids Learn · 交互演示目录</a></div>
+<div class="topbar">
+  <h1>B 树 / B+ 树 · 定义与操作可视化</h1>
+  <p>所有树形由内置算法实时生成并通过不变量校验 · 点击「▶ 播放」或「下一步」逐帧观看分裂 / 借 / 合并 / 树高变化</p>
+</div>
+
+<div class="wrap">
+<nav class="toc">
+  <ol>
+    <li><a href="#s1">B 树定义（m 阶）</a></li>
+    <li><a href="#s2">B 树查找</a></li>
+    <li><a href="#s3">B 树插入与分裂</a></li>
+    <li><a href="#s4">B 树删除（借 / 合并）</a></li>
+    <li><a href="#s5">m 阶数的选择</a></li>
+    <li><a href="#s6">B+ 树定义（M 阶）</a></li>
+    <li><a href="#s7">B+ 树 L 与 M 的选择</a></li>
+    <li><a href="#s8">B+ 树插入与删除</a></li>
+    <li><a href="#s9">性能与 B 树/B+ 树比较</a></li>
+  </ol>
+  <div class="legend" style="margin-top:14px;flex-direction:column;gap:6px">
+    <span><span class="swatch" style="background:#fff;border-color:#9aa3c4"></span><b>关键字格</b></span>
+    <span><span class="swatch" style="background:#cbd2e6"></span>子树指针 A<sub>i</sub></span>
+    <span><span class="swatch" style="background:#ffe7b3"></span>本步变动的关键字</span>
+    <span><span class="swatch" style="background:var(--indigo)"></span>查找路径</span>
+    <span><span class="swatch" style="background:#c7f0d2"></span>命中</span>
+    <span><span class="swatch" style="background:var(--red-s);border-color:var(--red)"></span>失败结点 F</span>
+    <span><span class="swatch" style="background:#effaf8;border-color:#7fcabf"></span>B+ 叶（连成链表）</span>
+  </div>
+</nav>
+
+<main>
+
+<section class="block" id="s1">
+  <h2><span class="num">1</span>B 树定义（m 阶）</h2>
+  <p class="sub">平衡的 M 叉查找树：用分叉换树高，把磁盘访问压到很小的常数。</p>
+  <div class="prose" data-sec="btree-def">
+<div class="callout motiv">
+<p><strong>动机</strong>：通过<span class="kw">增加分叉</span>来降低树高。M 叉查找树的最佳高度约为 log<sub>M</sub>N，分叉越多树越矮，从而把<span class="kw">磁盘访问</span>次数降到很小的常数。<span class="kw">B 树</span>本质上是一棵<span class="kw">平衡的 M 叉查找树</span>。</p>
+<div class="formula">M 叉查找树最佳高度 ≈ log<sub>M</sub>N</div>
+</div>
+
+<h3>m 阶 B 树的定义</h3>
+
+<p>一棵 <span class="kw">m 阶 B 树</span>，要么为<strong>空</strong>，要么满足下面四条性质：</p>
+
+<div class="callout def">
+<ol>
+<li><strong>根结点</strong>：或是<span class="kw">叶子</span>，或至少有 2 个、至多有 m 个<span class="kw">儿子</span>。</li>
+<li><strong>除根与叶子外的结点</strong>：每个结点的儿子数 s 满足 ⌈m/2⌉ ≤ s ≤ m。</li>
+<li><strong>关键字数与子树数</strong>：有 s 个儿子的非叶结点恰含 n = s−1 个<span class="kw">关键字</span>，即<span class="kw">子树</span>数 = 关键字数 + 1；结点形如 <code>(n, A₀, (K₁,R₁), A₁, …, (Kₙ,Rₙ), Aₙ)</code>。</li>
+<li><strong>叶子</strong>：所有叶子都在<span class="kw">同一层</span>，且不带信息（视为<span class="kw">查找失败结点</span>，为空、指针为空）。</li>
+</ol>
+</div>
+
+<div class="formula">⌈m/2⌉ ≤ s ≤ m，n = s − 1，子树数 = 关键字数 + 1</div>
+
+<h3>结点的形态与各项含义</h3>
+
+<p>每个结点按如下结构组织，关键字在结点内<strong>有序</strong>排列：</p>
+
+<p><code>(n, A₀, (K₁,R₁), A₁, (K₂,R₂), A₂, …, (Kₙ,Rₙ), Aₙ)</code></p>
+
+<div class="formula">K<sub>1</sub> &lt; K<sub>2</sub> &lt; … &lt; K<sub>n</sub>（关键字有序）</div>
+
+<table class="props">
+<thead>
+<tr><th>符号</th><th>含义</th></tr>
+</thead>
+<tbody>
+<tr><td><code>n</code></td><td>本结点的<span class="kw">关键字</span>个数（n = 儿子数 − 1）</td></tr>
+<tr><td><code>Kⱼ</code></td><td>第 j 个关键字，满足 K<sub>1</sub> &lt; K<sub>2</sub> &lt; … &lt; K<sub>n</sub></td></tr>
+<tr><td><code>Rⱼ</code></td><td>第 j 个关键字所对应<strong>记录</strong>的硬盘地址</td></tr>
+<tr><td><code>Aᵢ</code></td><td>第 i 棵<span class="kw">子树</span>（指向硬盘块）的地址</td></tr>
+</tbody>
+</table>
+
+<h3>四条性质速查表</h3>
+
+<table class="props">
+<thead>
+<tr><th>性质</th><th>对象</th><th>约束</th></tr>
+</thead>
+<tbody>
+<tr><td>①</td><td>根结点</td><td>是叶子，或儿子数为 2 ~ m</td></tr>
+<tr><td>②</td><td>除根与叶子外的结点</td><td>儿子数 s 满足 ⌈m/2⌉ ≤ s ≤ m</td></tr>
+<tr><td>③</td><td>非叶结点</td><td>含 n = s − 1 个关键字；子树数 = 关键字数 + 1；形态 <code>(n, A₀, (K₁,R₁), …, Aₙ)</code></td></tr>
+<tr><td>④</td><td>所有叶子</td><td>同处一层；不带信息，为空的查找失败结点</td></tr>
+</tbody>
+</table>
+
+<div class="callout tip">
+<p><strong>关键结论</strong>：一个<span class="kw">磁盘块</span>作为一个 B 树结点。结点中 <code>Aᵢ</code> 是指向硬盘块的<span class="kw">子树</span>地址，<code>Rⱼ</code> 是<span class="kw">关键字</span>对应记录的硬盘地址；记住<em>子树数 = 关键字数 + 1</em>，所有叶子始终在同一层（B 树是平衡树）。</p>
+</div>
+</div>
+  <h3>结点结构剖析</h3>
+  <div class="anatomy">
+    <div class="anode">
+      <span class="acell n">n=3</span>
+      <span class="acell ptr">A<sub>0</sub></span>
+      <span class="acell key">K<sub>1</sub></span><span class="acell rec">R<sub>1</sub></span>
+      <span class="acell ptr">A<sub>1</sub></span>
+      <span class="acell key">K<sub>2</sub></span><span class="acell rec">R<sub>2</sub></span>
+      <span class="acell ptr">A<sub>2</sub></span>
+      <span class="acell key">K<sub>3</sub></span><span class="acell rec">R<sub>3</sub></span>
+      <span class="acell ptr">A<sub>3</sub></span>
+    </div>
+    <div class="anote">
+      <span style="color:#1e293b;font-weight:600">n</span>＝关键字个数 ·
+      <span style="color:#4f46e5;font-weight:600">A<sub>i</sub></span>＝子树（硬盘块）地址 ·
+      <span style="color:#1d2733;font-weight:600">K<sub>j</sub></span>＝关键字（K<sub>1</sub>&lt;…&lt;K<sub>n</sub>） ·
+      <span style="color:#16a34a;font-weight:600">R<sub>j</sub></span>＝该关键字记录的硬盘地址。
+      子树数 = 关键字数 + 1；一个磁盘块即一个结点。
+    </div>
+  </div>
+</section>
+
+<section class="block" id="s2">
+  <h2><span class="num">2</span>B 树查找</h2>
+  <p class="sub">从根逐层下行，结点内按区间选子树指针；每下一层 = 一次磁盘 I/O。</p>
+  <div class="prose" data-sec="btree-search">
+<div class="callout motiv">查找的目标：从根结点出发，逐层下行直到命中<span class="kw">关键字</span>或确认失败。由于<span class="kw">儿子</span>众多、树高很低，整个过程只需很少的几次磁盘 I/O。</div>
+
+<h3>查找过程</h3>
+
+<ol>
+<li>从<span class="kw">根结点</span>开始，逐层向下行进。</li>
+<li>在当前结点内部，将待查值与有序的关键字 <code>K<sub>1</sub>&lt;K<sub>2</sub>&lt;…&lt;K<sub>n</sub></code> 比较，按其<strong>落入的区间</strong>选择对应的<span class="kw">子树</span>指针 <code>A<sub>i</sub></code>，沿该指针下行到下一层结点。</li>
+<li>重复上述比较与下行，直到判定成败。</li>
+</ol>
+
+<p>回顾结点的形态 <code>(n, A<sub>0</sub>, (K<sub>1</sub>,R<sub>1</sub>), A<sub>1</sub>, …, (K<sub>n</sub>,R<sub>n</sub>), A<sub>n</sub>)</code>：每个关键字两侧各有一个<span class="kw">子树</span>指针，待查值落在哪个区间，就走哪一根 <code>A<sub>i</sub></code>。</p>
+
+<h3>成败判定</h3>
+
+<div class="callout def">
+<ul>
+<li><strong>查找成功</strong>：在某结点内到达对应的<span class="kw">关键字</span>位置（待查值等于某个 <code>K<sub>j</sub></code>），即可由其 <code>R<sub>j</sub></code> 取得记录的硬盘地址。</li>
+<li><strong>查找失败</strong>：一路下行最终落到空的<span class="kw">叶子</span>结点 <code>F</code>（不带信息、指针为空的查找失败结点），此时确定待查值不存在。</li>
+</ul>
+<p>注意：必须真正到达某关键字处（成功）或落到空叶结点 <code>F</code>（失败），才能判定成败，中途不能提前结束。</p>
+</div>
+
+<h3>磁盘 I/O 与代价</h3>
+
+<p>一个磁盘块对应一个 B 树结点，因此<strong>每下行一层就对应一次磁盘 I/O</strong>（读入该层结点所在的磁盘块）。下行的层数最多就是树高，所以：</p>
+
+<div class="formula">查找的磁盘 I/O 次数 ≈ 树高（M 叉查找树最佳高度 log<sub>M</sub>N）</div>
+
+<div class="callout tip">B 树通过增大分叉压低树高，从而把昂贵的磁盘访问次数降到很小的常数——这正是 B 树查找高效的根本原因。</div>
+</div>
+  <div class="demo" id="demo-btree-search"></div>
+</section>
+
+<section class="block" id="s3">
+  <h2><span class="num">3</span>B 树插入与分裂</h2>
+  <p class="sub">总在最底层插入；结点超员（达 m 个关键字）则居中关键字上移、一分为二。</p>
+  <div class="prose" data-sec="btree-insert">
+<div class="callout def">
+<p><strong>插入位置</strong>：B 树的插入<strong>总是发生在最底层的非叶结点</strong>。先按查找过程逐层下行定位到目标结点，再把新<span class="kw">关键字</span><strong>按序</strong>插入该结点中。</p>
+</div>
+
+<h3>插入后是否需要分裂</h3>
+<ul>
+<li>若插入后结点的<span class="kw">关键字</span>数 <code>≤ m−1</code>，结点未<span class="kw">超员</span>，<strong>直接结束</strong>。</li>
+<li>若插入<em>前</em>该结点关键字数已 <code>= m−1</code>（插入后达到 <code>m</code> 个、<strong>超员</strong>），则必须<span class="kw">分裂</span>。</li>
+</ul>
+
+<h3>分裂过程</h3>
+<ol>
+<li>把超员结点<strong>一分为二</strong>，拆成<strong>前半</strong>与<strong>后半</strong>两个结点。</li>
+<li>排序后<strong>居中的那个关键字上移</strong>到<span class="kw">父结点</span>，使父结点<strong>增加一个关键字、一棵子树</strong>（上移关键字两侧分别由前半、后半两个结点承接）。</li>
+<li>若父结点因此也超员，则<strong>递归分裂</strong>，沿查找路径<span class="kw">向上传播</span>，必要时一直传到根。</li>
+</ol>
+
+<div class="formula">插入复杂度 ≈ 2 × 树高</div>
+
+<div class="callout warn">
+<p><strong>易错提醒（以 5 阶 B 树为例）</strong></p>
+<ul>
+<li>每个结点最多 <code>m−1 = 4</code> 个关键字；插入<strong>第 5 个</strong>关键字时才会分裂，而不是更早。</li>
+<li>上移到父结点的是<strong>排序后居中</strong>的那个关键字，不是任意挑选的关键字。</li>
+<li>目标结点<strong>未满（关键字数 <code>&lt; m−1</code>）则不分裂</strong>，按序插入即可结束。</li>
+</ul>
+</div>
+
+<div class="callout tip">
+<p><strong>口诀</strong>：定位到最底层非叶结点 → 按序插入 → 未超员就结束；超员则<strong>裂为前后两半、居中关键字上移到父</strong>（父增一关键字、一子树），父若超员再向上递归。</p>
+</div>
+</div>
+  <div class="demo" id="demo-btree-insert"></div>
+</section>
+
+<section class="block" id="s4">
+  <h2><span class="num">4</span>B 树删除（借 / 合并 / 树高−1）</h2>
+  <p class="sub">删内部用替身覆盖；删底层后低于下限「先借后合并」，合并可向上传播至掏空根。</p>
+  <div class="prose" data-sec="btree-delete">
+<div class="callout def">
+<p><span class="kw">删除内部结点的关键字</span>不能直接删，而是用<span class="kw">替身</span>覆盖后转化为删除最底层的替身：</p>
+<ul>
+<li><strong>用<span class="kw">后继</span>替身</strong>：取该关键字<span class="kw">右子树</span>的<strong>最左关键字</strong>覆盖之；</li>
+<li><strong>用<span class="kw">前驱</span>替身</strong>：取该关键字<span class="kw">左子树</span>的<strong>最右关键字</strong>覆盖之。</li>
+</ul>
+<p>覆盖后，原问题就转化为<strong>删除最底层（非叶）结点中的替身关键字</strong>。</p>
+</div>
+
+<h3>删除最底层关键字后的判定</h3>
+<p>在最底层删去关键字后，按结点当前的关键字数与<span class="kw">下限</span>比较：</p>
+<ul>
+<li>若仍<strong>满足关键字数下限</strong>，则删除完成，结束；</li>
+<li>若<strong>低于下限</strong>，按<span class="kw">先借后合并</span>处理。</li>
+</ul>
+
+<h3>借（向兄弟领养）</h3>
+<div class="callout def">
+<p>当左/右<span class="kw">兄弟</span>有<strong>富余</strong>（关键字数高于下限）时，经<span class="kw">父结点</span>中转完成<span class="kw">借</span>：</p>
+<ul>
+<li>父的<span class="kw">分隔关键字</span><strong>下移</strong>到本结点；</li>
+<li>兄弟的<strong>端点关键字上移</strong>到父结点。</li>
+</ul>
+<p>借之后本结点关键字数回到下限及以上，<strong>父结点关键字数不变</strong>，结束。</p>
+</div>
+
+<h3>合并</h3>
+<div class="callout def">
+<p>当左、右兄弟都<strong>恰为下限</strong>、无可借时，进行<span class="kw">合并</span>：</p>
+<ul>
+<li>父的<span class="kw">分隔关键字</span><strong>下移并入</strong>合并后的结点；</li>
+<li>本结点与该兄弟合为一个结点，<strong>父结点关键字数减一</strong>。</li>
+</ul>
+</div>
+
+<div class="callout tip">
+<p><strong>口诀：先借后合并。</strong>兄弟有富余就借（父的分隔关键字下移、兄弟端点关键字上移，经父中转），兄弟都到底就合并（父的分隔关键字下移并入、父关键字数减一）。</p>
+</div>
+
+<h3>失衡的向上传播</h3>
+<div class="callout warn">
+<p><span class="kw">合并</span>会使父结点关键字数减一，父结点因此可能<strong>低于下限而失衡</strong>，于是在父结点这一层继续按"先借后合并"处理，失衡可能<strong>逐层向上传播</strong>。</p>
+</div>
+<div class="callout tip">
+<p>最坏情况：若传播<strong>一直到达根</strong>，且<span class="kw">根被掏空</span>，则删去根，<strong>整棵树高度减一</strong>。</p>
+</div>
+</div>
+  <h3>常规删除：简单删除 → 借 → 合并 → 替身+借</h3>
+  <div class="demo" id="demo-btree-delete"></div>
+  <h3>合并向上传播：根被掏空 → 整树高度 −1（最坏情况）</h3>
+  <div class="demo" id="demo-btree-collapse"></div>
+</section>
+
+<section class="block" id="s5">
+  <h2><span class="num">5</span>m 阶数的选择</h2>
+  <p class="sub">让一个磁盘块恰好装下一个结点，由块容量反推阶数 M。</p>
+  <div class="prose" data-sec="btree-m">
+<div class="callout motiv">
+<p>B 树要靠<span class="kw">磁盘块</span>承载结点：<strong>一个磁盘块作为一个结点</strong>。因此结点能容纳多少内容，由磁盘块的物理容量决定，<span class="kw">阶数 M</span>正是据此倒推出来的——块越大、能放下的分支越多，树就越扁，磁盘 I/O 越少。</p>
+</div>
+
+<h3>结点内的三类存储</h3>
+<p>设磁盘块容量为 <code>max</code> 字节，每个<span class="kw">关键字</span>占 <code>key</code> 字节。一个 M 阶结点最多有 M 个<span class="kw">儿子</span>、M−1 个关键字，结点内需要同时存放三类内容：</p>
+<ul>
+<li><strong>关键字</strong>：最多 M−1 个，每个 <code>key</code> 字节，共 (M−1)×<code>key</code>。</li>
+<li><strong>子树（分支）地址</strong>：指向下层结点（硬盘块）的指针 <code>A<sub>i</sub></code>，最多 M 个。</li>
+<li><strong>记录地址</strong>：每个关键字对应记录的硬盘地址 <code>R<sub>j</sub></code>，最多 M−1 个。</li>
+</ul>
+
+<h3>确定 M 的不等式</h3>
+<p>三类内容之和不能超过一个磁盘块的容量，由此得到约束：</p>
+<div class="formula">
+(M−1)×key + M 个分支地址 + (M−1) 个记录地址 &lt; max
+</div>
+<p>把不等式中三项依次对应到上面三类存储：(M−1)×<code>key</code> 为关键字所占空间，<strong>M 个分支地址</strong>为子树指针所占空间，<strong>(M−1) 个记录地址</strong>为记录指针所占空间。求解该不等式即可确定满足条件的最大 <span class="kw">M</span>。</p>
+
+<div class="callout tip">
+<p>口诀：<strong>关键字 M−1 个、分支地址 M 个、记录地址 M−1 个</strong>，三者之和小于磁盘块容量 <code>max</code>，解出的最大 M 就是该 B 树的阶数。</p>
+</div>
+<div class="callout tip"><p>关于符号：理论约束写成严格小于 <code>&lt; max</code>（内容不能塞满到溢出磁盘块）；而在<strong>第 7 节</strong>具体求解时，常对取整后的整数解写成 <code>≤</code>（如 <code>36M&minus;32 ≤ 8192</code>）以求满足条件的<strong>最大整数 M</strong>。两式并不矛盾。</p></div>
+</div>
+</section>
+
+<section class="block bp" id="s6">
+  <h2><span class="num">6</span>B+ 树定义（M 阶）</h2>
+  <p class="sub">数据全在叶子、叶子连成单链表：随机查找与顺序遍历兼得（索引顺序文件）。</p>
+  <div class="prose" data-sec="bplus-def">
+<div class="callout motiv">
+<p><span class="kw">B 树</span>支持随机查找，但若要<strong>按序遍历全部记录</strong>则是灾难——必须做中序遍历，遍历代价高昂。<span class="kw">B+ 树</span>兼顾<strong>随机查找</strong>与<strong>顺序访问</strong>，本质上是一种<span class="kw">索引顺序文件</span>。</p>
+</div>
+
+<div class="callout def">
+<p>M 阶 B+ 树满足以下五条性质——核心思想是：<strong>数据记录全部下沉到叶子，非叶结点只作为查找的"路标"</strong>。</p>
+</div>
+
+<table class="props">
+<thead>
+<tr><th>编号</th><th>性质</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>①</td>
+<td><span class="kw">数据记录</span>只存储于<span class="kw">叶子</span>；<span class="kw">非叶结点</span>至多含 <code>M−1</code> 个键，仅用于<strong>引导查找</strong>。其中第 <em>i</em> 个键 = 第 <em>i+1</em> 棵<span class="kw">子树</span>的最小值。</td>
+</tr>
+<tr>
+<td>②</td>
+<td><span class="kw">根结点</span>或是<span class="kw">叶子</span>，或有 <code>2 ~ M</code> 个<span class="kw">儿子</span>。</td>
+</tr>
+<tr>
+<td>③</td>
+<td>除根外，<span class="kw">非叶结点</span>的儿子数为 <code>⌈M/2⌉ ~ M</code>（防止退化）。</td>
+</tr>
+<tr>
+<td>④</td>
+<td>所有<span class="kw">叶子</span>都在<strong>同一层</strong>；每个叶子含 <code>⌈L/2⌉ ~ L</code> 个<span class="kw">数据项</span>。</td>
+</tr>
+<tr>
+<td>⑤</td>
+<td>所有<span class="kw">叶子</span>连成一个<span class="kw">单链表</span>。</td>
+</tr>
+</tbody>
+</table>
+
+<div class="formula">第 <em>i</em> 个键 = 第 <em>i+1</em> 棵子树的最小值　|　非叶结点键数 ≤ M−1　|　非叶结点（除根）儿子数 ∈ [⌈M/2⌉, M]　|　叶子数据项 ∈ [⌈L/2⌉, L]</div>
+
+<h3>查找</h3>
+<p>从<span class="kw">根结点</span>开始，按关键字落入的<strong>区间</strong>逐层下行，直到到达<span class="kw">叶子</span>。</p>
+
+<div class="callout tip">
+<p>由于<strong>数据地址只在叶子</strong>，查找<strong>必须到达叶子</strong>才能判定成败——这一点与 B 树"可停于任一层"不同。</p>
+</div>
+</div>
+</section>
+
+<section class="block bp" id="s7">
+  <h2><span class="num">7</span>B+ 树 L 与 M 的选择</h2>
+  <p class="sub">由块大小、键长、指针长、记录长反推 M 与每叶容量 L。</p>
+  <div class="prose" data-sec="bplus-lm">
+<div class="callout def">
+<p><span class="kw">L 与 M 的选择</span>由磁盘块容量决定：一个磁盘块作为一个结点，要让结点内的全部内容恰好放进一个块中，由此用不等式反解出 M 与 L。</p>
+</div>
+
+<h3>非叶结点：确定 M</h3>
+
+<p>给定参数：磁盘块 <code>8192</code> 字节、键 <code>32</code> 字节、分支地址 <code>4</code> 字节。一个非叶结点至多含 <code>M&minus;1</code> 个键（仅用于引导查找），并带 <code>M</code> 个分支地址。</p>
+
+<div class="formula">(M &minus; 1) &times; 32 + M &times; 4 = 36M &minus; 32 &le; 8192</div>
+
+<p>解此不等式（36M &le; 8224）即得 <span class="kw">M = 228</span>。</p>
+
+<h3>叶子：确定 L</h3>
+
+<p>数据记录只存储于叶子。若每条记录 <code>256</code> 字节，则一个磁盘块能容纳的记录数为：</p>
+
+<div class="formula">8192 / 256 = 32</div>
+
+<p>故 <span class="kw">L = 32</span>，即每个叶子含 <strong>16 ~ 32</strong> 条数据项（叶子的下限为 <code>&lceil;L/2&rceil;</code> = 16，上限为 <code>L</code> = 32）。</p>
+
+<table class="props">
+<thead>
+<tr><th>结点类型</th><th>容量约束</th><th>结果</th></tr>
+</thead>
+<tbody>
+<tr><td>非叶结点</td><td><code>36M &minus; 32 &le; 8192</code></td><td>M = 228</td></tr>
+<tr><td>叶子</td><td><code>8192 / 256 = 32</code></td><td>L = 32，每叶 16 ~ 32 条</td></tr>
+</tbody>
+</table>
+
+<div class="callout tip">
+<p>通常 <span class="kw">L 远小于 M</span>：一条完整记录（256 字节）远大于一个键（32 字节），故同一磁盘块在叶子中只能装下较少记录，而在非叶结点中可装下很多键。</p>
+</div>
+</div>
+</section>
+
+<section class="block bp" id="s8">
+  <h2><span class="num">8</span>B+ 树插入与删除</h2>
+  <p class="sub">叶满分裂、复制分隔键上移；叶不足则领养或合并，根只剩一子才变矮。</p>
+  <div class="prose" data-sec="bplus-ops">
+<div class="callout motiv">B+ 树插入与删除的核心在于维护两条不变量：每个<span class="kw">叶子</span>含 <code>⌈L/2⌉ ~ L</code> 个<span class="kw">数据项</span>、所有叶子同层。任何插入都从叶子开始，任何删除引发的失衡都可能逐层向上<span class="kw">过滤</span>，因此调整始终沿查找路径传播。</div>
+
+<div class="callout tip">本页演示参数为 <code>M=4,L=4</code>，所以除根外非叶结点的儿子数下限是 <code>⌈4/2⌉=2</code>；可视化里出现 2 个孩子是合法状态。真正必须一直维护的是索引键不变量：每个非叶结点都应满足 <code>keys[i] = min(children[i+1])</code>，删除、领养、合并和内部调整后都要按右侧子树最小值刷新分隔键。</div>
+
+<h3>插入</h3>
+
+<p>插入时先<span class="kw">定位到叶子</span>（从根按区间下行直到对应叶子），再分情况处理：</p>
+
+<ul>
+<li><span class="kw">叶子不满</span>：直接把数据项插入该叶子，结束。</li>
+<li><span class="kw">叶子满</span>：把该叶子<span class="kw">分裂</span>为两个半满叶子，并<span class="kw">更新父结点</span>。</li>
+<li><span class="kw">父结点满</span>：父结点继续分裂，沿查找路径向上传播；最坏情况一直<span class="kw">分裂到根</span>。</li>
+</ul>
+
+<div class="callout tip">正因为分裂可能一路传到根，<strong>根允许仅有两个孩子</strong>——这是合法状态。</div>
+
+<h3>删除</h3>
+
+<p>删除发生在叶子。当某叶子的元素数<span class="kw">降到最小值以下</span>（低于 <code>⌈L/2⌉</code>）时，按"先借后合并"调整：</p>
+
+<ul>
+<li><span class="kw">领养（借）</span>：邻居（兄弟叶子）有富余时，从邻居处领养一个数据项补足本结点。</li>
+<li><span class="kw">合并</span>：邻居也恰为最少时，两者<span class="kw">合并</span>为一个叶子，<strong>父结点失去一个孩子</strong>。</li>
+</ul>
+
+<p>合并使父结点孩子数减一，可能导致父结点也低于下限，于是失衡<span class="kw">向上过滤直到根</span>。</p>
+
+<div class="callout tip">当过滤到根、使<strong>根只剩一个孩子</strong>时：删去根，让其唯一的孩子成为<span class="kw">新根</span>。这是<strong>唯一使 B+ 树变矮的情况</strong>。</div>
+
+<table class="props">
+<thead>
+<tr><th>操作</th><th>触发条件</th><th>处理方式</th><th>向上影响</th></tr>
+</thead>
+<tbody>
+<tr><td>插入</td><td>叶子不满</td><td>直接插入</td><td>无</td></tr>
+<tr><td>插入</td><td>叶子满</td><td>分裂为两个半满叶并更新父</td><td>父满则继续分裂，最坏分裂到根</td></tr>
+<tr><td>删除</td><td>邻居有富余</td><td>领养（借）邻居一项</td><td>就地解决，不向上传播</td></tr>
+<tr><td>删除</td><td>邻居也最少</td><td>合并，父失去一个孩子</td><td>向上过滤；根只剩一子则删根、其子为新根（唯一变矮）</td></tr>
+</tbody>
+</table>
+</div>
+  <h3>插入：叶分裂（复制最小值上移）→ 内部分裂 → 新建根（树高+1）</h3>
+  <div class="demo" id="demo-bplus-insert"></div>
+  <h3>删除：领养（借）→ 合并 → 根只剩一子 → 树高 −1（B+ 唯一变矮情形）</h3>
+  <div class="demo" id="demo-bplus-delete"></div>
+</section>
+
+<section class="block bp" id="s9">
+  <h2><span class="num">9</span>性能与 B 树 / B+ 树比较</h2>
+  <p class="sub">深度 log<sub>⌈M/2⌉</sub>(2N/L)，一般 3~4 层；叶链表使顺序遍历轻而易举。</p>
+  <div class="prose" data-sec="perf-cmp">
+<div class="callout motiv"><span class="kw">性能分析</span>的核心目标：估算 B+ 树的<span class="kw">深度</span>（即查找需要的磁盘读次数），并与 <span class="kw">B 树</span>对比两者在查找、插入、删除及顺序遍历上的差异。</div>
+
+<h3>B+ 树的深度估计</h3>
+
+<p>设共有 <code>N</code> 条记录。由于每个<span class="kw">叶子</span>至少装 ⌈L/2⌉ 个数据项，最坏情况下叶子尽量稀疏，最多会有 <code>2N/L</code> 个叶子。又因除根外每个非叶结点至少有 ⌈M/2⌉ 个<span class="kw">儿子</span>，从叶子层向上收敛的速度由 ⌈M/2⌉ 决定，于是树的<span class="kw">深度</span>为：</p>
+
+<div class="formula">最坏叶子数 = 2N / L，&nbsp;&nbsp;深度 = log<sub>⌈M/2⌉</sub>(2N / L)</div>
+
+<div class="callout tip">在常见参数下（<code>L</code> 远小于 <code>M</code>，分叉很大），这个深度一般只有 <strong>3 ~ 4 层</strong> 即够。</div>
+
+<h3>磁盘访问代价</h3>
+
+<ul>
+<li><strong>查找</strong>：至多约 <span class="kw">5 次读磁盘</span>。</li>
+<li><strong>插入 / 删除</strong>：在查找之上<strong>多一次写</strong>（写回被修改的结点）。</li>
+<li><strong>分裂 / 归并</strong>：至多再加 <strong>4 次写</strong>；此类操作<em>罕见</em>，可<span class="kw">均摊</span>忽略。</li>
+</ul>
+
+<h3>B 树 vs B+ 树</h3>
+
+<div class="callout cmp">关键差别在于<strong>数据存放位置</strong>：<span class="kw">B 树</span>的关键字与地址可分布在<em>任何结点</em>，因此查找<strong>可停于任一层</strong>；<span class="kw">B+ 树</span>的全部数据都在<em>叶子</em>，因此查找<strong>必到叶子</strong>。</div>
+
+<table class="props">
+<thead>
+<tr><th>对比项</th><th>B 树</th><th>B+ 树</th></tr>
+</thead>
+<tbody>
+<tr><td>关键字与地址分布</td><td>可分布在任何结点</td><td>全部数据在叶子，非叶仅引导查找</td></tr>
+<tr><td>查找终止位置</td><td>可停于任一层</td><td>必到叶子</td></tr>
+<tr><td>查找时间</td><td>≤ 树高</td><td>一定 = 树高</td></tr>
+<tr><td>插入 / 删除最差代价</td><td>树高的 2 倍</td><td>树高的 2 倍</td></tr>
+</tbody>
+</table>
+
+<div class="callout tip"><strong>查找时间口诀：</strong>B 树查找时间 <strong>≤ 树高</strong>（可能早停），B+ 树查找时间 <strong>恒 = 树高</strong>（必到叶）；而两者的<span class="kw">插入</span> / <span class="kw">删除</span>最差代价<strong>都是树高的 2 倍</strong>。</div>
+
+<h3>B+ 树便于按序遍历</h3>
+
+<p>B+ 树的全部记录都按序排在叶子层，并由<span class="kw">单链表</span>串起，因而顺序访问极为方便：</p>
+
+<ul>
+<li>用<strong>头指针</strong>指向<em>首叶</em>；</li>
+<li>各叶的<strong>尾指针</strong>链向<em>右邻叶</em>，组成一个<span class="kw">单链表</span>；</li>
+<li>顺着链一路向右，即可<strong>顺序遍历</strong>全部记录。</li>
+</ul>
+
+<div class="callout tip">这正是 B+ 树相对 B 树的关键优势：<span class="kw">随机查找</span>用树结构，<span class="kw">顺序遍历</span>则沿叶子单链表直接扫描，无需中序遍历。</div>
+</div>
+  <h3>叶子单链表：顺序遍历演示</h3>
+  <div class="demo" id="demo-bplus-traverse"></div>
+</section>
+
+</main>
+</div>
+
+<footer>B 树 / B+ 树定义与操作可视化 · 树结构由页面内置的 B 树/B+ 树算法实时构建，已通过对随机序列逐步校验不变量的测试</footer>
+
+<script>
+/* ============================================================================
+ * B 树 / B+ 树 模拟器（可嵌入浏览器，也可在 Node 下测试）
+ * 每个操作在关键步骤记录一帧快照 {tree, title, note, flash}，用于逐步可视化。
+ * ==========================================================================*/
+(function (global) {
+  'use strict';
+
+  function clone(n) {
+    if (!n) return n;
+    var c = { keys: n.keys.slice() };
+    if (n.leaf !== undefined) c.leaf = n.leaf;
+    if (n.children) c.children = n.children.map(clone);
+    return c;
+  }
+
+  /* ----------------------------- B 树 (m 阶) ----------------------------- */
+  function makeBTree(m) {
+    var maxKeys = m - 1;
+    var minKeys = Math.ceil(m / 2) - 1; // 非根结点关键字数下限
+    var t = { kind: 'btree', m: m, root: { keys: [], children: null }, log: [] };
+
+    function isLeaf(n) { return !n.children; }
+    function childIndex(n, key) { var i = 0; while (i < n.keys.length && n.keys[i] < key) i++; return i; }
+    function snap(title, note, flash) {
+      t.log.push({ tree: clone(t.root), title: title, note: note || '', flash: flash || [], kind: 'btree' });
+    }
+
+    t.insert = function (key) {
+      var node = t.root, path = [];
+      while (!isLeaf(node)) { var i = childIndex(node, key); path.push({ node: node, idx: i }); node = node.children[i]; }
+      if (node.keys.indexOf(key) !== -1) return;
+      var ins = childIndex(node, key);
+      node.keys.splice(ins, 0, key);
+      snap('插入 ' + key, '从根逐层下行定位到最底层叶结点，按序插入 ' + key +
+        (node.keys.length > maxKeys ? '（结点关键字数达 ' + node.keys.length + ' 超过 m−1=' + maxKeys + '，需分裂）' : '（未超员，结束）'), [key]);
+      while (node.keys.length > maxKeys) {
+        var mid = Math.floor(node.keys.length / 2);
+        var upKey = node.keys[mid];
+        var left = { keys: node.keys.slice(0, mid), children: isLeaf(node) ? null : node.children.slice(0, mid + 1) };
+        var right = { keys: node.keys.slice(mid + 1), children: isLeaf(node) ? null : node.children.slice(mid + 1) };
+        if (path.length === 0) {
+          t.root = { keys: [upKey], children: [left, right] };
+          snap('分裂（根）', '超员结点一分为二，居中关键字 ' + upKey + ' 上移成为新根；根分裂使整棵树高度 +1', [upKey]);
+          node = t.root;
+        } else {
+          var top = path.pop();
+          top.node.keys.splice(top.idx, 0, upKey);
+          top.node.children.splice(top.idx, 1, left, right);
+          snap('分裂', '超员结点一分为二（前半 / 后半），居中关键字 ' + upKey + ' 上移到父结点（父增一关键字一子树）', [upKey]);
+          node = top.node;
+        }
+      }
+    };
+
+    t.delete = function (key) {
+      var node = t.root, path = [], found = null;
+      while (true) {
+        var j = node.keys.indexOf(key);
+        if (j !== -1) { found = { node: node, j: j, path: path.slice() }; break; }
+        if (isLeaf(node)) break;
+        var i = childIndex(node, key); path.push({ node: node, idx: i }); node = node.children[i];
+      }
+      if (!found) return;
+      var leaf, removeKey, fixPath, fromInternal = !isLeaf(found.node);
+      if (!fromInternal) { leaf = found.node; removeKey = key; fixPath = found.path; }
+      else {
+        fixPath = found.path.slice();
+        fixPath.push({ node: found.node, idx: found.j });
+        var cur = found.node.children[found.j];
+        while (!isLeaf(cur)) { fixPath.push({ node: cur, idx: cur.children.length - 1 }); cur = cur.children[cur.children.length - 1]; }
+        var pred = cur.keys[cur.keys.length - 1];
+        found.node.keys[found.j] = pred;
+        snap('删除 ' + key, '待删关键字 ' + key + ' 在内部结点：用替身——左子树最右关键字（前驱）' + pred + ' 覆盖，转为删除最底层的替身 ' + pred, [pred]);
+        leaf = cur; removeKey = pred;
+      }
+      var rj = leaf.keys.indexOf(removeKey);
+      leaf.keys.splice(rj, 1);
+      snap(fromInternal ? '删除底层替身 ' + removeKey : '删除 ' + key,
+        '从最底层叶结点删除 ' + removeKey +
+        (fixPath.length > 0 && leaf.keys.length < minKeys ? '（关键字数 ' + leaf.keys.length + ' 低于下限 ' + minKeys + '，先借后合并）' : '（仍满足下限，结束）'), []);
+      while (fixPath.length > 0) {
+        var top = fixPath[fixPath.length - 1];
+        var parent = top.node, idx = top.idx, curN = parent.children[idx];
+        if (curN.keys.length >= minKeys) break;
+        var L = idx > 0 ? parent.children[idx - 1] : null;
+        var R = idx < parent.children.length - 1 ? parent.children[idx + 1] : null;
+        if (L && L.keys.length > minKeys) {
+          curN.keys.unshift(parent.keys[idx - 1]);
+          parent.keys[idx - 1] = L.keys.pop();
+          if (!isLeaf(curN)) curN.children.unshift(L.children.pop());
+          snap('向兄弟借', '左兄弟有富余：经父结点中转——父分隔关键字下移到本结点，左兄弟端点关键字上移到父结点', [curN.keys[0]]);
+          return;
+        } else if (R && R.keys.length > minKeys) {
+          curN.keys.push(parent.keys[idx]);
+          parent.keys[idx] = R.keys.shift();
+          if (!isLeaf(curN)) curN.children.push(R.children.shift());
+          snap('向兄弟借', '右兄弟有富余：父分隔关键字下移到本结点，右兄弟端点关键字上移到父结点', [curN.keys[curN.keys.length - 1]]);
+          return;
+        } else {
+          if (L) {
+            var d1 = parent.keys[idx - 1];
+            L.keys.push(d1); L.keys = L.keys.concat(curN.keys);
+            if (!isLeaf(L)) L.children = L.children.concat(curN.children);
+            parent.keys.splice(idx - 1, 1); parent.children.splice(idx, 1);
+            snap('合并', '左右兄弟都为下限：与左兄弟合并，父分隔关键字 ' + d1 + ' 下移并入合并结点，父关键字数 −1', [d1]);
+          } else {
+            var d2 = parent.keys[idx];
+            curN.keys.push(d2); curN.keys = curN.keys.concat(R.keys);
+            if (!isLeaf(curN)) curN.children = curN.children.concat(R.children);
+            parent.keys.splice(idx, 1); parent.children.splice(idx + 1, 1);
+            snap('合并', '与右兄弟合并，父分隔关键字 ' + d2 + ' 下移并入合并结点，父关键字数 −1', [d2]);
+          }
+          fixPath.pop();
+          if (fixPath.length === 0) {
+            if (t.root.keys.length === 0 && t.root.children) {
+              t.root = t.root.children[0];
+              snap('树高 −1', '合并向上传播到根且根被掏空（关键字数为 0），删去空根，其唯一孩子成为新根，整棵树高度 −1', []);
+            }
+            return;
+          }
+        }
+      }
+    };
+
+    return t;
+  }
+
+  /* ---------------------------- B+ 树 (M 阶, 叶 L) ---------------------------- */
+  function makeBPlus(M, L) {
+    var minLeaf = Math.ceil(L / 2), maxLeaf = L;
+    var minChild = Math.ceil(M / 2), maxChild = M;
+    var t = { kind: 'bplus', M: M, L: L, root: { keys: [], leaf: true }, log: [] };
+
+    function childIndex(n, key) { var i = 0; while (i < n.keys.length && key >= n.keys[i]) i++; return i; }
+    function firstKey(n) { return n.leaf ? n.keys[0] : firstKey(n.children[0]); }
+    function refreshBPlusKeys(n) {
+      if (!n || n.leaf) return;
+      n.children.forEach(refreshBPlusKeys);
+      n.keys = [];
+      for (var i = 1; i < n.children.length; i++) n.keys.push(firstKey(n.children[i]));
+    }
+    function snap(title, note, flash) {
+      refreshBPlusKeys(t.root);
+      t.log.push({ tree: clone(t.root), title: title, note: note || '', flash: flash || [], kind: 'bplus' });
+    }
+
+    function insertIntoParent(sep, rightChild, path) {
+      if (path.length === 0) {
+        t.root = { keys: [sep], children: [t.root, rightChild], leaf: false };
+        return; // 调用方负责快照
+      }
+      var top = path.pop();
+      top.node.keys.splice(top.idx, 0, sep);
+      top.node.children.splice(top.idx + 1, 0, rightChild);
+      var parent = top.node;
+      while (parent.children.length > maxChild) {
+        var mid = Math.floor(parent.keys.length / 2);
+        var upKey = parent.keys[mid];
+        var l2 = { keys: parent.keys.slice(0, mid), children: parent.children.slice(0, mid + 1), leaf: false };
+        var r2 = { keys: parent.keys.slice(mid + 1), children: parent.children.slice(mid + 1), leaf: false };
+        if (path.length === 0) { t.root = { keys: [upKey], children: [l2, r2], leaf: false }; return; }
+        var gp = path.pop();
+        gp.node.keys.splice(gp.idx, 0, upKey);
+        gp.node.children.splice(gp.idx, 1, l2, r2);
+        parent = gp.node;
+      }
+    }
+
+    t.insert = function (key) {
+      var node = t.root, path = [];
+      while (!node.leaf) { var i = childIndex(node, key); path.push({ node: node, idx: i }); node = node.children[i]; }
+      if (node.keys.indexOf(key) !== -1) return;
+      var ins = 0; while (ins < node.keys.length && node.keys[ins] < key) ins++;
+      node.keys.splice(ins, 0, key);
+      snap('插入 ' + key, '从根按区间下行至叶子，按序插入数据记录 ' + key +
+        (node.keys.length > maxLeaf ? '（叶数据数 ' + node.keys.length + ' 超过 L=' + maxLeaf + '，需分裂）' : '（叶未满，结束）'), [key]);
+      if (node.keys.length <= maxLeaf) return;
+      var mid = Math.floor((maxLeaf + 1) / 2);
+      var right = { keys: node.keys.slice(mid), leaf: true };
+      node.keys = node.keys.slice(0, mid);
+      var sep = right.keys[0];
+      var wasRoot = path.length === 0;
+      insertIntoParent(sep, right, path);
+      if (wasRoot) snap('分裂', '叶满，分裂为两个半满叶；新建根，分隔键 ' + sep + '（=右叶最小值）引导查找，树高 +1', [sep]);
+      else snap('分裂', '叶满，分裂为两个半满叶并更新父；分隔键 ' + sep + '（=右叶最小值）插入父结点', [sep]);
+    };
+
+    function fixInternal(path) {
+      while (path.length > 0) {
+        var cur = path[path.length - 1].node;
+        if (path.length === 1) {
+          if (cur.children.length === 1) { t.root = cur.children[0]; snap('树高 −1', '根只剩一个孩子，删去根，其孩子成为新根（B+ 树唯一变矮的情况）', []); }
+          return;
+        }
+        if (cur.children.length >= minChild) return;
+        var gpE = path[path.length - 2];
+        var gp = gpE.node, ci = gpE.idx;
+        var ls = ci > 0 ? gp.children[ci - 1] : null;
+        var rs = ci < gp.children.length - 1 ? gp.children[ci + 1] : null;
+        if (ls && ls.children.length > minChild) {
+          cur.keys.unshift(gp.keys[ci - 1]); gp.keys[ci - 1] = ls.keys.pop();
+          cur.children.unshift(ls.children.pop());
+          snap('领养（借）', '内部结点儿子数不足，向左兄弟借：父分隔键下移、兄弟分隔键上移，并移来一棵子树', []); return;
+        } else if (rs && rs.children.length > minChild) {
+          cur.keys.push(gp.keys[ci]); gp.keys[ci] = rs.keys.shift();
+          cur.children.push(rs.children.shift());
+          snap('领养（借）', '内部结点向右兄弟借：父分隔键下移、兄弟分隔键上移，并移来一棵子树', []); return;
+        } else {
+          if (ls) {
+            ls.keys.push(gp.keys[ci - 1]); ls.keys = ls.keys.concat(cur.keys);
+            ls.children = ls.children.concat(cur.children);
+            gp.keys.splice(ci - 1, 1); gp.children.splice(ci, 1);
+            snap('合并', '内部结点与左兄弟合并，父分隔键下移并入，父失一子', []);
+          } else {
+            cur.keys.push(gp.keys[ci]); cur.keys = cur.keys.concat(rs.keys);
+            cur.children = cur.children.concat(rs.children);
+            gp.keys.splice(ci, 1); gp.children.splice(ci + 1, 1);
+            snap('合并', '内部结点与右兄弟合并，父分隔键下移并入，父失一子', []);
+          }
+          path.pop();
+        }
+      }
+    }
+
+    t.delete = function (key) {
+      var node = t.root, path = [];
+      while (!node.leaf) { var i = childIndex(node, key); path.push({ node: node, idx: i }); node = node.children[i]; }
+      var j = node.keys.indexOf(key);
+      if (j === -1) return;
+      node.keys.splice(j, 1);
+      snap('删除 ' + key, '数据只在叶子：定位到叶子删除记录 ' + key +
+        (path.length > 0 && node.keys.length < minLeaf ? '（叶数据数 ' + node.keys.length + ' 低于下限 ' + minLeaf + '，需调整）' : '（仍 ≥ 下限或为根，结束）'), []);
+      if (path.length === 0) return;
+      if (node.keys.length >= minLeaf) return;
+      var top = path[path.length - 1], parent = top.node, idx = top.idx;
+      var Ln = idx > 0 ? parent.children[idx - 1] : null;
+      var Rn = idx < parent.children.length - 1 ? parent.children[idx + 1] : null;
+      if (Ln && Ln.keys.length > minLeaf) {
+        var b1 = Ln.keys.pop(); node.keys.unshift(b1); parent.keys[idx - 1] = node.keys[0];
+        snap('领养（借）', '邻居有富余：向左邻叶借来最大数据 ' + b1 + '，更新父分隔键为 ' + node.keys[0], [b1]); return;
+      } else if (Rn && Rn.keys.length > minLeaf) {
+        var b2 = Rn.keys.shift(); node.keys.push(b2); parent.keys[idx] = Rn.keys[0];
+        snap('领养（借）', '邻居有富余：向右邻叶借来最小数据 ' + b2 + '，更新父分隔键为 ' + Rn.keys[0], [b2]); return;
+      } else {
+        if (Ln) {
+          Ln.keys = Ln.keys.concat(node.keys);
+          parent.keys.splice(idx - 1, 1); parent.children.splice(idx, 1);
+          snap('合并', '邻居也最少：与左邻叶合并，删去父中对应分隔键，父失一子', []);
+        } else {
+          node.keys = node.keys.concat(Rn.keys);
+          parent.keys.splice(idx, 1); parent.children.splice(idx + 1, 1);
+          snap('合并', '与右邻叶合并，删去父中对应分隔键，父失一子', []);
+        }
+        fixInternal(path);
+      }
+    };
+
+    return t;
+  }
+
+  var api = { makeBTree: makeBTree, makeBPlus: makeBPlus, clone: clone };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else { global.BTreeSim = api; }
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+/* ============================================================================
+ * B 树 / B+ 树 SVG 渲染器 + 逐步播放控制器
+ *  - layout(root)               纯函数，计算坐标（可在 Node 下测试）
+ *  - drawSVG(root, frame, opts)  生成 <svg>（需要 document）
+ *  - Stepper(mount, frames,opts) 逐步播放控制器
+ *  - btSearchPath(root, key)     B 树/B+ 树查找路径
+ * ==========================================================================*/
+(function (global) {
+  'use strict';
+
+  var CFG = { cellW: 36, cellH: 30, levelH: 84, gapX: 30, padX: 26, padY: 26, leafPad: 40 };
+
+  function isLeafNode(n) { return !n.children || n.children.length === 0; }
+  function nodeW(n) { return Math.max(1, n.keys.length) * CFG.cellW; }
+
+  // 纯布局：返回 {placed:[{n,x,y,w,depth,isLeaf}], map, leaves, width, height, maxDepth}
+  function layout(root) {
+    var placed = [], cursor = CFG.padX, maxDepth = 0;
+    function rec(n, depth) {
+      if (depth > maxDepth) maxDepth = depth;
+      var w = nodeW(n), cx;
+      if (isLeafNode(n)) { cx = cursor + w / 2; cursor += w + CFG.gapX; }
+      else {
+        var xs = n.children.map(function (c) { return rec(c, depth + 1); });
+        cx = (xs[0] + xs[xs.length - 1]) / 2;
+      }
+      placed.push({ n: n, x: cx, y: CFG.padY + depth * CFG.levelH, w: w, depth: depth, isLeaf: isLeafNode(n) });
+      return cx;
+    }
+    rec(root, 0);
+    var map = new Map();
+    placed.forEach(function (p) { map.set(p.n, p); });
+    var leaves = placed.filter(function (p) { return p.isLeaf; });
+    var width = Math.max(cursor - CFG.gapX + CFG.padX, 120);
+    var height = CFG.padY + maxDepth * CFG.levelH + CFG.cellH + CFG.leafPad;
+    return { placed: placed, map: map, leaves: leaves, width: width, height: height, maxDepth: maxDepth };
+  }
+
+  // B 树 / B+ 树查找路径
+  function searchPath(root, key, isBplus) {
+    var n = root, path = [];
+    while (true) {
+      if (isBplus && !n.leaf === false && n.leaf) {
+        // B+ 叶子
+        var fi = n.keys.indexOf(key);
+        path.push({ node: n });
+        return { path: path, foundNode: n, foundIdx: fi, fail: fi === -1 };
+      }
+      if (isBplus) {
+        if (n.leaf) { var fi2 = n.keys.indexOf(key); path.push({ node: n }); return { path: path, foundNode: n, foundIdx: fi2, fail: fi2 === -1 }; }
+        var ci = 0; while (ci < n.keys.length && key >= n.keys[ci]) ci++;
+        path.push({ node: n, childIdx: ci }); n = n.children[ci];
+      } else {
+        var i = 0; while (i < n.keys.length && n.keys[i] < key) i++;
+        if (i < n.keys.length && n.keys[i] === key) { path.push({ node: n }); return { path: path, foundNode: n, foundIdx: i, fail: false }; }
+        if (isLeafNode(n)) { path.push({ node: n, failChild: i }); return { path: path, fail: true, failChild: i }; }
+        path.push({ node: n, childIdx: i }); n = n.children[i];
+      }
+    }
+  }
+
+  /* ----------------------------- DOM 渲染 ----------------------------- */
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(SVGNS, tag);
+    if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  // frame: {tree, flash, kind} ; opts: {searchInfo, traverseUpto}
+  function drawSVG(frame, opts) {
+    opts = opts || {};
+    var root = frame.tree;
+    var isBplus = frame.kind === 'bplus';
+    var lo = layout(root);
+    var svg = el('svg', { class: 'tree-svg', viewBox: '0 0 ' + lo.width + ' ' + lo.height, preserveAspectRatio: 'xMidYMin meet' });
+    svg.setAttribute('width', lo.width);
+    svg.setAttribute('height', lo.height);
+
+    var pathNodes = new Set();
+    if (opts.searchInfo) opts.searchInfo.path.forEach(function (p) { pathNodes.add(p.node); });
+    var flash = new Set(frame.flash || []);
+
+    // --- 边（A_i 指针）---
+    var gEdges = el('g', { class: 'edges' }, svg);
+    lo.placed.forEach(function (p) {
+      if (p.isLeaf) return;
+      var left = p.x - p.w / 2, bottom = p.y + CFG.cellH;
+      p.n.children.forEach(function (c, i) {
+        var cp = lo.map.get(c);
+        var px = left + i * CFG.cellW;
+        var onPath = opts.searchInfo && opts.searchInfo.path.some(function (e2) { return e2.node === p.n && e2.childIdx === i; });
+        var path = el('path', {
+          d: 'M' + px + ',' + bottom + ' C' + px + ',' + (bottom + CFG.levelH * 0.4) + ' ' + cp.x + ',' + (cp.y - CFG.levelH * 0.4) + ' ' + cp.x + ',' + cp.y,
+          class: 'edge' + (onPath ? ' edge-path' : '')
+        }, gEdges);
+        // 指针小方块
+        el('rect', { x: px - 3, y: bottom - 4, width: 6, height: 8, rx: 1, class: 'ptr' + (onPath ? ' ptr-path' : '') }, gEdges);
+      });
+    });
+
+    // --- B+ 叶链表 ---
+    if (isBplus && lo.leaves.length > 1) {
+      var gLink = el('g', { class: 'leaf-links' }, svg);
+      for (var li = 0; li < lo.leaves.length - 1; li++) {
+        var a = lo.leaves[li], b = lo.leaves[li + 1];
+        var ay = a.y + CFG.cellH / 2, ax = a.x + a.w / 2, bx = b.x - b.w / 2;
+        var lit = opts.traverseUpto != null && li < opts.traverseUpto;
+        el('path', { d: 'M' + ax + ',' + ay + ' L' + (bx - 7) + ',' + ay, class: 'leaf-link' + (lit ? ' lit' : '') }, gLink);
+        el('path', { d: 'M' + (bx - 7) + ',' + (ay - 4) + ' L' + (bx - 1) + ',' + ay + ' L' + (bx - 7) + ',' + (ay + 4) + ' Z', class: 'leaf-arrow' + (lit ? ' lit' : '') }, gLink);
+      }
+      // 头指针
+      var h0 = lo.leaves[0];
+      el('text', { x: h0.x - h0.w / 2 - 6, y: h0.y + CFG.cellH / 2 + 4, class: 'head-label', 'text-anchor': 'end' }, gLink).textContent = '首叶 →';
+    }
+
+    // --- 失败结点 F ---
+    if (opts.searchInfo && opts.searchInfo.fail && !isBplus) {
+      var last = opts.searchInfo.path[opts.searchInfo.path.length - 1];
+      var lp = lo.map.get(last.node);
+      var fx = (lp.x - lp.w / 2) + (last.failChild || 0) * CFG.cellW;
+      var fy = lp.y + CFG.cellH + 34;
+      el('path', { d: 'M' + fx + ',' + (lp.y + CFG.cellH) + ' L' + fx + ',' + (fy - 14), class: 'edge edge-fail' }, gEdges);
+      var fg = el('g', {}, svg);
+      el('rect', { x: fx - 13, y: fy - 13, width: 26, height: 26, rx: 4, class: 'fail-box' }, fg);
+      el('text', { x: fx, y: fy + 5, class: 'fail-text', 'text-anchor': 'middle' }, fg).textContent = 'F';
+    }
+
+    // --- 结点 ---
+    var gNodes = el('g', { class: 'nodes' }, svg);
+    lo.placed.forEach(function (p) {
+      var left = p.x - p.w / 2;
+      var g = el('g', { class: 'node' + (pathNodes.has(p.n) ? ' on-path' : '') + (p.isLeaf && isBplus ? ' bp-leaf' : '') }, gNodes);
+      var keys = p.n.keys;
+      if (keys.length === 0) {
+        el('rect', { x: left, y: p.y, width: CFG.cellW, height: CFG.cellH, rx: 4, class: 'cell empty' }, g);
+      }
+      // 外框
+      el('rect', { x: left, y: p.y, width: p.w, height: CFG.cellH, rx: 5, class: 'node-box' + (p.isLeaf ? ' leaf' : '') }, g);
+      keys.forEach(function (k, i) {
+        var cx = left + i * CFG.cellW;
+        var found = opts.searchInfo && opts.searchInfo.foundNode === p.n && opts.searchInfo.foundIdx === i;
+        el('rect', { x: cx, y: p.y, width: CFG.cellW, height: CFG.cellH, rx: i === 0 || i === keys.length - 1 ? 5 : 0, class: 'cell' + (flash.has(k) ? ' flash' : '') + (found ? ' found' : '') }, g);
+        if (i > 0) el('line', { x1: cx, y1: p.y + 2, x2: cx, y2: p.y + CFG.cellH - 2, class: 'cell-sep' }, g);
+        el('text', { x: cx + CFG.cellW / 2, y: p.y + CFG.cellH / 2 + 5, 'text-anchor': 'middle', class: 'key' + (flash.has(k) ? ' flash' : '') }, g).textContent = k;
+      });
+    });
+
+    return svg;
+  }
+
+  /* ----------------------------- 播放控制器 ----------------------------- */
+  function Stepper(mount, frames, opts) {
+    opts = opts || {};
+    var idx = 0, timer = null, self = this;
+    mount.classList.add('demo');
+    mount.innerHTML = '';
+
+    var bar = document.createElement('div'); bar.className = 'demo-head';
+    if (opts.caption) { var cap = document.createElement('span'); cap.className = 'demo-cap'; cap.textContent = opts.caption; bar.appendChild(cap); }
+    var counter = document.createElement('span'); counter.className = 'demo-counter';
+    bar.appendChild(counter);
+    mount.appendChild(bar);
+
+    var stage = document.createElement('div'); stage.className = 'demo-stage'; mount.appendChild(stage);
+
+    var info = document.createElement('div'); info.className = 'demo-info';
+    var titleEl = document.createElement('span'); titleEl.className = 'demo-title';
+    var noteEl = document.createElement('span'); noteEl.className = 'demo-note';
+    info.appendChild(titleEl); info.appendChild(noteEl); mount.appendChild(info);
+
+    var ctr = document.createElement('div'); ctr.className = 'demo-ctrls';
+    function mk(txt, cls, fn) { var b = document.createElement('button'); b.textContent = txt; b.className = 'demo-btn ' + (cls || ''); b.onclick = fn; ctr.appendChild(b); return b; }
+    var bFirst = mk('⏮', '', function () { stop(); go(0); });
+    var bPrev = mk('◀ 上一步', '', function () { stop(); go(idx - 1); });
+    var bPlay = mk('▶ 播放', 'play', function () { toggle(); });
+    var bNext = mk('下一步 ▶', '', function () { stop(); go(idx + 1); });
+    var bLast = mk('⏭', '', function () { stop(); go(frames.length - 1); });
+    mount.appendChild(ctr);
+
+    function render() {
+      stage.innerHTML = '';
+      var f = frames[idx];
+      stage.appendChild(drawSVG(f, f.opts || {}));
+      counter.textContent = '步骤 ' + (idx + 1) + ' / ' + frames.length;
+      titleEl.textContent = f.title || '';
+      noteEl.textContent = f.note || '';
+      bPrev.disabled = idx === 0; bFirst.disabled = idx === 0;
+      bNext.disabled = idx === frames.length - 1; bLast.disabled = idx === frames.length - 1;
+    }
+    function go(i) { idx = Math.max(0, Math.min(frames.length - 1, i)); render(); }
+    function stop() { if (timer) { clearInterval(timer); timer = null; bPlay.textContent = '▶ 播放'; bPlay.classList.remove('on'); } }
+    function toggle() {
+      if (timer) { stop(); return; }
+      if (idx === frames.length - 1) idx = 0;
+      bPlay.textContent = '⏸ 暂停'; bPlay.classList.add('on');
+      timer = setInterval(function () { if (idx >= frames.length - 1) { stop(); } else { go(idx + 1); } }, 1400);
+    }
+    this.go = go; this.stop = stop;
+    render();
+  }
+
+  var api = { layout: layout, drawSVG: drawSVG, searchPath: searchPath, Stepper: Stepper, CFG: CFG };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else global.Viz = api;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+(function(){
+  var S=window.BTreeSim, V=window.Viz, D=document;
+  function $(id){return D.getElementById(id);}
+  function startFrame(t,note){return {tree:S.clone(t.root),title:'起始',note:note||'演示起点（此前已建好的树）',flash:[],kind:t.kind};}
+
+  /* ---- 五个逐步演示 ---- */
+  function btreeInsert(){
+    var t=S.makeBTree(5);
+    t.log.push({tree:S.clone(t.root),title:'空树',note:'从空的 5 阶 B 树开始：每结点最多 m−1=4 个关键字，最多 5 棵子树',flash:[],kind:'btree'});
+    for(var k=1;k<=17;k++) t.insert(k);
+    new V.Stepper($('demo-btree-insert'),t.log,{caption:'5 阶 B 树 · 顺序插入 1–17（叶分裂 → 根分裂使树长高）'});
+  }
+  function btreeDelete(){
+    var t=S.makeBTree(5);
+    [20,40,60,80,100,120,140,160,180,200,220,240,10,30,50,70,90,110,130,150,170,190,210,230,5,15,25,35].forEach(function(k){t.insert(k);});
+    t.log.length=0; t.log.push(startFrame(t,'起始：一棵较丰满的 5 阶 B 树（下限=2 个关键字）'));
+    [230,80,70,30].forEach(function(k){t.delete(k);});
+    new V.Stepper($('demo-btree-delete'),t.log,{caption:'5 阶 B 树 · 删除 230,80,70,30'});
+  }
+  function btreeCollapse(){
+    var t=S.makeBTree(5); for(var k=1;k<=17;k++) t.insert(k);
+    t.log.length=0; t.log.push(startFrame(t,'起始：顺序插入 1–17 得到的 3 层 B 树'));
+    t.delete(6);
+    new V.Stepper($('demo-btree-collapse'),t.log,{caption:'5 阶 B 树 · 删除 6'});
+  }
+  function bplusInsert(){
+    var t=S.makeBPlus(4,4);
+    t.log.push({tree:S.clone(t.root),title:'空树',note:'从空的 B+ 树开始：M=4（内部最多 3 个分隔键），叶 L=4（每叶最多 4 条数据）',flash:[],kind:'bplus'});
+    for(var k=1;k<=16;k++) t.insert(k);
+    new V.Stepper($('demo-bplus-insert'),t.log,{caption:'B+ 树 M=4,L=4 · 顺序插入 1–16'});
+  }
+  function bplusDelete(){
+    var t=S.makeBPlus(4,4); for(var k=1;k<=16;k++) t.insert(k);
+    t.log.length=0; t.log.push(startFrame(t,'起始：插入 1–16 得到的 3 层 B+ 树，叶子已连成单链表'));
+    [11,7,8,9,1,2,3].forEach(function(k){t.delete(k);});
+    new V.Stepper($('demo-bplus-delete'),t.log,{caption:'B+ 树 M=4,L=4 · 删除 11,7,8,9,1,2,3'});
+  }
+
+  /* ---- B 树查找交互 ---- */
+  function buildSearch(){
+    var t=S.makeBTree(5); for(var k=1;k<=17;k++) t.insert(k);
+    var root=t.root, mount=$('demo-btree-search');
+    mount.classList.add('demo');
+    var head=D.createElement('div'); head.className='demo-head';
+    head.innerHTML='<span class="demo-cap">5 阶 B 树（含 1–17）· 点击关键字查找，观察下行路径与磁盘 I/O</span>';
+    mount.appendChild(head);
+    var ctr=D.createElement('div'); ctr.className='search-ctrls';
+    var lbl=D.createElement('span'); lbl.className='lbl'; lbl.textContent='查找：'; ctr.appendChild(lbl);
+    var stage=D.createElement('div'); stage.className='demo-stage';
+    var trace=D.createElement('div'); trace.className='trace';
+    [['13','成功'],['8','成功'],['16','成功'],['6','成功'],['99','失败→F'],['3','失败→F']].forEach(function(pair){
+      var b=D.createElement('button'); b.className='demo-btn'; b.textContent=pair[0]+'（'+pair[1]+'）';
+      b.onclick=function(){show(+pair[0]);}; ctr.appendChild(b);
+    });
+    mount.appendChild(ctr); mount.appendChild(stage); mount.appendChild(trace);
+    function show(key){
+      var info=V.searchPath(root,key,false);
+      stage.innerHTML=''; stage.appendChild(V.drawSVG({tree:root,flash:[],kind:'btree'},{searchInfo:info}));
+      var steps=info.path.map(function(p){return '['+p.node.keys.join(' ')+']';});
+      var tail=info.fail? ' → <span class="f">空叶结点 F（查找失败）</span>' : ' → <b>命中 '+key+'（查找成功）</b>';
+      trace.innerHTML='下行路径：'+steps.join(' → ')+tail+'　|　磁盘 I/O ≈ '+info.path.length+' 次（≈ 树高）';
+    }
+    show(13);
+  }
+
+  /* ---- B+ 叶链表顺序遍历 ---- */
+  function buildTraverse(){
+    var t=S.makeBPlus(4,4); for(var k=1;k<=16;k++) t.insert(k);
+    var root=t.root, mount=$('demo-bplus-traverse');
+    mount.classList.add('demo');
+    var head=D.createElement('div'); head.className='demo-head';
+    head.innerHTML='<span class="demo-cap">B+ 树（含 1–16）· 头指针 → 首叶，沿叶尾指针顺链遍历全部记录</span>';
+    mount.appendChild(head);
+    var ctr=D.createElement('div'); ctr.className='trav-ctrls';
+    var stage=D.createElement('div'); stage.className='demo-stage';
+    var out=D.createElement('div'); out.className='trav-out';
+    var lo=V.layout(root); var leaves=lo.leaves.map(function(p){return p.n;});
+    var pos=0, timer=null;
+    function render(){
+      stage.innerHTML=''; stage.appendChild(V.drawSVG({tree:root,flash:[],kind:'bplus'},{traverseUpto:pos}));
+      var got=[]; for(var i=0;i<=pos && i<leaves.length;i++) got=got.concat(leaves[i].keys);
+      out.innerHTML='已顺序读出：<span class="got">'+(got.length?got.join(', '):'—')+'</span>';
+    }
+    function step(){ if(pos>=leaves.length-1){stop();return;} pos++; render(); }
+    function stop(){ if(timer){clearInterval(timer);timer=null;play.textContent='▶ 顺链遍历';play.classList.remove('on');} }
+    var bReset=D.createElement('button'); bReset.className='demo-btn'; bReset.textContent='⏮ 重置';
+    bReset.onclick=function(){stop();pos=0;render();};
+    var play=D.createElement('button'); play.className='demo-btn play'; play.textContent='▶ 顺链遍历';
+    play.onclick=function(){ if(timer){stop();return;} if(pos>=leaves.length-1)pos=0;
+      play.textContent='⏸ 暂停';play.classList.add('on'); render();
+      timer=setInterval(function(){ if(pos>=leaves.length-1){stop();}else{pos++;render();} },1100); };
+    var bNext=D.createElement('button'); bNext.className='demo-btn'; bNext.textContent='下一叶 ▶'; bNext.onclick=function(){stop();step();};
+    ctr.appendChild(bReset); ctr.appendChild(play); ctr.appendChild(bNext);
+    mount.appendChild(ctr); mount.appendChild(stage); mount.appendChild(out);
+    render();
+  }
+
+  /* ---- 滚动高亮 TOC ---- */
+  function scrollSpy(){
+    var links={}; D.querySelectorAll('nav.toc a').forEach(function(a){links[a.getAttribute('href').slice(1)]=a;});
+    var obs=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){
+        Object.values(links).forEach(function(a){a.classList.remove('active');});
+        if(links[e.target.id]) links[e.target.id].classList.add('active');
+      }});
+    },{rootMargin:'-20% 0px -70% 0px'});
+    D.querySelectorAll('section.block').forEach(function(s){obs.observe(s);});
+  }
+
+  function init(){
+    btreeInsert(); btreeDelete(); btreeCollapse();
+    bplusInsert(); bplusDelete();
+    buildSearch(); buildTraverse(); scrollSpy();
+  }
+  if(D.readyState!=='loading') init(); else D.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+</body>
+</html>

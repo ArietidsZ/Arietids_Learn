@@ -1,0 +1,954 @@
+{
+  "released": "2026-10-26",
+  "courses": [
+    {
+      "id": "analysis-1",
+      "title": "数学分析 I",
+      "code": "ANALYSIS I",
+      "coverage": "第 5–8 章：不定积分、定积分、广义积分与数项级数",
+      "summary": "从积分方法到收敛判别。",
+      "notes": [
+        {
+          "title": "第5章 不定积分",
+          "shortTitle": "第5章 不定积分",
+          "slug": "courses/analysis-1/chapter-05",
+          "quick": false,
+          "code": "5",
+          "source": "数学分析 I/Summary/MA C5.md",
+          "sourceSha256": "1485ea98e1deff3d599d1983a511647cae4da5eaba5c4c679bf07fbcee8163e3",
+          "download": "/downloads/analysis-1/chapter-05.md"
+        },
+        {
+          "title": "第6章 定积分",
+          "shortTitle": "第6章 定积分",
+          "slug": "courses/analysis-1/chapter-06",
+          "quick": false,
+          "code": "6",
+          "source": "数学分析 I/Summary/MA C6.md",
+          "sourceSha256": "9cfc183f4ce305b3748e12b782711a6866657a48aa0e2f865e5948ca74f96088",
+          "download": "/downloads/analysis-1/chapter-06.md"
+        },
+        {
+          "title": "第7章 广义积分",
+          "shortTitle": "第7章 广义积分",
+          "slug": "courses/analysis-1/chapter-07",
+          "quick": false,
+          "code": "7",
+          "source": "数学分析 I/Summary/MA C7.md",
+          "sourceSha256": "62110940da2302aa4f900c6d2e9bc752deef50948eb2a81b4a494f1ff97085e7",
+          "download": "/downloads/analysis-1/chapter-07.md"
+        },
+        {
+          "title": "第8章 数项级数",
+          "shortTitle": "第8章 数项级数",
+          "slug": "courses/analysis-1/chapter-08",
+          "quick": false,
+          "code": "8",
+          "source": "数学分析 I/Summary/MA C8.md",
+          "sourceSha256": "75b7ab7202cb2f446f8b5aceb63e4b99ee1a25eda40b55d06594af5a8e3f9991",
+          "download": "/downloads/analysis-1/chapter-08.md"
+        }
+      ]
+    },
+    {
+      "id": "analysis-2",
+      "title": "数学分析 II",
+      "code": "ANALYSIS II",
+      "coverage": "第 12–15 章：曲线与曲面积分、函数项级数和 Fourier 级数",
+      "summary": "沿曲线、曲面积分，理解函数展开。",
+      "notes": [
+        {
+          "title": "Chap 12 第一类线面积分",
+          "shortTitle": "Chap 12 第一类线面积分",
+          "slug": "courses/analysis-2/chapter-12",
+          "quick": false,
+          "code": "12",
+          "source": "数学分析 II/MA_C12.md",
+          "sourceSha256": "12acad1d982ad2f117647bf5a70c4d42d91f561453671c9beefcafbf14bc5b41",
+          "download": "/downloads/analysis-2/chapter-12.md"
+        },
+        {
+          "title": "Chap 12 第一类线面积分(速览)",
+          "shortTitle": "Chap 12 第一类线面积分 · 速览",
+          "slug": "courses/analysis-2/chapter-12-quick",
+          "quick": true,
+          "code": "12",
+          "source": "数学分析 II/MA_C12T.md",
+          "sourceSha256": "047d18135b8e6479b5377c94018140c4235231b619af110853681bceea3e1522",
+          "download": "/downloads/analysis-2/chapter-12-quick.md"
+        },
+        {
+          "title": "Chap 13 第二类曲线和曲面积分",
+          "shortTitle": "Chap 13 第二类曲线和曲面积分",
+          "slug": "courses/analysis-2/chapter-13",
+          "quick": false,
+          "code": "13",
+          "source": "数学分析 II/MA_C13.md",
+          "sourceSha256": "8b07ccdf57376fccf5cc680b96135ae5cbab1d8b4038a94c7fa05509199f9ba9",
+          "download": "/downloads/analysis-2/chapter-13.md"
+        },
+        {
+          "title": "Chap 13 第二类曲线和曲面积分（速览）",
+          "shortTitle": "Chap 13 第二类曲线和曲面积分 · 速览",
+          "slug": "courses/analysis-2/chapter-13-quick",
+          "quick": true,
+          "code": "13",
+          "source": "数学分析 II/MA_C13T.md",
+          "sourceSha256": "c239cb986225e071afb75615fcc3de6a5d060bd7e781e35e25b9eb5ea29c7c4e",
+          "download": "/downloads/analysis-2/chapter-13-quick.md"
+        },
+        {
+          "title": "Chap 14 函数项级数",
+          "shortTitle": "Chap 14 函数项级数",
+          "slug": "courses/analysis-2/chapter-14",
+          "quick": false,
+          "code": "14",
+          "source": "数学分析 II/MA_C14.md",
+          "sourceSha256": "50dab97decc477855348da7c4c6f2197a1ab49436d2a5b8077bb739cd21a29c0",
+          "download": "/downloads/analysis-2/chapter-14.md"
+        },
+        {
+          "title": "Chap 14 函数项级数 · 速览",
+          "shortTitle": "Chap 14 函数项级数 · 速览",
+          "slug": "courses/analysis-2/chapter-14-quick",
+          "quick": true,
+          "code": "14",
+          "source": "数学分析 II/MA_C14T.md",
+          "sourceSha256": "b47bb46708e45f96a8f4ceda4380c5b53b1af6b6397451864aa01cb6514f77eb",
+          "download": "/downloads/analysis-2/chapter-14-quick.md"
+        },
+        {
+          "title": "Chap 15 Fourier 级数（15.1–15.3）",
+          "shortTitle": "Chap 15 Fourier 级数（15.1–15.3）",
+          "slug": "courses/analysis-2/chapter-15",
+          "quick": false,
+          "code": "15",
+          "source": "数学分析 II/MA_C15.md",
+          "sourceSha256": "cee052070628ae8f160b4385d2a8c8b0e3c06a1515037acde6182c0a6acaf1e4",
+          "download": "/downloads/analysis-2/chapter-15.md"
+        },
+        {
+          "title": "Chap 15 Fourier 级数（15.1–15.3 速览）",
+          "shortTitle": "Chap 15 Fourier 级数 · 速览",
+          "slug": "courses/analysis-2/chapter-15-quick",
+          "quick": true,
+          "code": "15",
+          "source": "数学分析 II/MA_C15T.md",
+          "sourceSha256": "d8139b9563755ceb8a4790d17951482831cc5f7b1728e4c635d1d0709cb8c6fc",
+          "download": "/downloads/analysis-2/chapter-15-quick.md"
+        }
+      ]
+    },
+    {
+      "id": "linear-algebra",
+      "title": "线性代数",
+      "code": "LINEAR ALGEBRA",
+      "coverage": "矩阵、行列式、向量空间、特征值、Jordan 标准形与二次型",
+      "summary": "把矩阵运算与空间结构联系起来。",
+      "notes": [
+        {
+          "title": "线性代数预备知识（第1-5讲）",
+          "shortTitle": "预备知识（第1-5讲）",
+          "slug": "courses/linear-algebra/chapter-1s0",
+          "quick": false,
+          "code": "1S0",
+          "source": "线性代数/Summary/LA C1S0.md",
+          "sourceSha256": "62f7d13b9ce0cc01e5fc6f5a2c2477f938c4ec3de35f9137faa0429ddea82bd8",
+          "download": "/downloads/linear-algebra/chapter-1s0.md"
+        },
+        {
+          "title": "第6讲：矩阵的概念 & 第7讲：矩阵的运算",
+          "shortTitle": "第6讲：矩阵的概念 & 第7讲：矩阵的运算",
+          "slug": "courses/linear-algebra/chapter-1s1",
+          "quick": false,
+          "code": "1S1",
+          "source": "线性代数/Summary/LA C1S1.md",
+          "sourceSha256": "b18bf63d9f85dbcee30bf96bc384e303cfa2aeb97c43edb552a87c31e51c803e",
+          "download": "/downloads/linear-algebra/chapter-1s1.md"
+        },
+        {
+          "title": "第8-9讲：行列式的定义与性质",
+          "shortTitle": "第8-9讲：行列式的定义与性质",
+          "slug": "courses/linear-algebra/chapter-1s2",
+          "quick": false,
+          "code": "1S2",
+          "source": "线性代数/Summary/LA C1S2.md",
+          "sourceSha256": "dec3a0fdfec0294e5280ffa9a56c6d94cc604657d63ec3b1446b184652c14a6d",
+          "download": "/downloads/linear-algebra/chapter-1s2.md"
+        },
+        {
+          "title": "第10-11讲：行列式按行（列）展开与拉普拉斯定理",
+          "shortTitle": "第10-11讲：行列式按行（列）展开与拉普拉斯定理",
+          "slug": "courses/linear-algebra/chapter-1s3",
+          "quick": false,
+          "code": "1S3",
+          "source": "线性代数/Summary/LA C1S3.md",
+          "sourceSha256": "b0a90909e4c59e37a227b25d62cc4b7d6688206a7dde3c7b4e6dca385dafb411",
+          "download": "/downloads/linear-algebra/chapter-1s3.md"
+        },
+        {
+          "title": "第12-13讲：可逆矩阵与克莱姆法则",
+          "shortTitle": "第12-13讲：可逆矩阵与克莱姆法则",
+          "slug": "courses/linear-algebra/chapter-1s4",
+          "quick": false,
+          "code": "1S4",
+          "source": "线性代数/Summary/LA C1S4.md",
+          "sourceSha256": "283471a4c9a7270ba62ee07b61584a36580f16f9032b42d7771620f1aca76f9a",
+          "download": "/downloads/linear-algebra/chapter-1s4.md"
+        },
+        {
+          "title": "第14讲：矩阵的分块",
+          "shortTitle": "第14讲：矩阵的分块",
+          "slug": "courses/linear-algebra/chapter-2s1",
+          "quick": false,
+          "code": "2S1",
+          "source": "线性代数/Summary/LA C2S1.md",
+          "sourceSha256": "3d0a297414cc9c402d978378e8ce8ec5437354b6c40cc3db45b6352cc9d78bb0",
+          "download": "/downloads/linear-algebra/chapter-2s1.md"
+        },
+        {
+          "title": "第15-16讲：矩阵初等变换与初等矩阵",
+          "shortTitle": "第15-16讲：矩阵初等变换与初等矩阵",
+          "slug": "courses/linear-algebra/chapter-2s2",
+          "quick": false,
+          "code": "2S2",
+          "source": "线性代数/Summary/LA C2S2.md",
+          "sourceSha256": "26122c7af87f933334c5d1917b5828b30a8319bf97b9f2893d4151954f8efb4b",
+          "download": "/downloads/linear-algebra/chapter-2s2.md"
+        },
+        {
+          "title": "线性代数知识集锦：矩阵的秩与线性方程组",
+          "shortTitle": "知识集锦：矩阵的秩与线性方程组",
+          "slug": "courses/linear-algebra/chapter-2s3",
+          "quick": false,
+          "code": "2S3",
+          "source": "线性代数/Summary/LA C2S3.md",
+          "sourceSha256": "73c49e5c74b746bed52791d2d2078d464340b2a67d67a6f4b2587deabb882be0",
+          "download": "/downloads/linear-algebra/chapter-2s3.md"
+        },
+        {
+          "title": "第20-23讲：n维向量空间与向量组的秩",
+          "shortTitle": "第20-23讲：n维向量空间与向量组的秩",
+          "slug": "courses/linear-algebra/chapter-2s4",
+          "quick": false,
+          "code": "2S4",
+          "source": "线性代数/Summary/LA C2S4.md",
+          "sourceSha256": "269cf158f5fcc0ac3912946ceb75fc1b40699aa05d817d9c505d2ba0eeb0bf7a",
+          "download": "/downloads/linear-algebra/chapter-2s4.md"
+        },
+        {
+          "title": "第25-26讲：特征值与特征向量性质",
+          "shortTitle": "第25-26讲：特征值与特征向量性质",
+          "slug": "courses/linear-algebra/chapter-3s1",
+          "quick": false,
+          "code": "3S1",
+          "source": "线性代数/Summary/LA C3S1.md",
+          "sourceSha256": "d3696de69600fcddd231471a5f419f867bd3eedb08f8dc19bf104982d92786bc",
+          "download": "/downloads/linear-algebra/chapter-3s1.md"
+        },
+        {
+          "title": "第27讲：相似矩阵与矩阵的相似对角阵",
+          "shortTitle": "第27讲：相似矩阵与矩阵的相似对角阵",
+          "slug": "courses/linear-algebra/chapter-3s2",
+          "quick": false,
+          "code": "3S2",
+          "source": "线性代数/Summary/LA C3S2.md",
+          "sourceSha256": "a79930d98a38ad197bddd5c40aa616ce00c13901a224797819c988da2641a9cf",
+          "download": "/downloads/linear-algebra/chapter-3s2.md"
+        },
+        {
+          "title": "第28讲：方阵的Jordan标准形与最小多项式",
+          "shortTitle": "第28讲：方阵的Jordan标准形与最小多项式",
+          "slug": "courses/linear-algebra/chapter-3s3",
+          "quick": false,
+          "code": "3S3",
+          "source": "线性代数/Summary/LA C3S3.md",
+          "sourceSha256": "af5a7cd2cc2ae787a61fe78991872768ab5fc70e5d13e41e6edb8497f68843d4",
+          "download": "/downloads/linear-algebra/chapter-3s3.md"
+        },
+        {
+          "title": "第30-31讲：实二次型与正定二次型",
+          "shortTitle": "第30-31讲：实二次型与正定二次型",
+          "slug": "courses/linear-algebra/chapter-4h1",
+          "quick": false,
+          "code": "4H1",
+          "source": "线性代数/Summary/LA C4H1.md",
+          "sourceSha256": "b72a0883dc5e2d8bdb4481c429848c086570db588d5b311a5ff368eb956cce52",
+          "download": "/downloads/linear-algebra/chapter-4h1.md"
+        },
+        {
+          "title": "线性代数知识集锦：第32-34讲",
+          "shortTitle": "知识集锦：第32-34讲",
+          "slug": "courses/linear-algebra/chapter-4h2",
+          "quick": false,
+          "code": "4H2",
+          "source": "线性代数/Summary/LA C4H2.md",
+          "sourceSha256": "e668575ceefc3105fc502d810d7335680c7d4bce56410a2a11c2945a63b2326b",
+          "download": "/downloads/linear-algebra/chapter-4h2.md"
+        },
+        {
+          "title": "线性空间（第35、36、38讲）",
+          "shortTitle": "线性空间（第35、36、38讲）",
+          "slug": "courses/linear-algebra/chapter-5h1",
+          "quick": false,
+          "code": "5H1",
+          "source": "线性代数/Summary/LA C5H1.md",
+          "sourceSha256": "4dc309e775e7cbeac3350c9e7193f4a4b97f45f6ee4e5713b69de1917c4b4172",
+          "download": "/downloads/linear-algebra/chapter-5h1.md"
+        },
+        {
+          "title": "第37讲：欧氏空间",
+          "shortTitle": "第37讲：欧氏空间",
+          "slug": "courses/linear-algebra/chapter-5h2",
+          "quick": false,
+          "code": "5H2",
+          "source": "线性代数/Summary/LA C5H2.md",
+          "sourceSha256": "db75cc21f5347a9abc1e39a8827d941c2a1f257c66f115004016f36a007d2aaf",
+          "download": "/downloads/linear-algebra/chapter-5h2.md"
+        }
+      ]
+    },
+    {
+      "id": "physics",
+      "title": "大学物理",
+      "code": "PHYSICS",
+      "coverage": "第 1–10 章：力学、相对论、振动与波、气体动理论及热力学",
+      "summary": "梳理物理模型、适用条件和计算方法。",
+      "notes": [
+        {
+          "title": "第1章 质点运动学",
+          "shortTitle": "第1章 质点运动学",
+          "slug": "courses/physics/chapter-01",
+          "quick": false,
+          "code": "1",
+          "source": "大学物理/PH_C1.md",
+          "sourceSha256": "9c073cdcf431264360799fb9aeaf704df481915ad21517e5e5b2c26e15f60e9c",
+          "download": "/downloads/physics/chapter-01.md"
+        },
+        {
+          "title": "第1章 质点运动学（速览）",
+          "shortTitle": "第1章 质点运动学 · 速览",
+          "slug": "courses/physics/chapter-01-quick",
+          "quick": true,
+          "code": "1",
+          "source": "大学物理/PH_C1T.md",
+          "sourceSha256": "7d5624b7f0dd658813b2779e857a440c6a5da087b7126ec5ca0dde547b0a572d",
+          "download": "/downloads/physics/chapter-01-quick.md"
+        },
+        {
+          "title": "第2章 质点动力学",
+          "shortTitle": "第2章 质点动力学",
+          "slug": "courses/physics/chapter-02",
+          "quick": false,
+          "code": "2",
+          "source": "大学物理/PH_C2.md",
+          "sourceSha256": "5dda1168e458baa0b4b9fd46726473de8bf5b351bbbbffbc53d0eea765a3f52a",
+          "download": "/downloads/physics/chapter-02.md"
+        },
+        {
+          "title": "第2章 质点动力学 · 速览",
+          "shortTitle": "第2章 质点动力学 · 速览",
+          "slug": "courses/physics/chapter-02-quick",
+          "quick": true,
+          "code": "2",
+          "source": "大学物理/PH_C2T.md",
+          "sourceSha256": "6ced2af4e3bf83ecf4e77815990dda520659c31cd124d2b3e8429dea2bc33744",
+          "download": "/downloads/physics/chapter-02-quick.md"
+        },
+        {
+          "title": "第3章 狭义相对论",
+          "shortTitle": "第3章 狭义相对论",
+          "slug": "courses/physics/chapter-03",
+          "quick": false,
+          "code": "3",
+          "source": "大学物理/PH_C3.md",
+          "sourceSha256": "af8f8c76e8116d63352f6b033ff532ce0b12f6e8d66b02c1169d1c7313c522ca",
+          "download": "/downloads/physics/chapter-03.md"
+        },
+        {
+          "title": "第3章 狭义相对论 · 速览",
+          "shortTitle": "第3章 狭义相对论 · 速览",
+          "slug": "courses/physics/chapter-03-quick",
+          "quick": true,
+          "code": "3",
+          "source": "大学物理/PH_C3T.md",
+          "sourceSha256": "a82362052c9431eb7acb12006f42026625a38d35cd776fd13ad0197e9e670cad",
+          "download": "/downloads/physics/chapter-03-quick.md"
+        },
+        {
+          "title": "大学物理 第4章 功和能",
+          "shortTitle": "第4章 功和能",
+          "slug": "courses/physics/chapter-04",
+          "quick": false,
+          "code": "4",
+          "source": "大学物理/PH_C4.md",
+          "sourceSha256": "ca7edbf25f12e9c49229f8994fb57285f0e4f4ad32c878b5775db5f47a1c73f9",
+          "download": "/downloads/physics/chapter-04.md"
+        },
+        {
+          "title": "大学物理 第4章 功和能 · 速览版",
+          "shortTitle": "第4章 功和能 · 速览",
+          "slug": "courses/physics/chapter-04-quick",
+          "quick": true,
+          "code": "4",
+          "source": "大学物理/PH_C4T.md",
+          "sourceSha256": "cca8aa9f00af3af7c68701f6645b3e1c0b2de6ebe4559a880ff8cde61856363f",
+          "download": "/downloads/physics/chapter-04-quick.md"
+        },
+        {
+          "title": "第五章 动量和角动量 · 复习资料",
+          "shortTitle": "第五章 动量和角动量 · 复习资料",
+          "slug": "courses/physics/chapter-05",
+          "quick": false,
+          "code": "5",
+          "source": "大学物理/PH_C5.md",
+          "sourceSha256": "330c3203b007205e162ddd52ab973c998f7a39b0f9594c578c0e47e6ddf75c6f",
+          "download": "/downloads/physics/chapter-05.md"
+        },
+        {
+          "title": "第五章 动量和角动量 · 速览",
+          "shortTitle": "第五章 动量和角动量 · 速览",
+          "slug": "courses/physics/chapter-05-quick",
+          "quick": true,
+          "code": "5",
+          "source": "大学物理/PH_C5T.md",
+          "sourceSha256": "6588be62796adf9bd54587a1f9ad8c43c578749e7a548d81d124dec6d477cf36",
+          "download": "/downloads/physics/chapter-05-quick.md"
+        },
+        {
+          "title": "第6章 刚体力学基础",
+          "shortTitle": "第6章 刚体力学基础",
+          "slug": "courses/physics/chapter-06",
+          "quick": false,
+          "code": "6",
+          "source": "大学物理/PH_C6.md",
+          "sourceSha256": "d50e25dc5e51608a36cb14b8e590daee8477c11c379a808ffd2ae53fd60861be",
+          "download": "/downloads/physics/chapter-06.md"
+        },
+        {
+          "title": "第6章 刚体力学基础 · 速览",
+          "shortTitle": "第6章 刚体力学基础 · 速览",
+          "slug": "courses/physics/chapter-06-quick",
+          "quick": true,
+          "code": "6",
+          "source": "大学物理/PH_C6T.md",
+          "sourceSha256": "70066836ebc5bdc2328bb36a821aaa1ebf16863a953e11720e8b929e57c2c7ef",
+          "download": "/downloads/physics/chapter-06-quick.md"
+        },
+        {
+          "title": "第7章 振动力学基础",
+          "shortTitle": "第7章 振动力学基础",
+          "slug": "courses/physics/chapter-07",
+          "quick": false,
+          "code": "7",
+          "source": "大学物理/PH_C7.md",
+          "sourceSha256": "21ca6b4a2a37b0d1db274d6166a38828c055b88cc8b3748ee5a33c37a4445a92",
+          "download": "/downloads/physics/chapter-07.md"
+        },
+        {
+          "title": "第7章 振动力学基础 · 速览",
+          "shortTitle": "第7章 振动力学基础 · 速览",
+          "slug": "courses/physics/chapter-07-quick",
+          "quick": true,
+          "code": "7",
+          "source": "大学物理/PH_C7T.md",
+          "sourceSha256": "23fd123b1393544f4358b86d640cd84dda151f63a939d81fe3bb201a7a52c276",
+          "download": "/downloads/physics/chapter-07-quick.md"
+        },
+        {
+          "title": "第8章 机械波",
+          "shortTitle": "第8章 机械波",
+          "slug": "courses/physics/chapter-08",
+          "quick": false,
+          "code": "8",
+          "source": "大学物理/PH_C8.md",
+          "sourceSha256": "72909d5745943449646ee1a2db230ba57a6b3f64b2387d3cf6a9d80ce39ee66e",
+          "download": "/downloads/physics/chapter-08.md"
+        },
+        {
+          "title": "第8章 机械波（速览）",
+          "shortTitle": "第8章 机械波 · 速览",
+          "slug": "courses/physics/chapter-08-quick",
+          "quick": true,
+          "code": "8",
+          "source": "大学物理/PH_C8T.md",
+          "sourceSha256": "625a411d93a2e3882c1510bcbde3b9d8137addc0a338d22b215bf7b3e9b5b270",
+          "download": "/downloads/physics/chapter-08-quick.md"
+        },
+        {
+          "title": "第9章 热力学平衡态（气体动理论）",
+          "shortTitle": "第9章 热力学平衡态（气体动理论）",
+          "slug": "courses/physics/chapter-09",
+          "quick": false,
+          "code": "9",
+          "source": "大学物理/PH_C9.md",
+          "sourceSha256": "909543467dc92d26f557c700adec94d6248c9952b56f64213e38e9ca63a4c3e5",
+          "download": "/downloads/physics/chapter-09.md"
+        },
+        {
+          "title": "第9章 热力学平衡态（气体动理论）·速览",
+          "shortTitle": "第9章 热力学平衡态（气体动理论） · 速览",
+          "slug": "courses/physics/chapter-09-quick",
+          "quick": true,
+          "code": "9",
+          "source": "大学物理/PH_C9T.md",
+          "sourceSha256": "09e64a9bd83a2e0dce1de3ba56728f0dabaa6387b37995f6d8d148d203ab2336",
+          "download": "/downloads/physics/chapter-09-quick.md"
+        },
+        {
+          "title": "第10章 热力学定律",
+          "shortTitle": "第10章 热力学定律",
+          "slug": "courses/physics/chapter-10",
+          "quick": false,
+          "code": "10",
+          "source": "大学物理/PH_C10.md",
+          "sourceSha256": "6c5817000a8ffff9c62c1385702c02265b9fba1bb194fe451a4059b2e7c324da",
+          "download": "/downloads/physics/chapter-10.md"
+        },
+        {
+          "title": "第10章 热力学定律 · 速览",
+          "shortTitle": "第10章 热力学定律 · 速览",
+          "slug": "courses/physics/chapter-10-quick",
+          "quick": true,
+          "code": "10",
+          "source": "大学物理/PH_C10T.md",
+          "sourceSha256": "99676042c57e6ba444fe1d57b058ff91008bc0980e1bd63ce08d46b9f2445cfe",
+          "download": "/downloads/physics/chapter-10-quick.md"
+        }
+      ]
+    },
+    {
+      "id": "programming",
+      "title": "程序设计",
+      "code": "PROGRAMMING",
+      "coverage": "第 1–10、12、14 章：C++ 基础、函数、数组、指针、类、继承与输入输出",
+      "summary": "用概念、代码与例题回看 C++ 基础。",
+      "notes": [
+        {
+          "title": "第一章 绪论",
+          "shortTitle": "第一章 绪论",
+          "slug": "courses/programming/chapter-01",
+          "quick": false,
+          "code": "1",
+          "source": "程序设计/Summary/FP C1.md",
+          "sourceSha256": "4bb5e91aced2f4eea513e3a772fe7137bb3595beac585c1f745b0c5a1a075afa",
+          "download": "/downloads/programming/chapter-01.md"
+        },
+        {
+          "title": "第二章 程序的基本组成",
+          "shortTitle": "第二章 程序的基本组成",
+          "slug": "courses/programming/chapter-02",
+          "quick": false,
+          "code": "2",
+          "source": "程序设计/Summary/FP C2.md",
+          "sourceSha256": "3d73543c304a2175bc888e0a51905b7defa7fed74ecb131a575edbb81c387d4a",
+          "download": "/downloads/programming/chapter-02.md"
+        },
+        {
+          "title": "第三章 分支程序设计",
+          "shortTitle": "第三章 分支程序设计",
+          "slug": "courses/programming/chapter-03",
+          "quick": false,
+          "code": "3",
+          "source": "程序设计/Summary/FP C3.md",
+          "sourceSha256": "097a8cbced767a9b745a4114a89d1ffa1f97fd88eaddf8f7669e9469f1e4b5d8",
+          "download": "/downloads/programming/chapter-03.md"
+        },
+        {
+          "title": "第四章 循环控制",
+          "shortTitle": "第四章 循环控制",
+          "slug": "courses/programming/chapter-04",
+          "quick": false,
+          "code": "4",
+          "source": "程序设计/Summary/FP C4.md",
+          "sourceSha256": "59f3020776f4f732aaa3b3bce82d7f2d451258700706aa20b17d19a3f552f593",
+          "download": "/downloads/programming/chapter-04.md"
+        },
+        {
+          "title": "第五章 函数",
+          "shortTitle": "第五章 函数",
+          "slug": "courses/programming/chapter-05",
+          "quick": false,
+          "code": "5",
+          "source": "程序设计/Summary/FP C5.md",
+          "sourceSha256": "0ccef7e1a01f1ba5ae5c16eb0c6fd13af745d394dc6607696048ecd2cd669491",
+          "download": "/downloads/programming/chapter-05.md"
+        },
+        {
+          "title": "第六章 数组",
+          "shortTitle": "第六章 数组",
+          "slug": "courses/programming/chapter-06",
+          "quick": false,
+          "code": "6",
+          "source": "程序设计/Summary/FP C6.md",
+          "sourceSha256": "3849bfe3e3d5f45249f0b4d1dd71c0d15df0f7eac5891f5a5d63b004cf4c397e",
+          "download": "/downloads/programming/chapter-06.md"
+        },
+        {
+          "title": "第七章 指针",
+          "shortTitle": "第七章 指针",
+          "slug": "courses/programming/chapter-07",
+          "quick": false,
+          "code": "7",
+          "source": "程序设计/Summary/FP C7.md",
+          "sourceSha256": "306191392d97ed31e299a26aa6b35afa9650cdcdd945b5f95eeedeb87aa7d84e",
+          "download": "/downloads/programming/chapter-07.md"
+        },
+        {
+          "title": "第八章 结构体",
+          "shortTitle": "第八章 结构体",
+          "slug": "courses/programming/chapter-08",
+          "quick": false,
+          "code": "8",
+          "source": "程序设计/Summary/FP C8.md",
+          "sourceSha256": "a2ff1f2f19478612f0350c2b57a30eef53ef3a60d29a1358720199d97ba7c134",
+          "download": "/downloads/programming/chapter-08.md"
+        },
+        {
+          "title": "第九章 模块化开发",
+          "shortTitle": "第九章 模块化开发",
+          "slug": "courses/programming/chapter-09",
+          "quick": false,
+          "code": "9",
+          "source": "程序设计/Summary/FP C9.md",
+          "sourceSha256": "e2c6bdcde0bd7fcd80a4bf7cc91225785a534f47c538bfbc24ee99b041659a07",
+          "download": "/downloads/programming/chapter-09.md"
+        },
+        {
+          "title": "第十章 自定义类型（类）",
+          "shortTitle": "第十章 自定义类型（类）",
+          "slug": "courses/programming/chapter-10",
+          "quick": false,
+          "code": "10",
+          "source": "程序设计/Summary/FP C10.md",
+          "sourceSha256": "e1c925d2701bb28a10a142c55eb3add82b5c0d9caabbf620bbcb0ca933b22cd6",
+          "download": "/downloads/programming/chapter-10.md"
+        },
+        {
+          "title": "第十二章 组合与继承",
+          "shortTitle": "第十二章 组合与继承",
+          "slug": "courses/programming/chapter-12",
+          "quick": false,
+          "code": "12",
+          "source": "程序设计/Summary/FP C12.md",
+          "sourceSha256": "de1b26f85b1af2d464712c511ac5073d4e245df112f2e7cfa04f4750d747ff92",
+          "download": "/downloads/programming/chapter-12.md"
+        },
+        {
+          "title": "第十四章 输入输出",
+          "shortTitle": "第十四章 输入输出",
+          "slug": "courses/programming/chapter-14",
+          "quick": false,
+          "code": "14",
+          "source": "程序设计/Summary/FP C14.md",
+          "sourceSha256": "3b0550c1f0249eb5c4d40c53308b592299eed1885040285c430499e913bd6a97",
+          "download": "/downloads/programming/chapter-14.md"
+        }
+      ]
+    },
+    {
+      "id": "data-structures",
+      "title": "数据结构",
+      "code": "DATA STRUCTURES",
+      "coverage": "第 0–7 章：绪论、线性表、栈与队列、树、图、查找和排序",
+      "summary": "从数据组织到操作过程与复杂度。",
+      "notes": [
+        {
+          "title": "数据结构 · 第〇章 引言",
+          "shortTitle": "第〇章 引言",
+          "slug": "courses/data-structures/chapter-00",
+          "quick": false,
+          "code": "0",
+          "source": "数据结构/DS_C0.md",
+          "sourceSha256": "ff71abe8ee50c458972d93120617bfddd45507408868b79a18b96fdedc65eac9",
+          "download": "/downloads/data-structures/chapter-00.md"
+        },
+        {
+          "title": "数据结构 · 第〇章 引言（速览）",
+          "shortTitle": "第〇章 引言 · 速览",
+          "slug": "courses/data-structures/chapter-00-quick",
+          "quick": true,
+          "code": "0",
+          "source": "数据结构/DS_C0T.md",
+          "sourceSha256": "e4b748f9bc6901d44c7a84d555b9c8525f9e1ab961db72d16ab9ef683edeb650",
+          "download": "/downloads/data-structures/chapter-00-quick.md"
+        },
+        {
+          "title": "数据结构 第一章 绪论",
+          "shortTitle": "第一章 绪论",
+          "slug": "courses/data-structures/chapter-01",
+          "quick": false,
+          "code": "1",
+          "source": "数据结构/DS_C1.md",
+          "sourceSha256": "389168cc077b13f86104946e32ad5044d3cd1a210a101c0d4e40b6461b33708a",
+          "download": "/downloads/data-structures/chapter-01.md"
+        },
+        {
+          "title": "数据结构 第一章 绪论 · 速览",
+          "shortTitle": "第一章 绪论 · 速览",
+          "slug": "courses/data-structures/chapter-01-quick",
+          "quick": true,
+          "code": "1",
+          "source": "数据结构/DS_C1T.md",
+          "sourceSha256": "81850c03cae10fa6886b32eea32049b92fc8255e10357970a8bc968dbd8da97b",
+          "download": "/downloads/data-structures/chapter-01-quick.md"
+        },
+        {
+          "title": "数据结构 第二章 线性表",
+          "shortTitle": "第二章 线性表",
+          "slug": "courses/data-structures/chapter-02",
+          "quick": false,
+          "code": "2",
+          "source": "数据结构/DS_C2.md",
+          "sourceSha256": "50b262b29312d0a491fb2b58289c0641d816b5c88ecd36b711dd55ebbcbc900d",
+          "download": "/downloads/data-structures/chapter-02.md"
+        },
+        {
+          "title": "数据结构 第二章 线性表 · 速览",
+          "shortTitle": "第二章 线性表 · 速览",
+          "slug": "courses/data-structures/chapter-02-quick",
+          "quick": true,
+          "code": "2",
+          "source": "数据结构/DS_C2T.md",
+          "sourceSha256": "3468742719384c0dd55974f3b33386ad9144030d37170d3b37731b66107d430e",
+          "download": "/downloads/data-structures/chapter-02-quick.md"
+        },
+        {
+          "title": "第三章 栈和队列",
+          "shortTitle": "第三章 栈和队列",
+          "slug": "courses/data-structures/chapter-03",
+          "quick": false,
+          "code": "3",
+          "source": "数据结构/DS_C3.md",
+          "sourceSha256": "7daff44eef6d1e59a91acca7dd4a007a71b28b1820e288b84d3141c2c6695918",
+          "download": "/downloads/data-structures/chapter-03.md"
+        },
+        {
+          "title": "第三章 栈和队列 · 速览",
+          "shortTitle": "第三章 栈和队列 · 速览",
+          "slug": "courses/data-structures/chapter-03-quick",
+          "quick": true,
+          "code": "3",
+          "source": "数据结构/DS_C3T.md",
+          "sourceSha256": "ed08c5850eebb758ba458de530a5363d201b42e5aeea82ad016f2aca920f18e3",
+          "download": "/downloads/data-structures/chapter-03-quick.md"
+        },
+        {
+          "title": "数据结构 第四章 树",
+          "shortTitle": "第四章 树",
+          "slug": "courses/data-structures/chapter-04",
+          "quick": false,
+          "code": "4",
+          "source": "数据结构/DS_C4.md",
+          "sourceSha256": "c7e9c58b45b9009343b554cf131a501113563cd6443576908d32dee44529603c",
+          "download": "/downloads/data-structures/chapter-04.md"
+        },
+        {
+          "title": "数据结构 第四章 树(速览)",
+          "shortTitle": "第四章 树 · 速览",
+          "slug": "courses/data-structures/chapter-04-quick",
+          "quick": true,
+          "code": "4",
+          "source": "数据结构/DS_C4T.md",
+          "sourceSha256": "9fea48379d4134cb3ef969dc06666f042190f74140af94474d6157099f1b2346",
+          "download": "/downloads/data-structures/chapter-04-quick.md"
+        },
+        {
+          "title": "第五章 图",
+          "shortTitle": "第五章 图",
+          "slug": "courses/data-structures/chapter-05",
+          "quick": false,
+          "code": "5",
+          "source": "数据结构/DS_C5.md",
+          "sourceSha256": "a39cba5c6c188543f78326594c2284cc2223477b9b6eccabb72c6748ad7935b5",
+          "download": "/downloads/data-structures/chapter-05.md"
+        },
+        {
+          "title": "第五章 图 · 速览",
+          "shortTitle": "第五章 图 · 速览",
+          "slug": "courses/data-structures/chapter-05-quick",
+          "quick": true,
+          "code": "5",
+          "source": "数据结构/DS_C5T.md",
+          "sourceSha256": "78d1c0c84fff9e9f5882adb9ba4daf6f83fb250fd0d5be42b5ce2a1b2259366f",
+          "download": "/downloads/data-structures/chapter-05-quick.md"
+        },
+        {
+          "title": "第六章 查找",
+          "shortTitle": "第六章 查找",
+          "slug": "courses/data-structures/chapter-06",
+          "quick": false,
+          "code": "6",
+          "source": "数据结构/DS_C6.md",
+          "sourceSha256": "c30d71ef5d92e9dc6241476d798f269465866d89d9eed042f3efe7262c5efe6e",
+          "download": "/downloads/data-structures/chapter-06.md"
+        },
+        {
+          "title": "第六章 查找 · 速览",
+          "shortTitle": "第六章 查找 · 速览",
+          "slug": "courses/data-structures/chapter-06-quick",
+          "quick": true,
+          "code": "6",
+          "source": "数据结构/DS_C6T.md",
+          "sourceSha256": "180a09192849cbb7ef749842bf0b1c5bae90d7df9013a86f492678098144ab1e",
+          "download": "/downloads/data-structures/chapter-06-quick.md"
+        },
+        {
+          "title": "第七章 排序",
+          "shortTitle": "第七章 排序",
+          "slug": "courses/data-structures/chapter-07",
+          "quick": false,
+          "code": "7",
+          "source": "数据结构/DS_C7.md",
+          "sourceSha256": "f1a8a8240b5e12d4a641abe891b3cc7a011199d2acf7b28020d14900235d3d59",
+          "download": "/downloads/data-structures/chapter-07.md"
+        },
+        {
+          "title": "第七章 排序 — 速览",
+          "shortTitle": "第七章 排序 · 速览",
+          "slug": "courses/data-structures/chapter-07-quick",
+          "quick": true,
+          "code": "7",
+          "source": "数据结构/DS_C7T.md",
+          "sourceSha256": "7d8efc3de1e6d0b9c5f795dcf0792cb93e4ca0544ca0b11df1e262638e3e2db5",
+          "download": "/downloads/data-structures/chapter-07-quick.md"
+        }
+      ]
+    },
+    {
+      "id": "discrete-math",
+      "title": "离散数学",
+      "code": "DISCRETE MATHEMATICS",
+      "coverage": "图论、数理逻辑、集合、关系、函数与基数",
+      "summary": "整理定义、证明方法与反例。",
+      "notes": [
+        {
+          "title": "离散数学 · 图论",
+          "shortTitle": "图论",
+          "slug": "courses/discrete-math/chapter-01",
+          "quick": false,
+          "code": "1",
+          "source": "离散数学/DM_C1.md",
+          "sourceSha256": "739b33614b289e636f9419d71ee1e593b3797fa8bd4b7f2c81185c86cf422cc4",
+          "download": "/downloads/discrete-math/chapter-01.md"
+        },
+        {
+          "title": "离散数学 · 图论 · 速览",
+          "shortTitle": "图论 · 速览",
+          "slug": "courses/discrete-math/chapter-01-quick",
+          "quick": true,
+          "code": "1",
+          "source": "离散数学/DM_C1T.md",
+          "sourceSha256": "7457c346f317507014e9d1a9070c7cc829e69cb70f40d397e5a5c3fee0ec47f9",
+          "download": "/downloads/discrete-math/chapter-01-quick.md"
+        },
+        {
+          "title": "离散数学 · 数理逻辑",
+          "shortTitle": "数理逻辑",
+          "slug": "courses/discrete-math/chapter-02",
+          "quick": false,
+          "code": "2",
+          "source": "离散数学/DM_C2.md",
+          "sourceSha256": "4a513878141f157c82943b6a9d1410df47d18360ca2038f007ed7badbc8fef12",
+          "download": "/downloads/discrete-math/chapter-02.md"
+        },
+        {
+          "title": "离散数学 · 数理逻辑 · 速览",
+          "shortTitle": "数理逻辑 · 速览",
+          "slug": "courses/discrete-math/chapter-02-quick",
+          "quick": true,
+          "code": "2",
+          "source": "离散数学/DM_C2T.md",
+          "sourceSha256": "c38d13491d2d665f88a320f14fc2ebbb59aa2d1378cf2af86645264c78238f55",
+          "download": "/downloads/discrete-math/chapter-02-quick.md"
+        },
+        {
+          "title": "离散数学 · 集合、关系、函数与基数",
+          "shortTitle": "集合、关系、函数与基数",
+          "slug": "courses/discrete-math/chapter-03",
+          "quick": false,
+          "code": "3",
+          "source": "离散数学/DM_C3.md",
+          "sourceSha256": "5f222878caa073cc07d996395693a7c2c256dfda3dfc9e3d8d8ef05dbbff14e1",
+          "download": "/downloads/discrete-math/chapter-03.md"
+        },
+        {
+          "title": "离散数学 · 集合、关系、函数与基数 · 速览",
+          "shortTitle": "集合、关系、函数与基数 · 速览",
+          "slug": "courses/discrete-math/chapter-03-quick",
+          "quick": true,
+          "code": "3",
+          "source": "离散数学/DM_C3T.md",
+          "sourceSha256": "55450ab30db8c834b7181ab0b9d2773e7efd55e96117c9e3239a38d3296e33ed",
+          "download": "/downloads/discrete-math/chapter-03-quick.md"
+        }
+      ]
+    }
+  ],
+  "demos": [
+    {
+      "id": "avl",
+      "title": "AVL 旋转与删除回溯",
+      "course": "data-structures",
+      "description": "观察失衡节点、旋转过程与删除后的回溯。",
+      "url": "/demos/avl.html",
+      "source": "数据结构/AVL旋转可视化.html"
+    },
+    {
+      "id": "b-trees",
+      "title": "B 树与 B+ 树",
+      "course": "data-structures",
+      "description": "比较节点结构，观察插入与分裂。",
+      "url": "/demos/b-trees.html",
+      "source": "数据结构/B树与B+树-可视化.html"
+    },
+    {
+      "id": "binary-trees",
+      "title": "二叉树构造与基本操作",
+      "course": "data-structures",
+      "description": "用具体树形理解构造、遍历和基本操作。",
+      "url": "/demos/binary-trees.html",
+      "source": "数据结构/二叉树构造与基本操作可视化.html"
+    },
+    {
+      "id": "ds-methods",
+      "title": "数据结构题目方法复习",
+      "course": "data-structures",
+      "description": "按题目类型回顾数据结构的解题方法。",
+      "url": "/demos/ds-methods.html",
+      "source": "数据结构/数据结构作业复习资料.html"
+    },
+    {
+      "id": "cantor",
+      "title": "不可数集合与 Cantor 定理",
+      "course": "discrete-math",
+      "description": "逐步观察对角线论证。",
+      "url": "/demos/cantor.html",
+      "source": "离散数学/Visualizations/cantor-uncountable-visual.html"
+    },
+    {
+      "id": "schroder-bernstein",
+      "title": "Schröder–Bernstein 定理",
+      "course": "discrete-math",
+      "description": "通过映射和链理解等势证明。",
+      "url": "/demos/schroder-bernstein.html",
+      "source": "离散数学/Visualizations/schroder-bernstein-visual.html"
+    },
+    {
+      "id": "function-spaces",
+      "title": "函数空间的等势",
+      "course": "discrete-math",
+      "description": "探索函数集合之间的对应关系。",
+      "url": "/demos/function-spaces.html",
+      "source": "离散数学/Visualizations/DM_N608_function_space_visual.html"
+    },
+    {
+      "id": "edge-partition",
+      "title": "无桥图与边集二分：反例",
+      "course": "discrete-math",
+      "description": "用反例检验关于图的划分的直觉。",
+      "url": "/demos/edge-partition.html",
+      "source": "离散数学/Visualizations/edge_partition_counterexample_visual.html"
+    }
+  ]
+}

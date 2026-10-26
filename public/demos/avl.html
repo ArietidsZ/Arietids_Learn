@@ -1,0 +1,1979 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AVL 旋转与删除回溯可视化</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f8fb;
+      --surface: #ffffff;
+      --surface-strong: #eef3f8;
+      --canvas: #fbfdff;
+      --canvas-grid: rgba(23, 107, 135, 0.075);
+      --ink: #1f2430;
+      --muted: #667085;
+      --line: #d3dbe7;
+      --line-strong: #a8b6c9;
+      --accent: #176b87;
+      --accent-soft: #dff4f8;
+      --orange: #c45a1b;
+      --orange-soft: #fff0e5;
+      --green: #27704b;
+      --green-soft: #e4f6ec;
+      --purple: #6f4aa3;
+      --purple-soft: #efe8fb;
+      --shadow: 0 18px 50px rgba(28, 39, 59, 0.10);
+      --radius: 8px;
+      --mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #101418;
+        --surface: #171d23;
+        --surface-strong: #202833;
+        --canvas: #131920;
+        --canvas-grid: rgba(111, 196, 215, 0.10);
+        --ink: #ecf1f8;
+        --muted: #a8b3c2;
+        --line: #344151;
+        --line-strong: #56677c;
+        --accent: #6fc4d7;
+        --accent-soft: #14333b;
+        --orange: #f0a36b;
+        --orange-soft: #3a2618;
+        --green: #75d49d;
+        --green-soft: #163423;
+        --purple: #c0a0f1;
+        --purple-soft: #2b2440;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(23, 107, 135, 0.08), transparent 320px),
+        var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 44px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.12;
+      font-weight: 780;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .source {
+      justify-self: end;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 18px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: end;
+      margin: 28px 0 12px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.2;
+    }
+
+    .section-head p {
+      max-width: 780px;
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .jump-link {
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px 12px;
+      background: var(--surface);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .jump-link:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .controls {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+      background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+      border-bottom: 1px solid var(--line);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .delete-cases {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    .case-button,
+    .step-button,
+    .icon-button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 7px;
+      min-height: 42px;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .case-button {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 9px 10px;
+      text-align: left;
+    }
+
+    .case-button:hover,
+    .step-button:hover,
+    .icon-button:hover {
+      border-color: var(--line-strong);
+      background: var(--surface-strong);
+    }
+
+    .case-button:active,
+    .step-button:active,
+    .icon-button:active {
+      transform: translateY(1px);
+    }
+
+    .case-button[aria-pressed="true"] {
+      border-color: color-mix(in srgb, var(--accent), var(--line) 30%);
+      background: var(--accent-soft);
+      color: var(--accent);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent), transparent 72%);
+    }
+
+    .case-code {
+      display: inline-grid;
+      place-items: center;
+      min-width: 38px;
+      min-height: 30px;
+      border-radius: 6px;
+      background: var(--surface-strong);
+      font-family: var(--mono);
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .case-button[aria-pressed="true"] .case-code {
+      background: var(--surface);
+      color: var(--accent);
+    }
+
+    .case-label {
+      min-width: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .case-button[aria-pressed="true"] .case-label {
+      color: var(--accent);
+    }
+
+    .stepper {
+      display: grid;
+      grid-template-columns: auto auto 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-button {
+      width: 42px;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+    }
+
+    .icon-button svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.2;
+    }
+
+    .step-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .step-button {
+      padding: 8px 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .step-button[aria-current="step"] {
+      border-color: color-mix(in srgb, var(--orange), var(--line) 28%);
+      background: var(--orange-soft);
+      color: var(--orange);
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--orange), transparent 72%);
+    }
+
+    .diagram-panel {
+      overflow: hidden;
+    }
+
+    .diagram-header {
+      padding: 18px 18px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .case-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .path {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .path span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      color: var(--muted);
+      background: var(--surface);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .path span.hot {
+      border-color: color-mix(in srgb, var(--orange), var(--line) 30%);
+      color: var(--orange);
+      background: var(--orange-soft);
+    }
+
+    .svg-wrap {
+      padding: 14px 16px 10px;
+    }
+
+    #treeSvg,
+    #deleteSvg {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1000 / 540;
+      min-height: 340px;
+    }
+
+    .edge {
+      stroke: var(--line-strong);
+      stroke-width: 3.6;
+      stroke-linecap: round;
+      fill: none;
+    }
+
+    .edge.primary {
+      stroke: var(--accent);
+      stroke-width: 4.6;
+    }
+
+    .edge.rotation {
+      stroke: var(--orange);
+      stroke-dasharray: 10 10;
+      stroke-width: 4.4;
+    }
+
+    .canvas-bg {
+      fill: var(--canvas);
+      stroke: var(--line);
+      stroke-width: 1.5;
+    }
+
+    .canvas-grid {
+      opacity: 0.86;
+    }
+
+    .node circle {
+      fill: var(--surface);
+      stroke: var(--line-strong);
+      stroke-width: 4;
+      filter: url(#nodeShadow);
+    }
+
+    .node .halo {
+      fill: none;
+      stroke-width: 8;
+      opacity: 0.18;
+      filter: none;
+    }
+
+    .node.conflict .halo {
+      stroke: var(--orange);
+    }
+
+    .node.pivot .halo {
+      stroke: var(--accent);
+    }
+
+    .node.grand .halo {
+      stroke: var(--green);
+    }
+
+    .node text.main {
+      fill: var(--ink);
+      font-size: 28px;
+      font-weight: 780;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    .node .badge {
+      fill: var(--surface);
+      stroke: var(--line);
+      stroke-width: 1.2;
+    }
+
+    .node text.sub {
+      fill: var(--muted);
+      font-size: 13px;
+      text-anchor: middle;
+      font-weight: 700;
+    }
+
+    .node.conflict circle {
+      fill: var(--orange-soft);
+      stroke: var(--orange);
+    }
+
+    .node.pivot circle {
+      fill: var(--accent-soft);
+      stroke: var(--accent);
+    }
+
+    .node.grand circle {
+      fill: var(--green-soft);
+      stroke: var(--green);
+    }
+
+    .node.deleted circle {
+      fill: var(--surface-strong);
+      stroke: var(--line-strong);
+      stroke-dasharray: 8 8;
+    }
+
+    .node.deleted text.main {
+      fill: var(--muted);
+    }
+
+    .subtree path {
+      fill: var(--surface);
+      stroke: var(--line-strong);
+      stroke-width: 3;
+      filter: url(#softShadow);
+    }
+
+    .subtree text {
+      fill: var(--ink);
+      font-family: var(--mono);
+      font-size: 19px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: central;
+    }
+
+    .motion-label {
+      fill: var(--orange);
+      font-size: 18px;
+      font-weight: 780;
+      text-anchor: middle;
+    }
+
+    .motion-box {
+      fill: var(--orange-soft);
+      stroke: color-mix(in srgb, var(--orange), transparent 58%);
+      stroke-width: 1.4;
+    }
+
+    .caption-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line);
+    }
+
+    .caption-item {
+      min-height: 96px;
+      padding: 14px 16px;
+      border-right: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .caption-item:last-child {
+      border-right: 0;
+    }
+
+    .caption-item strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .caption-item p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .side {
+      display: grid;
+      gap: 18px;
+    }
+
+    .explain {
+      padding: 18px;
+    }
+
+    .step-title {
+      margin: 0 0 8px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .step-note {
+      margin: 0 0 16px;
+      color: var(--muted);
+    }
+
+    .formula {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+    }
+
+    .formula div {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 10px;
+      align-items: baseline;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .formula dt {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .formula dd {
+      margin: 0;
+    }
+
+    .code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: var(--surface-strong);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 12px;
+      overflow: auto;
+      white-space: pre;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      background: var(--surface);
+    }
+
+    .dot.conflict {
+      color: var(--orange);
+      background: var(--orange-soft);
+    }
+
+    .dot.pivot {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .dot.grand {
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .table-panel {
+      margin-top: 18px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .table-header h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.25;
+    }
+
+    .table-header p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .table-scroll {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: var(--surface);
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 15px 18px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-strong);
+      font-size: 18px;
+    }
+
+    td:first-child {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent);
+      width: 110px;
+    }
+
+    .fine-print {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      .section-head,
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .source,
+      .jump-link {
+        justify-self: start;
+      }
+
+      .segmented,
+      .delete-cases,
+      .caption-row,
+      .legend {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .caption-item:nth-child(2) {
+        border-right: 0;
+      }
+
+      .caption-item:last-child {
+        grid-column: 1 / -1;
+        border-top: 1px solid var(--line);
+      }
+
+      #treeSvg,
+      #deleteSvg {
+        min-height: 310px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        width: min(100vw - 20px, 1180px);
+        padding-top: 18px;
+      }
+
+      .segmented,
+      .delete-cases,
+      .stepper,
+      .step-strip,
+      .caption-row,
+      .legend {
+        grid-template-columns: 1fr;
+      }
+
+      .icon-button {
+        width: 100%;
+      }
+
+      .diagram-header {
+        display: grid;
+      }
+
+      .path {
+        justify-content: flex-start;
+      }
+
+      .caption-item,
+      .caption-item:nth-child(2) {
+        border-right: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .caption-item:first-child {
+        border-top: 0;
+      }
+
+      #treeSvg,
+      #deleteSvg {
+        aspect-ratio: 720 / 600;
+        min-height: 360px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        transition-duration: 1ms !important;
+        animation-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body><div style="padding:10px 16px;background:#153a43;color:#fff;font:14px/1.6 system-ui"><a style="color:#fff;text-decoration:none" href="/explore/">← Arietids Learn · 交互演示目录</a></div>
+  <main class="page">
+    <section class="hero">
+      <div>
+        <h1>AVL 旋转与删除回溯可视化</h1>
+        <p class="subtitle">按“冲突结点 → 孩子 → 孙子”的方向识别插入四型；删除时再看 P 原 BF、处理方式，以及局部高度是否还要继续向上传导。</p>
+      </div>
+      <div class="source">对应 DS_C6T：平衡二叉树插入旋转 / 删除回溯</div>
+    </section>
+
+    <section class="section-head" id="insert">
+      <div>
+        <h2>插入：四型旋转</h2>
+        <p>插入只会在自下而上的第一处失衡结点附近调整一次。关键是看 A 到 B、B 到 C 两段方向。</p>
+      </div>
+      <a class="jump-link" href="#delete">跳到删除回溯</a>
+    </section>
+
+    <section class="workspace">
+      <div class="panel diagram-panel">
+        <div class="controls">
+          <div class="segmented" id="caseButtons" aria-label="旋转类型"></div>
+          <div class="stepper">
+            <button class="icon-button" id="prevBtn" aria-label="上一步">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
+            <button class="icon-button" id="playBtn" aria-label="播放或暂停">
+              <svg id="playIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </button>
+            <div class="step-strip" id="stepButtons" aria-label="步骤"></div>
+            <button class="icon-button" id="nextBtn" aria-label="下一步">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="diagram-header">
+          <div>
+            <h2 class="case-title" id="caseTitle"></h2>
+          </div>
+          <div class="path" id="pathChips"></div>
+        </div>
+
+        <div class="svg-wrap">
+          <svg id="treeSvg" viewBox="0 0 1000 540" role="img" aria-labelledby="svgTitle svgDesc">
+            <title id="svgTitle">AVL 旋转示意图</title>
+            <desc id="svgDesc">当前步骤的二叉树局部结构，展示冲突结点、旋转支点、孙子结点以及 T1 到 T4 子树位置。</desc>
+          </svg>
+        </div>
+
+        <div class="caption-row">
+          <div class="caption-item">
+            <strong>判定</strong>
+            <p id="judgeText"></p>
+          </div>
+          <div class="caption-item">
+            <strong>旋转</strong>
+            <p id="rotationText"></p>
+          </div>
+          <div class="caption-item">
+            <strong>结果</strong>
+            <p id="resultText"></p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <section class="panel explain">
+          <h2 class="step-title" id="stepTitle"></h2>
+          <p class="step-note" id="stepNote"></p>
+          <dl class="formula" id="formulaList"></dl>
+          <div class="legend" aria-label="图例">
+            <span><i class="dot conflict"></i>冲突结点</span>
+            <span><i class="dot pivot"></i>旋转支点</span>
+            <span><i class="dot grand"></i>孙子结点</span>
+          </div>
+        </section>
+
+        <section class="panel explain">
+          <h2 class="step-title">指针重挂模板</h2>
+          <pre class="code" id="codeBlock"></pre>
+        </section>
+      </aside>
+    </section>
+
+    <section class="panel table-panel" aria-label="AVL 四型旋转表">
+      <div class="table-header">
+        <h2>插入失衡四型</h2>
+        <p>从冲突结点开始，连续看“孩子方向、孙子方向”：同侧是单旋，异侧是双旋。</p>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>类型</th>
+              <th>插入方向</th>
+              <th>处理</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>LL</td>
+              <td>左孩子的左子树</td>
+              <td>右单旋（口诀：右旋插到右子之左）</td>
+            </tr>
+            <tr>
+              <td>RR</td>
+              <td>右孩子的右子树</td>
+              <td>左单旋（左旋插入左子之右）</td>
+            </tr>
+            <tr>
+              <td>LR</td>
+              <td>左孩子的右子树</td>
+              <td>先对左孩 RR 左旋，再对冲突结点 LL 右旋</td>
+            </tr>
+            <tr>
+              <td>RL</td>
+              <td>右孩子的左子树</td>
+              <td>先对右孩 LL 右旋，再对冲突结点 RR 左旋</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section-head" id="delete">
+      <div>
+        <h2>删除：左子树变矮后的回溯</h2>
+        <p>删除可能一路向上传导。这里固定讨论“删除发生在 P 左子树”，逐一观察 P 原 BF、右孩子形态、旋转后高度是否变矮。</p>
+      </div>
+      <a class="jump-link" href="#insert">回到插入旋转</a>
+    </section>
+
+    <section class="workspace deletion-workspace">
+      <div class="panel diagram-panel">
+        <div class="controls">
+          <div class="segmented delete-cases" id="deleteCaseButtons" aria-label="删除回溯情况"></div>
+          <div class="stepper">
+            <button class="icon-button" id="deletePrevBtn" aria-label="删除上一步">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
+            <button class="icon-button" id="deletePlayBtn" aria-label="播放或暂停删除过程">
+              <svg id="deletePlayIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z"></path>
+              </svg>
+            </button>
+            <div class="step-strip" id="deleteStepButtons" aria-label="删除步骤"></div>
+            <button class="icon-button" id="deleteNextBtn" aria-label="删除下一步">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="diagram-header">
+          <div>
+            <h2 class="case-title" id="deleteCaseTitle"></h2>
+          </div>
+          <div class="path" id="deletePathChips"></div>
+        </div>
+
+        <div class="svg-wrap">
+          <svg id="deleteSvg" viewBox="0 0 1000 540" role="img" aria-labelledby="deleteSvgTitle deleteSvgDesc">
+            <title id="deleteSvgTitle">AVL 删除回溯示意图</title>
+            <desc id="deleteSvgDesc">当前步骤展示删除发生在 P 左子树后，P 的平衡因子变化、右孩子形态和是否继续向上回溯。</desc>
+          </svg>
+        </div>
+
+        <div class="caption-row">
+          <div class="caption-item">
+            <strong>P 原 BF</strong>
+            <p id="deleteBfText"></p>
+          </div>
+          <div class="caption-item">
+            <strong>处理</strong>
+            <p id="deleteActionText"></p>
+          </div>
+          <div class="caption-item">
+            <strong>回溯</strong>
+            <p id="deleteContinueText"></p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <section class="panel explain">
+          <h2 class="step-title" id="deleteStepTitle"></h2>
+          <p class="step-note" id="deleteStepNote"></p>
+          <dl class="formula" id="deleteFormulaList"></dl>
+          <div class="legend" aria-label="删除图例">
+            <span><i class="dot conflict"></i>P 当前结点</span>
+            <span><i class="dot pivot"></i>S 右孩子</span>
+            <span><i class="dot grand"></i>C 孙子结点</span>
+          </div>
+        </section>
+
+        <section class="panel explain">
+          <h2 class="step-title">删除回溯模板</h2>
+          <pre class="code" id="deleteCodeBlock"></pre>
+        </section>
+      </aside>
+    </section>
+
+    <section class="panel table-panel" aria-label="AVL 删除回溯表">
+      <div class="table-header">
+        <h2>删除发生在 P 左子树：五种回溯情况</h2>
+        <p>删除后左子树变矮一层，先看 P 原来的 BF；若局部高度变矮，就必须继续向上检查。</p>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>情况</th>
+              <th>P 原 BF</th>
+              <th>处理</th>
+              <th>是否继续向上</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>0</td>
+              <td>不调整（BF 变 −1）</td>
+              <td>高度不变，停</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>+1</td>
+              <td>不调整（BF 变 0）</td>
+              <td>高度变矮，继续</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>−1→−2，右孩左子树矮</td>
+              <td>RR 旋转</td>
+              <td>高度变矮，继续</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>−1→−2，右孩右子树矮</td>
+              <td>RL 旋转</td>
+              <td>高度变矮，继续</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>−1→−2，右孩左右等高</td>
+              <td>RR 或 RL（RR 简单）</td>
+              <td>高度不变，停</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="fine-print">图中 A 为插入回溯时第一个失衡的冲突结点，B 为高子树孩子，C 为决定四型方向的孙子结点；删除表中的 P 表示当前向上回溯检查到的父结点。</p>
+  </main>
+
+  <script>
+    const templates = {
+      LL: {
+        title: "LL：左孩子的左子树插入",
+        short: "左-左",
+        direction: "从冲突结点 A 先走左到 B，再走左到 C。",
+        handling: "对 A 做右单旋，B 上升为局部根。",
+        result: "中序次序保持为 T1、C、T2、B、T3、A、T4，局部高度恢复。",
+        code: [
+          "rotateRight(A):",
+          "  B = A.left",
+          "  A.left = B.right   // T3 挂到 A 左侧",
+          "  B.right = A",
+          "  updateHeight(A)",
+          "  updateHeight(B)",
+          "  return B"
+        ].join("\n"),
+        steps: [
+          {
+            title: "1. 插入后，A 的 BF 变为 +2",
+            note: "新增结点落在 A 的左孩子 B 的左侧，回溯到 A 时出现左高两层。",
+            formula: [["方向", "A → left(B) → left(C)"], ["类型", "LL"], ["动作", "准备右单旋"]],
+            label: "判定 LL",
+            rotation: "A 左侧过高",
+            tree: "llBefore"
+          },
+          {
+            title: "2. B 上升，A 向右下旋",
+            note: "右旋时，B 原来的右子树 T3 不能丢失，要改挂到 A 的左侧。",
+            formula: [["支点", "B"], ["重挂", "T3: B.right → A.left"], ["动作", "rotateRight(A)"]],
+            label: "右旋",
+            rotation: "B 上升，A 下沉",
+            tree: "llRotate"
+          },
+          {
+            title: "3. LL 调整完成",
+            note: "B 成为局部根，A 成为 B 的右孩子，C 仍在 B 左侧。",
+            formula: [["新根", "B"], ["左侧", "C(T1,T2)"], ["右侧", "A(T3,T4)"]],
+            label: "完成",
+            rotation: "高度恢复",
+            tree: "llAfter"
+          }
+        ]
+      },
+      RR: {
+        title: "RR：右孩子的右子树插入",
+        short: "右-右",
+        direction: "从冲突结点 A 先走右到 B，再走右到 C。",
+        handling: "对 A 做左单旋，B 上升为局部根。",
+        result: "中序次序保持为 T1、A、T2、B、T3、C、T4，局部高度恢复。",
+        code: [
+          "rotateLeft(A):",
+          "  B = A.right",
+          "  A.right = B.left  // T2 挂到 A 右侧",
+          "  B.left = A",
+          "  updateHeight(A)",
+          "  updateHeight(B)",
+          "  return B"
+        ].join("\n"),
+        steps: [
+          {
+            title: "1. 插入后，A 的 BF 变为 -2",
+            note: "新增结点落在 A 的右孩子 B 的右侧，回溯到 A 时出现右高两层。",
+            formula: [["方向", "A → right(B) → right(C)"], ["类型", "RR"], ["动作", "准备左单旋"]],
+            label: "判定 RR",
+            rotation: "A 右侧过高",
+            tree: "rrBefore"
+          },
+          {
+            title: "2. B 上升，A 向左下旋",
+            note: "左旋时，B 原来的左子树 T2 要改挂到 A 的右侧。",
+            formula: [["支点", "B"], ["重挂", "T2: B.left → A.right"], ["动作", "rotateLeft(A)"]],
+            label: "左旋",
+            rotation: "B 上升，A 下沉",
+            tree: "rrRotate"
+          },
+          {
+            title: "3. RR 调整完成",
+            note: "B 成为局部根，A 成为 B 的左孩子，C 仍在 B 右侧。",
+            formula: [["新根", "B"], ["左侧", "A(T1,T2)"], ["右侧", "C(T3,T4)"]],
+            label: "完成",
+            rotation: "高度恢复",
+            tree: "rrAfter"
+          }
+        ]
+      },
+      LR: {
+        title: "LR：左孩子的右子树插入",
+        short: "左-右",
+        direction: "从冲突结点 A 先走左到 B，再走右到 C。",
+        handling: "先对 B 做左旋，把 LR 转成 LL；再对 A 做右旋。",
+        result: "孙子 C 成为局部根，B 在左、A 在右，T1–T4 中序次序不变。",
+        code: [
+          "rotateLeftRight(A):",
+          "  A.left = rotateLeft(A.left)",
+          "  return rotateRight(A)",
+          "",
+          "after:",
+          "  C.left = B   // B 保留 T1,T2",
+          "  C.right = A  // A 保留 T3,T4"
+        ].join("\n"),
+        steps: [
+          {
+            title: "1. 插入后，A 左高但 B 右高",
+            note: "方向不是同侧延伸，不能直接对 A 单旋；需要先把 B-C 调成同侧。",
+            formula: [["方向", "A → left(B) → right(C)"], ["类型", "LR"], ["动作", "先处理左孩子 B"]],
+            label: "判定 LR",
+            rotation: "B 的右侧过高",
+            tree: "lrBefore"
+          },
+          {
+            title: "2. 先对 B 做 RR 左旋",
+            note: "C 上升到 A 的左侧，B 成为 C 的左孩子，T2 改挂到 B 的右侧。",
+            formula: [["第一次", "rotateLeft(B)"], ["重挂", "T2: C.left → B.right"], ["转化", "LR → LL"]],
+            label: "左旋 B",
+            rotation: "C 上升到 A 左侧",
+            tree: "lrMiddle"
+          },
+          {
+            title: "3. 再对 A 做 LL 右旋",
+            note: "C 作为孙子结点升到顶部，B 与 A 分居左右。",
+            formula: [["第二次", "rotateRight(A)"], ["新根", "C"], ["结果", "B-C-A 平衡"]],
+            label: "右旋 A",
+            rotation: "双旋完成",
+            tree: "lrAfter"
+          }
+        ]
+      },
+      RL: {
+        title: "RL：右孩子的左子树插入",
+        short: "右-左",
+        direction: "从冲突结点 A 先走右到 B，再走左到 C。",
+        handling: "先对 B 做右旋，把 RL 转成 RR；再对 A 做左旋。",
+        result: "孙子 C 成为局部根，A 在左、B 在右，T1–T4 中序次序不变。",
+        code: [
+          "rotateRightLeft(A):",
+          "  A.right = rotateRight(A.right)",
+          "  return rotateLeft(A)",
+          "",
+          "after:",
+          "  C.left = A   // A 保留 T1,T2",
+          "  C.right = B  // B 保留 T3,T4"
+        ].join("\n"),
+        steps: [
+          {
+            title: "1. 插入后，A 右高但 B 左高",
+            note: "方向不是同侧延伸，不能直接对 A 单旋；需要先把 B-C 调成同侧。",
+            formula: [["方向", "A → right(B) → left(C)"], ["类型", "RL"], ["动作", "先处理右孩子 B"]],
+            label: "判定 RL",
+            rotation: "B 的左侧过高",
+            tree: "rlBefore"
+          },
+          {
+            title: "2. 先对 B 做 LL 右旋",
+            note: "C 上升到 A 的右侧，B 成为 C 的右孩子，T3 改挂到 B 的左侧。",
+            formula: [["第一次", "rotateRight(B)"], ["重挂", "T3: C.right → B.left"], ["转化", "RL → RR"]],
+            label: "右旋 B",
+            rotation: "C 上升到 A 右侧",
+            tree: "rlMiddle"
+          },
+          {
+            title: "3. 再对 A 做 RR 左旋",
+            note: "C 作为孙子结点升到顶部，A 与 B 分居左右。",
+            formula: [["第二次", "rotateLeft(A)"], ["新根", "C"], ["结果", "A-C-B 平衡"]],
+            label: "左旋 A",
+            rotation: "双旋完成",
+            tree: "rlAfter"
+          }
+        ]
+      }
+    };
+
+    const layouts = {
+      llBefore: {
+        nodes: [
+          n("A", 500, 75, "conflict", "BF=+2"),
+          n("B", 360, 205, "pivot", "左孩"),
+          n("C", 240, 335, "grand", "左孙"),
+          t("T1", 165, 455), t("T2", 315, 455), t("T3", 500, 335), t("T4", 665, 205)
+        ],
+        edges: [["A", "B", "primary"], ["A", "T4"], ["B", "C", "primary"], ["B", "T3"], ["C", "T1"], ["C", "T2"]],
+        motion: "LL: 对 A 右单旋"
+      },
+      llRotate: {
+        nodes: [
+          n("B", 500, 90, "pivot", "上升"),
+          n("C", 330, 235, "grand", "保留"),
+          n("A", 655, 235, "conflict", "下沉"),
+          t("T1", 230, 390), t("T2", 420, 390), t("T3", 575, 390), t("T4", 760, 390)
+        ],
+        edges: [["B", "C", "primary"], ["B", "A", "rotation"], ["C", "T1"], ["C", "T2"], ["A", "T3", "primary"], ["A", "T4"]],
+        motion: "T3 改挂到 A.left"
+      },
+      llAfter: {
+        nodes: [
+          n("B", 500, 80, "pivot", "新根"),
+          n("C", 330, 220, "grand", "左"),
+          n("A", 670, 220, "conflict", "右"),
+          t("T1", 230, 385), t("T2", 420, 385), t("T3", 580, 385), t("T4", 770, 385)
+        ],
+        edges: [["B", "C", "primary"], ["B", "A", "primary"], ["C", "T1"], ["C", "T2"], ["A", "T3"], ["A", "T4"]],
+        motion: "B 成为局部根"
+      },
+      rrBefore: {
+        nodes: [
+          n("A", 500, 75, "conflict", "BF=-2"),
+          n("B", 640, 205, "pivot", "右孩"),
+          n("C", 760, 335, "grand", "右孙"),
+          t("T1", 335, 205), t("T2", 500, 335), t("T3", 685, 455), t("T4", 835, 455)
+        ],
+        edges: [["A", "T1"], ["A", "B", "primary"], ["B", "T2"], ["B", "C", "primary"], ["C", "T3"], ["C", "T4"]],
+        motion: "RR: 对 A 左单旋"
+      },
+      rrRotate: {
+        nodes: [
+          n("B", 500, 90, "pivot", "上升"),
+          n("A", 345, 235, "conflict", "下沉"),
+          n("C", 670, 235, "grand", "保留"),
+          t("T1", 240, 390), t("T2", 425, 390), t("T3", 580, 390), t("T4", 770, 390)
+        ],
+        edges: [["B", "A", "rotation"], ["B", "C", "primary"], ["A", "T1"], ["A", "T2", "primary"], ["C", "T3"], ["C", "T4"]],
+        motion: "T2 改挂到 A.right"
+      },
+      rrAfter: {
+        nodes: [
+          n("B", 500, 80, "pivot", "新根"),
+          n("A", 330, 220, "conflict", "左"),
+          n("C", 670, 220, "grand", "右"),
+          t("T1", 230, 385), t("T2", 420, 385), t("T3", 580, 385), t("T4", 770, 385)
+        ],
+        edges: [["B", "A", "primary"], ["B", "C", "primary"], ["A", "T1"], ["A", "T2"], ["C", "T3"], ["C", "T4"]],
+        motion: "B 成为局部根"
+      },
+      lrBefore: {
+        nodes: [
+          n("A", 500, 75, "conflict", "BF=+2"),
+          n("B", 335, 205, "pivot", "左孩"),
+          n("C", 455, 335, "grand", "右孙"),
+          t("T1", 205, 335), t("T2", 380, 455), t("T3", 530, 455), t("T4", 675, 205)
+        ],
+        edges: [["A", "B", "primary"], ["A", "T4"], ["B", "T1"], ["B", "C", "primary"], ["C", "T2"], ["C", "T3"]],
+        motion: "LR: 先左旋 B"
+      },
+      lrMiddle: {
+        nodes: [
+          n("A", 560, 75, "conflict", "待右旋"),
+          n("C", 395, 205, "grand", "上升"),
+          n("B", 275, 335, "pivot", "下沉"),
+          t("T1", 175, 455), t("T2", 355, 455), t("T3", 510, 335), t("T4", 725, 205)
+        ],
+        edges: [["A", "C", "primary"], ["A", "T4"], ["C", "B", "rotation"], ["C", "T3"], ["B", "T1"], ["B", "T2", "primary"]],
+        motion: "转化为 A-C-B 的 LL"
+      },
+      lrAfter: {
+        nodes: [
+          n("C", 500, 80, "grand", "新根"),
+          n("B", 330, 220, "pivot", "左"),
+          n("A", 670, 220, "conflict", "右"),
+          t("T1", 230, 385), t("T2", 420, 385), t("T3", 580, 385), t("T4", 770, 385)
+        ],
+        edges: [["C", "B", "primary"], ["C", "A", "primary"], ["B", "T1"], ["B", "T2"], ["A", "T3"], ["A", "T4"]],
+        motion: "C 成为局部根"
+      },
+      rlBefore: {
+        nodes: [
+          n("A", 500, 75, "conflict", "BF=-2"),
+          n("B", 665, 205, "pivot", "右孩"),
+          n("C", 545, 335, "grand", "左孙"),
+          t("T1", 325, 205), t("T2", 470, 455), t("T3", 620, 455), t("T4", 795, 335)
+        ],
+        edges: [["A", "T1"], ["A", "B", "primary"], ["B", "C", "primary"], ["B", "T4"], ["C", "T2"], ["C", "T3"]],
+        motion: "RL: 先右旋 B"
+      },
+      rlMiddle: {
+        nodes: [
+          n("A", 440, 75, "conflict", "待左旋"),
+          n("C", 605, 205, "grand", "上升"),
+          n("B", 725, 335, "pivot", "下沉"),
+          t("T1", 275, 205), t("T2", 490, 335), t("T3", 645, 455), t("T4", 825, 455)
+        ],
+        edges: [["A", "T1"], ["A", "C", "primary"], ["C", "T2"], ["C", "B", "rotation"], ["B", "T3", "primary"], ["B", "T4"]],
+        motion: "转化为 A-C-B 的 RR"
+      },
+      rlAfter: {
+        nodes: [
+          n("C", 500, 80, "grand", "新根"),
+          n("A", 330, 220, "conflict", "左"),
+          n("B", 670, 220, "pivot", "右"),
+          t("T1", 230, 385), t("T2", 420, 385), t("T3", 580, 385), t("T4", 770, 385)
+        ],
+        edges: [["C", "A", "primary"], ["C", "B", "primary"], ["A", "T1"], ["A", "T2"], ["B", "T3"], ["B", "T4"]],
+        motion: "C 成为局部根"
+      }
+    };
+
+    const deleteTemplates = {
+      D1: {
+        title: "情况 1：P 原 BF = 0",
+        short: "0 → -1",
+        actionShort: "不旋转，停",
+        bf: "P 原 BF = 0",
+        action: "左子树变矮后，P 的 BF 由 0 变为 −1，不需要旋转。",
+        cont: "P 的局部高度不变，回溯停止。",
+        code: [
+          "case P.BF == 0:",
+          "  P.BF = -1",
+          "  return true   // 高度不变，停"
+        ].join("\n"),
+        chips: ["删在左子树", "0→−1", "高度不变"],
+        steps: [
+          {
+            label: "删除前",
+            title: "1. P 原来左右等高",
+            note: "P 的 BF 为 0，说明删除前左右子树高度相等。",
+            formula: [["P 原 BF", "0"], ["删除位置", "左子树"], ["判断", "暂不旋转"]],
+            tree: "d1Before"
+          },
+          {
+            label: "BF 变 -1",
+            title: "2. 左侧变矮，P 右侧相对高一层",
+            note: "P 的 BF 变为 −1，但整棵以 P 为根的子树高度没有下降。",
+            formula: [["P 新 BF", "−1"], ["处理", "不调整"], ["返回", "高度不变，停"]],
+            tree: "d1After"
+          }
+        ]
+      },
+      D2: {
+        title: "情况 2：P 原 BF = +1",
+        short: "+1 → 0",
+        actionShort: "不旋转，继续",
+        bf: "P 原 BF = +1",
+        action: "左子树变矮后，P 的 BF 由 +1 变为 0，不需要旋转。",
+        cont: "P 的局部高度变矮，必须继续向上回溯。",
+        code: [
+          "case P.BF == +1:",
+          "  P.BF = 0",
+          "  return false  // 高度变矮，继续"
+        ].join("\n"),
+        chips: ["删在左子树", "+1→0", "继续向上"],
+        steps: [
+          {
+            label: "删除前",
+            title: "1. P 原来左侧高一层",
+            note: "P 的 BF 为 +1，删除发生在较高的左子树里。",
+            formula: [["P 原 BF", "+1"], ["删除位置", "左子树"], ["判断", "左高被削平"]],
+            tree: "d2Before"
+          },
+          {
+            label: "BF 变 0",
+            title: "2. P 变为左右等高",
+            note: "不需要旋转，但以 P 为根的局部子树整体矮了一层。",
+            formula: [["P 新 BF", "0"], ["处理", "不调整"], ["返回", "高度变矮，继续"]],
+            tree: "d2After"
+          }
+        ]
+      },
+      D3: {
+        title: "情况 3：−1→−2，右孩左子树矮",
+        short: "RR",
+        actionShort: "左旋，继续",
+        bf: "P 原 BF = −1，删除后变 −2",
+        action: "右孩子 S 的左子树更矮，属于右右方向，对 P 做 RR 左旋。",
+        cont: "旋转后局部高度变矮，继续向上回溯。",
+        code: [
+          "case P.BF == -1 and S.left shorter:",
+          "  P = rotateLeft(P)   // RR 旋转",
+          "  return false        // 高度变矮，继续"
+        ].join("\n"),
+        chips: ["−1→−2", "S 左矮", "RR 左旋"],
+        steps: [
+          {
+            label: "失衡",
+            title: "1. 删除后 P 右侧高两层",
+            note: "P 原来已经右高一层，左子树再变矮后，P 的 BF 从 −1 变为 −2。",
+            formula: [["P 新 BF", "−2"], ["S 形态", "左子树矮"], ["类型", "RR"]],
+            tree: "d3Before"
+          },
+          {
+            label: "左旋 P",
+            title: "2. S 上升，P 向左下旋",
+            note: "这是和插入 RR 相同的左旋结构，S 的左子树 T2 改挂到 P 的右侧。",
+            formula: [["旋转", "rotateLeft(P)"], ["重挂", "T2 → P.right"], ["新根", "S"]],
+            tree: "d3Rotate"
+          },
+          {
+            label: "继续",
+            title: "3. 局部高度变矮，继续向上",
+            note: "删除调整不一定一处结束；本情况旋转后仍要把“变矮”传给 P 的父结点。",
+            formula: [["处理", "RR 旋转"], ["高度", "变矮"], ["返回", "继续"]],
+            tree: "d3After"
+          }
+        ]
+      },
+      D4: {
+        title: "情况 4：−1→−2，右孩右子树矮",
+        short: "RL",
+        actionShort: "双旋，继续",
+        bf: "P 原 BF = −1，删除后变 −2",
+        action: "右孩子 S 的右子树更矮，即 S 左侧更高，先右旋 S，再左旋 P。",
+        cont: "旋转后局部高度变矮，继续向上回溯。",
+        code: [
+          "case P.BF == -1 and S.right shorter:",
+          "  P.right = rotateRight(P.right)",
+          "  P = rotateLeft(P)   // RL 旋转",
+          "  return false        // 高度变矮，继续"
+        ].join("\n"),
+        chips: ["−1→−2", "S 右矮", "RL 双旋"],
+        steps: [
+          {
+            label: "失衡",
+            title: "1. P 右重，S 左重",
+            note: "删除在 P 左侧造成 P 失衡；右孩子 S 的右子树矮，所以不能直接左旋 P。",
+            formula: [["P 新 BF", "−2"], ["S 形态", "右子树矮"], ["类型", "RL"]],
+            tree: "d4Before"
+          },
+          {
+            label: "右旋 S",
+            title: "2. 先把 S-C 转成同侧",
+            note: "C 上升到 P 的右侧，S 成为 C 的右孩子，T3 改挂到 S 的左侧。",
+            formula: [["第一次", "rotateRight(S)"], ["重挂", "T3 → S.left"], ["转化", "RL → RR"]],
+            tree: "d4Middle"
+          },
+          {
+            label: "左旋 P",
+            title: "3. 再对 P 做左旋",
+            note: "C 成为局部根，P 和 S 分居左右；本情况高度变矮，继续向上。",
+            formula: [["第二次", "rotateLeft(P)"], ["新根", "C"], ["返回", "高度变矮，继续"]],
+            tree: "d4After"
+          }
+        ]
+      },
+      D5: {
+        title: "情况 5：−1→−2，右孩左右等高",
+        short: "等高",
+        actionShort: "RR 简单，停",
+        bf: "P 原 BF = −1，删除后变 −2",
+        action: "右孩子 S 的左右子树等高，RR 或 RL 都可；通常选 RR 左旋更简单。",
+        cont: "旋转后局部高度不变，回溯停止。",
+        code: [
+          "case P.BF == -1 and S.BF == 0:",
+          "  P = rotateLeft(P)   // RR 简单",
+          "  return true         // 高度不变，停"
+        ].join("\n"),
+        chips: ["−1→−2", "S 左右等高", "停"],
+        steps: [
+          {
+            label: "失衡",
+            title: "1. S 左右等高",
+            note: "P 右侧高两层，但右孩子 S 自己左右等高，这是删除中特有的停止情况。",
+            formula: [["P 新 BF", "−2"], ["S 形态", "左右等高"], ["选择", "RR 更简单"]],
+            tree: "d5Before"
+          },
+          {
+            label: "RR 左旋",
+            title: "2. S 上升后高度不变",
+            note: "做 RR 左旋即可恢复平衡；由于局部高度不变，不再继续向上。",
+            formula: [["处理", "RR 或 RL"], ["常用", "RR 左旋"], ["返回", "高度不变，停"]],
+            tree: "d5After"
+          }
+        ]
+      }
+    };
+
+    const deleteLayouts = {
+      d1Before: {
+        nodes: [n("P", 500, 95, "conflict", "BF=0"), t("L h", 330, 320), t("R h", 670, 320)],
+        edges: [["P", "L h", "primary"], ["P", "R h"]],
+        motion: "删除前：左右等高"
+      },
+      d1After: {
+        nodes: [n("P", 500, 95, "conflict", "BF=-1"), t("L-1", 330, 320), t("R h", 670, 320)],
+        edges: [["P", "L-1", "rotation"], ["P", "R h", "primary"]],
+        motion: "高度不变：停"
+      },
+      d2Before: {
+        nodes: [n("P", 500, 95, "conflict", "BF=+1"), t("L+1", 330, 320), t("R h", 670, 320)],
+        edges: [["P", "L+1", "primary"], ["P", "R h"]],
+        motion: "删除前：左侧高一层"
+      },
+      d2After: {
+        nodes: [n("P", 500, 95, "conflict", "BF=0"), t("L h", 330, 320), t("R h", 670, 320)],
+        edges: [["P", "L h", "rotation"], ["P", "R h"]],
+        motion: "高度变矮：继续"
+      },
+      d3Before: {
+        nodes: [
+          n("P", 430, 75, "conflict", "BF=-2"),
+          t("L-1", 245, 245),
+          n("S", 620, 205, "pivot", "右孩"),
+          t("T2", 500, 390),
+          n("C", 760, 340, "grand", "高侧"),
+          t("T3", 680, 470),
+          t("T4", 840, 470)
+        ],
+        edges: [["P", "L-1", "rotation"], ["P", "S", "primary"], ["S", "T2"], ["S", "C", "primary"], ["C", "T3"], ["C", "T4"]],
+        motion: "S.left 矮：RR 左旋"
+      },
+      d3Rotate: {
+        nodes: [
+          n("S", 500, 90, "pivot", "上升"),
+          n("P", 345, 235, "conflict", "下沉"),
+          n("C", 680, 235, "grand", "右侧"),
+          t("L-1", 245, 390),
+          t("T2", 425, 390),
+          t("T3", 600, 390),
+          t("T4", 780, 390)
+        ],
+        edges: [["S", "P", "rotation"], ["S", "C", "primary"], ["P", "L-1"], ["P", "T2", "primary"], ["C", "T3"], ["C", "T4"]],
+        motion: "T2 改挂到 P.right"
+      },
+      d3After: {
+        nodes: [
+          n("S", 500, 90, "pivot", "新根"),
+          n("P", 345, 235, "conflict", "继续"),
+          n("C", 680, 235, "grand", "右侧"),
+          t("L-1", 245, 390),
+          t("T2", 425, 390),
+          t("T3", 600, 390),
+          t("T4", 780, 390)
+        ],
+        edges: [["S", "P", "primary"], ["S", "C", "primary"], ["P", "L-1"], ["P", "T2"], ["C", "T3"], ["C", "T4"]],
+        motion: "高度变矮：继续向上"
+      },
+      d4Before: {
+        nodes: [
+          n("P", 430, 75, "conflict", "BF=-2"),
+          t("L-1", 245, 245),
+          n("S", 650, 205, "pivot", "右孩"),
+          n("C", 530, 340, "grand", "高侧"),
+          t("T2", 455, 470),
+          t("T3", 610, 470),
+          t("T4", 800, 340)
+        ],
+        edges: [["P", "L-1", "rotation"], ["P", "S", "primary"], ["S", "C", "primary"], ["S", "T4"], ["C", "T2"], ["C", "T3"]],
+        motion: "S.right 矮：RL 双旋"
+      },
+      d4Middle: {
+        nodes: [
+          n("P", 430, 75, "conflict", "待左旋"),
+          t("L-1", 245, 245),
+          n("C", 610, 205, "grand", "上升"),
+          t("T2", 500, 340),
+          n("S", 735, 340, "pivot", "下沉"),
+          t("T3", 650, 470),
+          t("T4", 830, 470)
+        ],
+        edges: [["P", "L-1"], ["P", "C", "primary"], ["C", "T2"], ["C", "S", "rotation"], ["S", "T3", "primary"], ["S", "T4"]],
+        motion: "先 rotateRight(S)"
+      },
+      d4After: {
+        nodes: [
+          n("C", 500, 90, "grand", "新根"),
+          n("P", 330, 235, "conflict", "继续"),
+          n("S", 670, 235, "pivot", "右"),
+          t("L-1", 230, 390),
+          t("T2", 420, 390),
+          t("T3", 580, 390),
+          t("T4", 770, 390)
+        ],
+        edges: [["C", "P", "primary"], ["C", "S", "primary"], ["P", "L-1"], ["P", "T2"], ["S", "T3"], ["S", "T4"]],
+        motion: "高度变矮：继续向上"
+      },
+      d5Before: {
+        nodes: [
+          n("P", 430, 75, "conflict", "BF=-2"),
+          t("L-1", 245, 245),
+          n("S", 650, 205, "pivot", "BF=0"),
+          t("T2", 540, 390),
+          t("T3", 760, 390)
+        ],
+        edges: [["P", "L-1", "rotation"], ["P", "S", "primary"], ["S", "T2", "primary"], ["S", "T3", "primary"]],
+        motion: "S 左右等高：选 RR"
+      },
+      d5After: {
+        nodes: [
+          n("S", 500, 90, "pivot", "新根"),
+          n("P", 345, 235, "conflict", "BF=-1"),
+          t("T3", 680, 235),
+          t("L-1", 245, 390),
+          t("T2", 425, 390)
+        ],
+        edges: [["S", "P", "rotation"], ["S", "T3"], ["P", "L-1"], ["P", "T2", "primary"]],
+        motion: "高度不变：停"
+      }
+    };
+
+    let activeCase = "LL";
+    let activeStep = 0;
+    let timer = null;
+    let activeDeleteCase = "D1";
+    let activeDeleteStep = 0;
+    let deleteTimer = null;
+
+    const svg = document.getElementById("treeSvg");
+    const deleteSvg = document.getElementById("deleteSvg");
+    const caseButtons = document.getElementById("caseButtons");
+    const stepButtons = document.getElementById("stepButtons");
+    const deleteCaseButtons = document.getElementById("deleteCaseButtons");
+    const deleteStepButtons = document.getElementById("deleteStepButtons");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const playBtn = document.getElementById("playBtn");
+    const playIcon = document.getElementById("playIcon");
+    const deletePrevBtn = document.getElementById("deletePrevBtn");
+    const deleteNextBtn = document.getElementById("deleteNextBtn");
+    const deletePlayBtn = document.getElementById("deletePlayBtn");
+    const deletePlayIcon = document.getElementById("deletePlayIcon");
+
+    function n(id, x, y, role, sub) {
+      return { id, x, y, role, sub, type: "node" };
+    }
+
+    function t(id, x, y) {
+      return { id, x, y, type: "subtree" };
+    }
+
+    function el(name, attrs = {}) {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      return node;
+    }
+
+    function addSvgScaffold(target, prefix) {
+      const defs = el("defs");
+      const pattern = el("pattern", { id: `${prefix}Grid`, width: "36", height: "36", patternUnits: "userSpaceOnUse" });
+      pattern.append(el("path", { d: "M 36 0 H 0 V 36", fill: "none", stroke: "var(--canvas-grid)", "stroke-width": "1" }));
+      defs.append(pattern);
+
+      const nodeShadow = el("filter", { id: "nodeShadow", x: "-40%", y: "-40%", width: "180%", height: "180%" });
+      nodeShadow.append(el("feDropShadow", { dx: "0", dy: "8", stdDeviation: "7", "flood-color": "rgba(28,39,59,0.18)" }));
+      defs.append(nodeShadow);
+
+      const softShadow = el("filter", { id: "softShadow", x: "-30%", y: "-30%", width: "160%", height: "160%" });
+      softShadow.append(el("feDropShadow", { dx: "0", dy: "5", stdDeviation: "5", "flood-color": "rgba(28,39,59,0.12)" }));
+      defs.append(softShadow);
+
+      const marker = el("marker", {
+        id: `${prefix}Arrow`,
+        viewBox: "0 0 10 10",
+        refX: "8",
+        refY: "5",
+        markerWidth: "7",
+        markerHeight: "7",
+        orient: "auto-start-reverse"
+      });
+      marker.append(el("path", { d: "M 0 0 L 10 5 L 0 10 z", fill: "var(--orange)" }));
+      defs.append(marker);
+      target.append(defs);
+
+      target.append(el("rect", { class: "canvas-bg", x: "20", y: "18", width: "960", height: "502", rx: "22" }));
+      target.append(el("rect", { class: "canvas-grid", x: "20", y: "18", width: "960", height: "502", rx: "22", fill: `url(#${prefix}Grid)` }));
+    }
+
+    function drawEdge(start, end, cls, prefix) {
+      const startY = start.y + (start.type === "subtree" ? 34 : 45);
+      const endY = end.y - (end.type === "subtree" ? 34 : 45);
+      const bend = Math.max(48, Math.abs(end.y - start.y) * 0.42);
+      const d = `M ${start.x} ${startY} C ${start.x} ${startY + bend}, ${end.x} ${endY - bend}, ${end.x} ${endY}`;
+      const attrs = { class: `edge ${cls || ""}`, d };
+      if (cls === "rotation") attrs["marker-end"] = `url(#${prefix}Arrow)`;
+      return el("path", attrs);
+    }
+
+    function renderCaseButtons() {
+      caseButtons.innerHTML = "";
+      Object.entries(templates).forEach(([key, item]) => {
+        const button = document.createElement("button");
+        button.className = "case-button";
+        button.type = "button";
+        button.setAttribute("aria-pressed", key === activeCase ? "true" : "false");
+        button.innerHTML = `<span class="case-code">${key}</span><span class="case-label">${item.short}<br>${item.handling.split("，")[0]}</span>`;
+        button.addEventListener("click", () => {
+          activeCase = key;
+          activeStep = 0;
+          stopPlayback();
+          render();
+        });
+        caseButtons.appendChild(button);
+      });
+    }
+
+    function renderStepButtons() {
+      const steps = templates[activeCase].steps;
+      stepButtons.innerHTML = "";
+      steps.forEach((step, index) => {
+        const button = document.createElement("button");
+        button.className = "step-button";
+        button.type = "button";
+        button.textContent = step.label;
+        if (index === activeStep) button.setAttribute("aria-current", "step");
+        button.addEventListener("click", () => {
+          activeStep = index;
+          stopPlayback();
+          render();
+        });
+        stepButtons.appendChild(button);
+      });
+    }
+
+    function renderDeleteCaseButtons() {
+      deleteCaseButtons.innerHTML = "";
+      Object.entries(deleteTemplates).forEach(([key, item]) => {
+        const button = document.createElement("button");
+        button.className = "case-button";
+        button.type = "button";
+        button.setAttribute("aria-pressed", key === activeDeleteCase ? "true" : "false");
+        button.innerHTML = `<span class="case-code">${key.replace("D", "")}</span><span class="case-label">${item.short}<br>${item.actionShort}</span>`;
+        button.addEventListener("click", () => {
+          activeDeleteCase = key;
+          activeDeleteStep = 0;
+          stopDeletePlayback();
+          renderDelete();
+        });
+        deleteCaseButtons.appendChild(button);
+      });
+    }
+
+    function renderDeleteStepButtons() {
+      const steps = deleteTemplates[activeDeleteCase].steps;
+      deleteStepButtons.innerHTML = "";
+      steps.forEach((step, index) => {
+        const button = document.createElement("button");
+        button.className = "step-button";
+        button.type = "button";
+        button.textContent = step.label;
+        if (index === activeDeleteStep) button.setAttribute("aria-current", "step");
+        button.addEventListener("click", () => {
+          activeDeleteStep = index;
+          stopDeletePlayback();
+          renderDelete();
+        });
+        deleteStepButtons.appendChild(button);
+      });
+    }
+
+    function renderTree(layoutName) {
+      const layout = layouts[layoutName];
+      svg.innerHTML = "";
+      svg.append(el("title", { id: "svgTitle" }));
+      svg.lastChild.textContent = `AVL ${activeCase} 旋转示意`;
+      svg.append(el("desc", { id: "svgDesc" }));
+      svg.lastChild.textContent = templates[activeCase].steps[activeStep].note;
+      addSvgScaffold(svg, "insert");
+
+      const byId = Object.fromEntries(layout.nodes.map((node) => [node.id, node]));
+      const edgeGroup = el("g");
+      layout.edges.forEach(([from, to, cls]) => {
+        const start = byId[from];
+        const end = byId[to];
+        edgeGroup.append(drawEdge(start, end, cls, "insert"));
+      });
+      svg.append(edgeGroup);
+
+      const nodeGroup = el("g");
+      layout.nodes.forEach((item) => {
+        nodeGroup.append(item.type === "subtree" ? drawSubtree(item) : drawNode(item));
+      });
+      svg.append(nodeGroup);
+
+      const label = el("text", { class: "motion-label", x: 500, y: 510 });
+      const box = el("rect", { class: "motion-box", x: 350, y: 486, width: 300, height: 34, rx: 17 });
+      svg.append(box);
+      label.textContent = layout.motion;
+      svg.append(label);
+    }
+
+    function renderDeleteTree(layoutName) {
+      const layout = deleteLayouts[layoutName];
+      deleteSvg.innerHTML = "";
+      deleteSvg.append(el("title", { id: "deleteSvgTitle" }));
+      deleteSvg.lastChild.textContent = `AVL 删除回溯 ${activeDeleteCase.replace("D", "情况 ")}`;
+      deleteSvg.append(el("desc", { id: "deleteSvgDesc" }));
+      deleteSvg.lastChild.textContent = deleteTemplates[activeDeleteCase].steps[activeDeleteStep].note;
+      addSvgScaffold(deleteSvg, "delete");
+
+      const byId = Object.fromEntries(layout.nodes.map((node) => [node.id, node]));
+      const edgeGroup = el("g");
+      layout.edges.forEach(([from, to, cls]) => {
+        const start = byId[from];
+        const end = byId[to];
+        edgeGroup.append(drawEdge(start, end, cls, "delete"));
+      });
+      deleteSvg.append(edgeGroup);
+
+      const nodeGroup = el("g");
+      layout.nodes.forEach((item) => {
+        nodeGroup.append(item.type === "subtree" ? drawSubtree(item) : drawNode(item));
+      });
+      deleteSvg.append(nodeGroup);
+
+      const label = el("text", { class: "motion-label", x: 500, y: 510 });
+      const box = el("rect", { class: "motion-box", x: 350, y: 486, width: 300, height: 34, rx: 17 });
+      deleteSvg.append(box);
+      label.textContent = layout.motion;
+      deleteSvg.append(label);
+    }
+
+    function drawNode(item) {
+      const group = el("g", { class: `node ${item.role}`, transform: `translate(${item.x} ${item.y})` });
+      group.append(el("circle", { class: "halo", r: 52 }));
+      group.append(el("circle", { r: 46 }));
+      const main = el("text", { class: "main", y: -5 });
+      main.textContent = item.id;
+      group.append(main);
+      if (item.sub) {
+        group.append(el("rect", { class: "badge", x: -42, y: 39, width: 84, height: 24, rx: 12 }));
+        const sub = el("text", { class: "sub", y: 56 });
+        sub.textContent = item.sub;
+        group.append(sub);
+      }
+      return group;
+    }
+
+    function drawSubtree(item) {
+      const group = el("g", { class: "subtree", transform: `translate(${item.x} ${item.y})` });
+      group.append(el("path", { d: "M -56 38 C -42 12 -20 -30 0 -46 C 20 -30 42 12 56 38 Z" }));
+      const text = el("text");
+      text.textContent = item.id;
+      group.append(text);
+      return group;
+    }
+
+    function renderText() {
+      const item = templates[activeCase];
+      const step = item.steps[activeStep];
+      document.getElementById("caseTitle").textContent = item.title;
+      document.getElementById("judgeText").textContent = item.direction;
+      document.getElementById("rotationText").textContent = item.handling;
+      document.getElementById("resultText").textContent = item.result;
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepNote").textContent = step.note;
+      document.getElementById("codeBlock").textContent = item.code;
+
+      const pathChips = document.getElementById("pathChips");
+      const [first, second] = item.short.split("-");
+      pathChips.innerHTML = [
+        `<span class="hot">A 冲突</span>`,
+        `<span>${first}孩子 B</span>`,
+        `<span>${second}孙子 C</span>`
+      ].join("");
+
+      const formulaList = document.getElementById("formulaList");
+      formulaList.innerHTML = step.formula.map(([dt, dd]) => `<div><dt>${dt}</dt><dd>${dd}</dd></div>`).join("");
+    }
+
+    function renderDeleteText() {
+      const item = deleteTemplates[activeDeleteCase];
+      const step = item.steps[activeDeleteStep];
+      document.getElementById("deleteCaseTitle").textContent = item.title;
+      document.getElementById("deleteBfText").textContent = item.bf;
+      document.getElementById("deleteActionText").textContent = item.action;
+      document.getElementById("deleteContinueText").textContent = item.cont;
+      document.getElementById("deleteStepTitle").textContent = step.title;
+      document.getElementById("deleteStepNote").textContent = step.note;
+      document.getElementById("deleteCodeBlock").textContent = item.code;
+
+      const chips = document.getElementById("deletePathChips");
+      chips.innerHTML = item.chips.map((chip, index) => `<span class="${index === 0 ? "hot" : ""}">${chip}</span>`).join("");
+
+      const formulaList = document.getElementById("deleteFormulaList");
+      formulaList.innerHTML = step.formula.map(([dt, dd]) => `<div><dt>${dt}</dt><dd>${dd}</dd></div>`).join("");
+    }
+
+    function renderPlaybackIcon() {
+      playIcon.innerHTML = timer
+        ? '<path d="M8 5v14M16 5v14"></path>'
+        : '<path d="M8 5v14l11-7z"></path>';
+    }
+
+    function renderDeletePlaybackIcon() {
+      deletePlayIcon.innerHTML = deleteTimer
+        ? '<path d="M8 5v14M16 5v14"></path>'
+        : '<path d="M8 5v14l11-7z"></path>';
+    }
+
+    function stopPlayback() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      renderPlaybackIcon();
+    }
+
+    function stopDeletePlayback() {
+      if (deleteTimer) {
+        clearInterval(deleteTimer);
+        deleteTimer = null;
+      }
+      renderDeletePlaybackIcon();
+    }
+
+    function togglePlayback() {
+      if (timer) {
+        stopPlayback();
+        return;
+      }
+      timer = setInterval(() => {
+        const max = templates[activeCase].steps.length - 1;
+        activeStep = activeStep === max ? 0 : activeStep + 1;
+        render();
+      }, 1500);
+      renderPlaybackIcon();
+    }
+
+    function toggleDeletePlayback() {
+      if (deleteTimer) {
+        stopDeletePlayback();
+        return;
+      }
+      deleteTimer = setInterval(() => {
+        const max = deleteTemplates[activeDeleteCase].steps.length - 1;
+        activeDeleteStep = activeDeleteStep === max ? 0 : activeDeleteStep + 1;
+        renderDelete();
+      }, 1500);
+      renderDeletePlaybackIcon();
+    }
+
+    function render() {
+      renderCaseButtons();
+      renderStepButtons();
+      renderText();
+      renderTree(templates[activeCase].steps[activeStep].tree);
+      renderPlaybackIcon();
+    }
+
+    function renderDelete() {
+      renderDeleteCaseButtons();
+      renderDeleteStepButtons();
+      renderDeleteText();
+      renderDeleteTree(deleteTemplates[activeDeleteCase].steps[activeDeleteStep].tree);
+      renderDeletePlaybackIcon();
+    }
+
+    prevBtn.addEventListener("click", () => {
+      const max = templates[activeCase].steps.length - 1;
+      activeStep = activeStep === 0 ? max : activeStep - 1;
+      stopPlayback();
+      render();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      const max = templates[activeCase].steps.length - 1;
+      activeStep = activeStep === max ? 0 : activeStep + 1;
+      stopPlayback();
+      render();
+    });
+
+    playBtn.addEventListener("click", togglePlayback);
+
+    deletePrevBtn.addEventListener("click", () => {
+      const max = deleteTemplates[activeDeleteCase].steps.length - 1;
+      activeDeleteStep = activeDeleteStep === 0 ? max : activeDeleteStep - 1;
+      stopDeletePlayback();
+      renderDelete();
+    });
+
+    deleteNextBtn.addEventListener("click", () => {
+      const max = deleteTemplates[activeDeleteCase].steps.length - 1;
+      activeDeleteStep = activeDeleteStep === max ? 0 : activeDeleteStep + 1;
+      stopDeletePlayback();
+      renderDelete();
+    });
+
+    deletePlayBtn.addEventListener("click", toggleDeletePlayback);
+
+    render();
+    renderDelete();
+  </script>
+</body>
+</html>

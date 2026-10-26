@@ -1,0 +1,1605 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>二叉树构造与基本操作可视化</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-2: #eef3f7;
+      --canvas: #fbfdff;
+      --ink: #17202a;
+      --muted: #667085;
+      --line: #d7dee8;
+      --line-strong: #aebccc;
+      --teal: #127d8e;
+      --teal-soft: #dff4f7;
+      --amber: #b96919;
+      --amber-soft: #fff0dc;
+      --violet: #6853b8;
+      --violet-soft: #ede9ff;
+      --green: #25754d;
+      --green-soft: #e3f5ea;
+      --red: #b84646;
+      --red-soft: #fde9e9;
+      --shadow: 0 20px 54px rgba(23, 32, 42, 0.10);
+      --radius: 8px;
+      --mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #101418;
+        --surface: #171d23;
+        --surface-2: #202934;
+        --canvas: #11181f;
+        --ink: #ecf2f8;
+        --muted: #a6b1bf;
+        --line: #344252;
+        --line-strong: #5c6e84;
+        --teal: #63c8d7;
+        --teal-soft: #12363c;
+        --amber: #f0af66;
+        --amber-soft: #3b2916;
+        --violet: #b7a4f4;
+        --violet-soft: #2c2746;
+        --green: #78d59e;
+        --green-soft: #163525;
+        --red: #f09696;
+        --red-soft: #402020;
+        --shadow: 0 20px 54px rgba(0, 0, 0, 0.28);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(18, 125, 142, 0.08), transparent 310px),
+        var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    .app {
+      width: min(1280px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 24px 0 42px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.12;
+      font-weight: 780;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .source {
+      justify-self: end;
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .input-wrap {
+      display: grid;
+      gap: 7px;
+    }
+
+    .label-row {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sequence-input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 9px 11px;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .sequence-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(18, 125, 142, 0.14);
+    }
+
+    .sample-row,
+    .step-controls,
+    .tabs {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .sample-row {
+      justify-content: flex-end;
+    }
+
+    .sample-button,
+    .icon-button,
+    .tab-button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .sample-button {
+      min-height: 36px;
+      padding: 0 11px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      display: inline-grid;
+      place-items: center;
+    }
+
+    .icon-button svg {
+      width: 19px;
+      height: 19px;
+      stroke-width: 2.2;
+    }
+
+    .sample-button:hover,
+    .icon-button:hover,
+    .tab-button:hover {
+      background: var(--surface-2);
+      border-color: var(--line-strong);
+    }
+
+    .sample-button:active,
+    .icon-button:active,
+    .tab-button:active {
+      transform: translateY(1px);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) 360px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .canvas-panel {
+      overflow: hidden;
+    }
+
+    .canvas-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: end;
+      padding: 15px 16px 12px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    }
+
+    .canvas-head h2 {
+      font-size: 22px;
+      line-height: 1.18;
+    }
+
+    .canvas-head p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--teal);
+    }
+
+    .dot.queue {
+      background: var(--amber);
+    }
+
+    .dot.done {
+      background: var(--green);
+    }
+
+    .tree-stage {
+      position: relative;
+      background:
+        linear-gradient(rgba(18, 125, 142, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(18, 125, 142, 0.055) 1px, transparent 1px),
+        var(--canvas);
+      background-size: 32px 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    #treeSvg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-height: 360px;
+    }
+
+    .edge {
+      stroke: var(--line-strong);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+    }
+
+    .ghost-edge {
+      stroke: var(--line-strong);
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-dasharray: 6 7;
+      opacity: 0.7;
+    }
+
+    .node-circle {
+      fill: var(--surface);
+      stroke: var(--line-strong);
+      stroke-width: 2.2;
+      filter: drop-shadow(0 8px 14px rgba(23, 32, 42, 0.12));
+    }
+
+    .node.active .node-circle {
+      fill: var(--teal-soft);
+      stroke: var(--teal);
+      stroke-width: 3;
+    }
+
+    .node.queued .node-circle {
+      fill: var(--amber-soft);
+      stroke: var(--amber);
+    }
+
+    .node.done .node-circle {
+      fill: var(--green-soft);
+      stroke: var(--green);
+    }
+
+    .node.deleted {
+      opacity: 0.28;
+    }
+
+    .node-label {
+      fill: var(--ink);
+      font-size: 17px;
+      font-weight: 760;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .node-index {
+      fill: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+      text-anchor: middle;
+    }
+
+    .value-badge {
+      fill: var(--violet);
+    }
+
+    .badge-text {
+      fill: #fff;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .ghost-slot {
+      fill: transparent;
+      stroke: var(--line-strong);
+      stroke-width: 1.7;
+      stroke-dasharray: 5 6;
+    }
+
+    .ghost-label {
+      fill: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px 16px 16px;
+      background: var(--surface);
+    }
+
+    .rail-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .token-rail,
+    .queue-rail,
+    .stack-rail {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 42px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .token,
+    .queue-token,
+    .stack-token {
+      flex: 0 0 auto;
+      min-width: 38px;
+      height: 34px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .token.null {
+      color: var(--muted);
+      border-style: dashed;
+      background: transparent;
+    }
+
+    .token.processed {
+      border-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .token.active {
+      border-color: var(--teal);
+      background: var(--teal-soft);
+      color: var(--teal);
+    }
+
+    .queue-token {
+      border-color: var(--amber);
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .stack-token {
+      border-color: var(--violet);
+      background: var(--violet-soft);
+      color: var(--violet);
+    }
+
+    .empty-note {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .inspector {
+      position: sticky;
+      top: 12px;
+      overflow: hidden;
+    }
+
+    .tabs {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+
+    .tab-button {
+      min-height: 36px;
+      padding: 0 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .tab-button[aria-pressed="true"] {
+      color: var(--teal);
+      border-color: var(--teal);
+      background: var(--teal-soft);
+    }
+
+    .inspector-body {
+      display: grid;
+      gap: 13px;
+      padding: 14px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+    }
+
+    .stat {
+      min-height: 72px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 10px;
+      background: var(--canvas);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-value {
+      margin-top: 3px;
+      font-family: var(--mono);
+      font-size: 22px;
+      line-height: 1.1;
+      font-weight: 760;
+    }
+
+    .formula-box,
+    .detail-box {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--canvas);
+      padding: 12px;
+    }
+
+    .formula-title,
+    .detail-title {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .formula {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .detail-text {
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .progress-wrap {
+      display: grid;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .progress-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .step-slider {
+      width: 100%;
+      accent-color: var(--teal);
+    }
+
+    .trace-panel {
+      margin-top: 16px;
+      overflow: hidden;
+    }
+
+    .trace-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+
+    .trace-head h3 {
+      font-size: 17px;
+    }
+
+    .trace-head span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .trace-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+    }
+
+    .trace-list li {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 12px;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .trace-list li:last-child {
+      border-bottom: 0;
+    }
+
+    .trace-list .current {
+      color: var(--ink);
+      background: var(--teal-soft);
+    }
+
+    .trace-no {
+      font-family: var(--mono);
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    @media (max-width: 1040px) {
+      .toolbar,
+      .topbar,
+      .layout,
+      .canvas-head {
+        grid-template-columns: 1fr;
+      }
+
+      .source,
+      .sample-row {
+        justify-self: start;
+      }
+
+      .inspector {
+        position: static;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .app {
+        width: min(100vw - 20px, 1280px);
+        padding-top: 16px;
+      }
+
+      .legend {
+        flex-wrap: wrap;
+        white-space: normal;
+      }
+
+      .stat-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .trace-list li {
+        grid-template-columns: 42px minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body><div style="padding:10px 16px;background:#153a43;color:#fff;font:14px/1.6 system-ui"><a style="color:#fff;text-decoration:none" href="/explore/">← Arietids Learn · 交互演示目录</a></div>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>二叉树构造与基本操作可视化</h1>
+        <p class="subtitle">把层次构造、NULL_VALUE 占位、size、height、delTree 放在同一个可回放画布里。</p>
+      </div>
+      <div class="source">来源: DS_C4T.md · 构造与基本操作</div>
+    </header>
+
+    <section class="toolbar panel" aria-label="输入与回放控制">
+      <div class="input-wrap">
+        <div class="label-row">
+          <span>层次序列</span>
+          <span>NULL_VALUE = #</span>
+        </div>
+        <input id="sequenceInput" class="sequence-input" value="A B C D # E F # # G" aria-label="层次构造输入序列">
+      </div>
+      <div class="sample-row" aria-label="样例序列">
+        <button class="sample-button" data-seq="A B C D # E F # # G">一般树</button>
+        <button class="sample-button" data-seq="A B C D E F G">完全树</button>
+        <button class="sample-button" data-seq="A B # C # D">单支链</button>
+        <button class="sample-button" data-seq="#">空树</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <section class="canvas-panel panel">
+        <div class="canvas-head">
+          <div>
+            <h2 id="modeTitle">层次构造</h2>
+            <p id="modeSubtitle">队列驱动: 队首出队, 依次读取左孩子和右孩子。</p>
+          </div>
+          <div class="legend" aria-label="图例">
+            <span class="legend-item"><span class="dot"></span>当前</span>
+            <span class="legend-item"><span class="dot queue"></span>队列</span>
+            <span class="legend-item"><span class="dot done"></span>已求值</span>
+          </div>
+        </div>
+
+        <div class="tree-stage">
+          <svg id="treeSvg" viewBox="0 0 1000 520" role="img" aria-labelledby="treeTitle treeDesc">
+            <title id="treeTitle">二叉树操作可视化</title>
+            <desc id="treeDesc">按层次序列构造二叉树, 并展示 size height delTree 的递归过程。</desc>
+          </svg>
+        </div>
+
+        <div class="timeline">
+          <div>
+            <div class="rail-head">
+              <span>输入序列</span>
+              <span id="tokenState">0 / 0</span>
+            </div>
+            <div id="tokenRail" class="token-rail"></div>
+          </div>
+          <div>
+            <div class="rail-head">
+              <span id="railTitle">构造队列</span>
+              <span id="railState">队列空</span>
+            </div>
+            <div id="queueRail" class="queue-rail"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="inspector panel">
+        <div class="tabs" role="group" aria-label="操作模式">
+          <button class="tab-button" data-mode="build" aria-pressed="true">层次构造</button>
+          <button class="tab-button" data-mode="size" aria-pressed="false">size</button>
+          <button class="tab-button" data-mode="height" aria-pressed="false">height</button>
+          <button class="tab-button" data-mode="delete" aria-pressed="false">delTree</button>
+        </div>
+
+        <div class="inspector-body">
+          <div class="step-controls" aria-label="步骤控制">
+            <button id="resetBtn" class="icon-button" title="回到第一步" aria-label="回到第一步">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 5v6h6"/><path d="M5.6 15a7 7 0 1 0 .7-7.7L4 11"/></svg>
+            </button>
+            <button id="prevBtn" class="icon-button" title="上一步" aria-label="上一步">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <button id="playBtn" class="icon-button" title="播放/暂停" aria-label="播放或暂停">
+              <svg id="playIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="nextBtn" class="icon-button" title="下一步" aria-label="下一步">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="progress-wrap">
+            <div class="progress-row">
+              <span>step</span>
+              <input id="stepSlider" class="step-slider" type="range" min="0" max="0" value="0" aria-label="步骤进度">
+              <span id="stepReadout">1/1</span>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat">
+              <div class="stat-label">结点数</div>
+              <div id="nodeCount" class="stat-value">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">高度</div>
+              <div id="heightCount" class="stat-value">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">队列/栈</div>
+              <div id="railCount" class="stat-value">0</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">当前 token</div>
+              <div id="activeToken" class="stat-value">-</div>
+            </div>
+          </div>
+
+          <div class="formula-box">
+            <div class="formula-title">当前规则</div>
+            <pre id="formulaText" class="formula"></pre>
+          </div>
+
+          <div class="detail-box">
+            <div class="detail-title">当前步骤</div>
+            <div id="detailText" class="detail-text"></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="trace-panel panel">
+      <div class="trace-head">
+        <h3>执行轨迹</h3>
+        <span id="traceMeta">最近步骤</span>
+      </div>
+      <ol id="traceList" class="trace-list"></ol>
+    </section>
+  </main>
+
+  <script>
+    const NULL_ALIASES = new Set(["#", "NULL", "null", "N", "_", "∅"]);
+    const modeInfo = {
+      build: {
+        title: "层次构造",
+        subtitle: "队列驱动: 队首出队, 依次读取左孩子和右孩子。",
+        railTitle: "构造队列",
+        formula: "q.push(root)\nwhile (!q.empty()) {\n  p = q.front(); q.pop();\n  读取左孩子; 若非 NULL_VALUE 则建结点并进队\n  读取右孩子; 若非 NULL_VALUE 则建结点并进队\n}"
+      },
+      size: {
+        title: "size",
+        subtitle: "后序递归: 先取左右子树结点数, 再回到当前结点。",
+        railTitle: "递归栈",
+        formula: "size(t) = 0, t == null\nsize(t) = 1 + size(L) + size(R)"
+      },
+      height: {
+        title: "height",
+        subtitle: "后序递归: 左右高度都已知后, 当前高度取最大值加一。",
+        railTitle: "递归栈",
+        formula: "height(t) = 0, t == null\nheight(t) = 1 + max(height(L), height(R))"
+      },
+      delete: {
+        title: "delTree",
+        subtitle: "释放顺序: 先删左子树, 再删右子树, 最后删除当前结点。",
+        railTitle: "递归栈",
+        formula: "delTree(t):\n  if (t == null) return\n  delTree(t->left)\n  delTree(t->right)\n  delete t\nroot = NULL"
+      }
+    };
+
+    const samples = document.querySelectorAll(".sample-button");
+    const sequenceInput = document.getElementById("sequenceInput");
+    const svg = document.getElementById("treeSvg");
+    const tokenRail = document.getElementById("tokenRail");
+    const queueRail = document.getElementById("queueRail");
+    const traceList = document.getElementById("traceList");
+    const tabs = document.querySelectorAll(".tab-button");
+    const modeTitle = document.getElementById("modeTitle");
+    const modeSubtitle = document.getElementById("modeSubtitle");
+    const railTitle = document.getElementById("railTitle");
+    const formulaText = document.getElementById("formulaText");
+    const detailText = document.getElementById("detailText");
+    const tokenState = document.getElementById("tokenState");
+    const railState = document.getElementById("railState");
+    const nodeCount = document.getElementById("nodeCount");
+    const heightCount = document.getElementById("heightCount");
+    const railCount = document.getElementById("railCount");
+    const activeToken = document.getElementById("activeToken");
+    const stepReadout = document.getElementById("stepReadout");
+    const stepSlider = document.getElementById("stepSlider");
+    const traceMeta = document.getElementById("traceMeta");
+    const playBtn = document.getElementById("playBtn");
+    const playIcon = document.getElementById("playIcon");
+
+    const app = {
+      mode: "build",
+      frames: [],
+      tree: emptyTree(),
+      tokens: [],
+      index: 0,
+      timer: null
+    };
+
+    function emptyTree() {
+      return { root: null, nodes: [], ghosts: [], nodeMap: new Map(), size: 0, height: 0 };
+    }
+
+    function parseTokens(raw) {
+      return raw
+        .trim()
+        .split(/[\s,，]+/)
+        .map((token) => token.trim())
+        .filter(Boolean);
+    }
+
+    function isNullToken(token) {
+      return NULL_ALIASES.has(token);
+    }
+
+    function measureHeight(rootId, map) {
+      if (!rootId) return 0;
+      const node = map.get(rootId);
+      return 1 + Math.max(measureHeight(node.left, map), measureHeight(node.right, map));
+    }
+
+    function cloneNodes(nodes) {
+      return nodes.map((node) => ({ ...node }));
+    }
+
+    function cloneGhosts(ghosts) {
+      return ghosts.map((ghost) => ({ ...ghost }));
+    }
+
+    function queueLabels(queue, map) {
+      return queue.map((id) => {
+        const node = map.get(id);
+        return node ? node.label : id;
+      });
+    }
+
+    function snapshotFrame(base) {
+      return {
+        mode: base.mode || "build",
+        title: base.title || "",
+        detail: base.detail || "",
+        log: base.log || base.detail || "",
+        nodes: cloneNodes(base.nodes || []),
+        ghosts: cloneGhosts(base.ghosts || []),
+        queue: [...(base.queue || [])],
+        queueLabels: [...(base.queueLabels || [])],
+        stack: [...(base.stack || [])],
+        values: { ...(base.values || {}) },
+        deleted: { ...(base.deleted || {}) },
+        activeNode: base.activeNode || null,
+        activeToken: Number.isInteger(base.activeToken) ? base.activeToken : -1,
+        processedCount: base.processedCount || 0,
+        finalSize: base.finalSize || 0,
+        finalHeight: base.finalHeight || 0
+      };
+    }
+
+    function simulateBuild(tokens) {
+      const frames = [];
+      const tree = emptyTree();
+      const nodes = [];
+      const ghosts = [];
+      const map = new Map();
+      let idSeed = 0;
+      let ghostSeed = 0;
+
+      const makeNode = (label, level, slot, parentId, side, tokenIndex) => {
+        const node = {
+          id: `n${++idSeed}`,
+          label,
+          level,
+          slot,
+          parentId,
+          side,
+          left: null,
+          right: null,
+          tokenIndex
+        };
+        nodes.push(node);
+        map.set(node.id, node);
+        return node;
+      };
+
+      const makeGhost = (parent, side, tokenIndex, token) => {
+        const ghost = {
+          id: `g${++ghostSeed}`,
+          parentId: parent.id,
+          side,
+          level: parent.level + 1,
+          slot: parent.slot * 2 + (side === "left" ? 0 : 1),
+          tokenIndex,
+          label: token || "#"
+        };
+        ghosts.push(ghost);
+      };
+
+      if (tokens.length === 0) {
+        frames.push(snapshotFrame({
+          mode: "build",
+          title: "等待输入",
+          detail: "输入序列为空, 当前为空树。",
+          log: "输入序列为空。",
+          nodes,
+          ghosts,
+          finalSize: 0,
+          finalHeight: 0
+        }));
+        tree.nodes = nodes;
+        tree.ghosts = ghosts;
+        tree.nodeMap = map;
+        return { frames, tree };
+      }
+
+      if (isNullToken(tokens[0])) {
+        frames.push(snapshotFrame({
+          mode: "build",
+          title: "空树",
+          detail: "首个 token 是 NULL_VALUE, 不建立根结点。",
+          log: "首位为 NULL_VALUE, 构造结果为空树。",
+          nodes,
+          ghosts,
+          activeToken: 0,
+          processedCount: 1,
+          finalSize: 0,
+          finalHeight: 0
+        }));
+        tree.nodes = nodes;
+        tree.ghosts = ghosts;
+        tree.nodeMap = map;
+        return { frames, tree };
+      }
+
+      const root = makeNode(tokens[0], 0, 0, null, null, 0);
+      const queue = [root.id];
+      frames.push(snapshotFrame({
+        mode: "build",
+        title: "创建根结点",
+        detail: `读取 ${tokens[0]} 作为根结点, 根结点进队。`,
+        log: `token[0] = ${tokens[0]} -> root, push(root)。`,
+        nodes,
+        ghosts,
+        queue,
+        queueLabels: queueLabels(queue, map),
+        activeNode: root.id,
+        activeToken: 0,
+        processedCount: 1
+      }));
+
+      let i = 1;
+      while (queue.length > 0 && i < tokens.length) {
+        const parentId = queue.shift();
+        const parent = map.get(parentId);
+        frames.push(snapshotFrame({
+          mode: "build",
+          title: "队首出队",
+          detail: `${parent.label} 出队, 准备依次读取左孩子和右孩子。`,
+          log: `pop(${parent.label}), 队列剩余 ${queueLabels(queue, map).join(", ") || "空"}。`,
+          nodes,
+          ghosts,
+          queue,
+          queueLabels: queueLabels(queue, map),
+          activeNode: parent.id,
+          activeToken: i,
+          processedCount: i
+        }));
+
+        for (const side of ["left", "right"]) {
+          if (i >= tokens.length) break;
+          const token = tokens[i];
+          const sideName = side === "left" ? "左孩子" : "右孩子";
+          if (isNullToken(token)) {
+            makeGhost(parent, side, i, token);
+            frames.push(snapshotFrame({
+              mode: "build",
+              title: `读取${sideName}`,
+              detail: `token[${i}] = ${token}, 只占位, 不建结点, 不进队。`,
+              log: `${parent.label}.${sideName} = NULL_VALUE, skip enqueue。`,
+              nodes,
+              ghosts,
+              queue,
+              queueLabels: queueLabels(queue, map),
+              activeNode: parent.id,
+              activeToken: i,
+              processedCount: i + 1
+            }));
+          } else {
+            const child = makeNode(
+              token,
+              parent.level + 1,
+              parent.slot * 2 + (side === "left" ? 0 : 1),
+              parent.id,
+              side,
+              i
+            );
+            parent[side] = child.id;
+            queue.push(child.id);
+            frames.push(snapshotFrame({
+              mode: "build",
+              title: `读取${sideName}`,
+              detail: `token[${i}] = ${token}, 建为 ${parent.label} 的${sideName}, 并进队。`,
+              log: `${parent.label}.${sideName} = ${token}, push(${token})。`,
+              nodes,
+              ghosts,
+              queue,
+              queueLabels: queueLabels(queue, map),
+              activeNode: child.id,
+              activeToken: i,
+              processedCount: i + 1
+            }));
+          }
+          i += 1;
+        }
+      }
+
+      if (queue.length > 0 && i >= tokens.length) {
+        frames.push(snapshotFrame({
+          mode: "build",
+          title: "输入结束",
+          detail: "输入可能省略了末尾 NULL_VALUE, 构造时必须先判断 i < v.size() 再读取右孩子。",
+          log: "序列结束, 停止读取; 未出现的末尾空孩子不访问。",
+          nodes,
+          ghosts,
+          queue,
+          queueLabels: queueLabels(queue, map),
+          activeNode: queue[0] || null,
+          activeToken: -1,
+          processedCount: i
+        }));
+      }
+
+      if (queue.length === 0 && i < tokens.length) {
+        frames.push(snapshotFrame({
+          mode: "build",
+          title: "队列为空",
+          detail: "没有可挂接的父结点, 后续 token 不会进入树。",
+          log: `队列为空, 忽略剩余 ${tokens.length - i} 个 token。`,
+          nodes,
+          ghosts,
+          queue,
+          queueLabels: [],
+          activeToken: i,
+          processedCount: i
+        }));
+      }
+
+      tree.root = root.id;
+      tree.nodes = cloneNodes(nodes);
+      tree.ghosts = cloneGhosts(ghosts);
+      tree.nodeMap = new Map(tree.nodes.map((node) => [node.id, node]));
+      tree.size = tree.nodes.length;
+      tree.height = measureHeight(tree.root, tree.nodeMap);
+
+      return {
+        frames: frames.map((frame) => ({ ...frame, finalSize: tree.size, finalHeight: tree.height })),
+        tree
+      };
+    }
+
+    function buildValueFrames(tree, mode) {
+      if (!tree.root) {
+        return [snapshotFrame({
+          mode,
+          title: "空树",
+          detail: `${modeInfo[mode].title}(NULL) = 0。`,
+          log: "空树直接返回 0。",
+          nodes: tree.nodes,
+          ghosts: tree.ghosts,
+          finalSize: 0,
+          finalHeight: 0
+        })];
+      }
+
+      const frames = [];
+      const values = {};
+      const stack = [];
+      const map = tree.nodeMap;
+
+      const visit = (id) => {
+        if (!id) return 0;
+        const node = map.get(id);
+        stack.push(node.label);
+        frames.push(snapshotFrame({
+          mode,
+          title: `进入 ${node.label}`,
+          detail: `递归进入 ${node.label}, 先处理左子树。`,
+          log: `enter ${modeInfo[mode].title}(${node.label})。`,
+          nodes: tree.nodes,
+          ghosts: tree.ghosts,
+          stack,
+          values,
+          activeNode: id,
+          processedCount: app.tokens.length,
+          finalSize: tree.size,
+          finalHeight: tree.height
+        }));
+
+        const leftValue = visit(node.left);
+        if (!node.left) {
+          frames.push(snapshotFrame({
+            mode,
+            title: `${node.label} 左子树为空`,
+            detail: `${node.label} 的左子树为空, 返回 0。`,
+            log: `${node.label}.left == NULL -> 0。`,
+            nodes: tree.nodes,
+            ghosts: tree.ghosts,
+            stack,
+            values,
+            activeNode: id,
+            processedCount: app.tokens.length,
+            finalSize: tree.size,
+            finalHeight: tree.height
+          }));
+        }
+
+        const rightValue = visit(node.right);
+        if (!node.right) {
+          frames.push(snapshotFrame({
+            mode,
+            title: `${node.label} 右子树为空`,
+            detail: `${node.label} 的右子树为空, 返回 0。`,
+            log: `${node.label}.right == NULL -> 0。`,
+            nodes: tree.nodes,
+            ghosts: tree.ghosts,
+            stack,
+            values,
+            activeNode: id,
+            processedCount: app.tokens.length,
+            finalSize: tree.size,
+            finalHeight: tree.height
+          }));
+        }
+
+        const current = mode === "size"
+          ? 1 + leftValue + rightValue
+          : 1 + Math.max(leftValue, rightValue);
+        values[id] = current;
+        frames.push(snapshotFrame({
+          mode,
+          title: `回到 ${node.label}`,
+          detail: mode === "size"
+            ? `${node.label}: 1 + ${leftValue} + ${rightValue} = ${current}。`
+            : `${node.label}: 1 + max(${leftValue}, ${rightValue}) = ${current}。`,
+          log: `${modeInfo[mode].title}(${node.label}) = ${current}。`,
+          nodes: tree.nodes,
+          ghosts: tree.ghosts,
+          stack,
+          values,
+          activeNode: id,
+          processedCount: app.tokens.length,
+          finalSize: tree.size,
+          finalHeight: tree.height
+        }));
+        stack.pop();
+        return current;
+      };
+
+      visit(tree.root);
+      return frames;
+    }
+
+    function buildDeleteFrames(tree) {
+      if (!tree.root) {
+        return [snapshotFrame({
+          mode: "delete",
+          title: "空树",
+          detail: "delTree(NULL) 直接返回, root 已为空。",
+          log: "空树无需删除。",
+          nodes: tree.nodes,
+          ghosts: tree.ghosts,
+          finalSize: 0,
+          finalHeight: 0
+        })];
+      }
+
+      const frames = [];
+      const deleted = {};
+      const stack = [];
+      const map = tree.nodeMap;
+
+      const visit = (id) => {
+        if (!id) return;
+        const node = map.get(id);
+        stack.push(node.label);
+        frames.push(snapshotFrame({
+          mode: "delete",
+          title: `进入 ${node.label}`,
+          detail: `递归进入 ${node.label}, 按左子树 -> 右子树 -> 当前结点删除。`,
+          log: `enter delTree(${node.label})。`,
+          nodes: tree.nodes,
+          ghosts: tree.ghosts,
+          stack,
+          deleted,
+          activeNode: id,
+          processedCount: app.tokens.length,
+          finalSize: tree.size,
+          finalHeight: tree.height
+        }));
+
+        visit(node.left);
+        visit(node.right);
+        deleted[id] = true;
+        frames.push(snapshotFrame({
+          mode: "delete",
+          title: `删除 ${node.label}`,
+          detail: `${node.label} 的左右子树已处理完, 删除当前结点。`,
+          log: `delete ${node.label}。`,
+          nodes: tree.nodes,
+          ghosts: tree.ghosts,
+          stack,
+          deleted,
+          activeNode: id,
+          processedCount: app.tokens.length,
+          finalSize: tree.size,
+          finalHeight: tree.height
+        }));
+        stack.pop();
+      };
+
+      visit(tree.root);
+      frames.push(snapshotFrame({
+        mode: "delete",
+        title: "root 置空",
+        detail: "整棵树删除完成, 公有 delTree() 最后将 root 置为空。",
+        log: "root = NULL。",
+        nodes: tree.nodes,
+        ghosts: tree.ghosts,
+        stack: [],
+        deleted,
+        processedCount: app.tokens.length,
+        finalSize: tree.size,
+        finalHeight: tree.height
+      }));
+      return frames;
+    }
+
+    function rebuild() {
+      stopPlay();
+      app.tokens = parseTokens(sequenceInput.value);
+      const built = simulateBuild(app.tokens);
+      app.tree = built.tree;
+      if (app.mode === "build") {
+        app.frames = built.frames;
+      } else if (app.mode === "size" || app.mode === "height") {
+        app.frames = buildValueFrames(app.tree, app.mode);
+      } else {
+        app.frames = buildDeleteFrames(app.tree);
+      }
+      app.index = Math.min(app.index, app.frames.length - 1);
+      if (app.index < 0) app.index = 0;
+      render();
+    }
+
+    function svgEl(name, attrs = {}) {
+      const node = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      return node;
+    }
+
+    function positionFor(level, slot) {
+      const width = 900;
+      const left = 50;
+      const x = left + ((slot + 0.5) * width) / Math.pow(2, level);
+      const y = 70 + level * 86;
+      return { x, y };
+    }
+
+    function drawTree(frame) {
+      svg.innerHTML = "";
+      const title = svgEl("title", { id: "treeTitle" });
+      title.textContent = frame.title || "二叉树操作可视化";
+      const desc = svgEl("desc", { id: "treeDesc" });
+      desc.textContent = frame.detail || "二叉树操作可视化";
+      svg.append(title, desc);
+
+      const bg = svgEl("rect", { x: 16, y: 16, width: 968, height: 488, rx: 18, fill: "transparent" });
+      svg.append(bg);
+
+      if (!frame.nodes.length) {
+        const empty = svgEl("text", {
+          x: 500,
+          y: 250,
+          fill: "var(--muted)",
+          "font-size": 20,
+          "font-weight": 700,
+          "text-anchor": "middle"
+        });
+        empty.textContent = "空树";
+        svg.append(empty);
+        return;
+      }
+
+      const map = new Map(frame.nodes.map((node) => [node.id, node]));
+      const queued = new Set(frame.queue || []);
+      const values = frame.values || {};
+      const deleted = frame.deleted || {};
+
+      const edgeLayer = svgEl("g");
+      const ghostLayer = svgEl("g");
+      const nodeLayer = svgEl("g");
+
+      for (const node of frame.nodes) {
+        const from = positionFor(node.level, node.slot);
+        for (const side of ["left", "right"]) {
+          if (!node[side]) continue;
+          const child = map.get(node[side]);
+          if (!child) continue;
+          const to = positionFor(child.level, child.slot);
+          edgeLayer.append(svgEl("line", {
+            class: "edge",
+            x1: from.x,
+            y1: from.y + 22,
+            x2: to.x,
+            y2: to.y - 22
+          }));
+        }
+      }
+
+      for (const ghost of frame.ghosts) {
+        const parent = map.get(ghost.parentId);
+        if (!parent) continue;
+        const from = positionFor(parent.level, parent.slot);
+        const to = positionFor(ghost.level, ghost.slot);
+        ghostLayer.append(svgEl("line", {
+          class: "ghost-edge",
+          x1: from.x,
+          y1: from.y + 22,
+          x2: to.x,
+          y2: to.y - 14
+        }));
+        const slot = svgEl("g");
+        slot.append(svgEl("circle", { class: "ghost-slot", cx: to.x, cy: to.y, r: 16 }));
+        const label = svgEl("text", { class: "ghost-label", x: to.x, y: to.y + 1 });
+        label.textContent = ghost.label || "#";
+        slot.append(label);
+        ghostLayer.append(slot);
+      }
+
+      for (const node of frame.nodes) {
+        const pos = positionFor(node.level, node.slot);
+        const group = svgEl("g", {
+          class: [
+            "node",
+            node.id === frame.activeNode ? "active" : "",
+            queued.has(node.id) ? "queued" : "",
+            values[node.id] ? "done" : "",
+            deleted[node.id] ? "deleted" : ""
+          ].filter(Boolean).join(" "),
+          transform: `translate(${pos.x} ${pos.y})`
+        });
+        group.append(svgEl("circle", { class: "node-circle", cx: 0, cy: 0, r: 25 }));
+        const label = svgEl("text", { class: "node-label", x: 0, y: 1 });
+        label.textContent = node.label;
+        group.append(label);
+        const index = svgEl("text", { class: "node-index", x: 0, y: 39 });
+        index.textContent = `i=${Math.pow(2, node.level) + node.slot}`;
+        group.append(index);
+
+        if (values[node.id]) {
+          group.append(svgEl("circle", { class: "value-badge", cx: 23, cy: -21, r: 13 }));
+          const valueText = svgEl("text", { class: "badge-text", x: 23, y: -20 });
+          valueText.textContent = values[node.id];
+          group.append(valueText);
+        }
+        nodeLayer.append(group);
+      }
+
+      svg.append(edgeLayer, ghostLayer, nodeLayer);
+    }
+
+    function renderTokens(frame) {
+      tokenRail.innerHTML = "";
+      if (!app.tokens.length) {
+        const empty = document.createElement("span");
+        empty.className = "empty-note";
+        empty.textContent = "无输入";
+        tokenRail.append(empty);
+      } else {
+        app.tokens.forEach((token, index) => {
+          const item = document.createElement("span");
+          item.className = [
+            "token",
+            isNullToken(token) ? "null" : "",
+            index < frame.processedCount ? "processed" : "",
+            index === frame.activeToken ? "active" : ""
+          ].filter(Boolean).join(" ");
+          item.textContent = token;
+          tokenRail.append(item);
+        });
+      }
+      const processed = Math.min(frame.processedCount || 0, app.tokens.length);
+      tokenState.textContent = `${processed} / ${app.tokens.length}`;
+      activeToken.textContent = frame.activeToken >= 0 ? app.tokens[frame.activeToken] || "-" : "-";
+    }
+
+    function renderRail(frame) {
+      queueRail.innerHTML = "";
+      const railItems = app.mode === "build" ? (frame.queueLabels || []) : (frame.stack || []);
+      queueRail.className = app.mode === "build" ? "queue-rail" : "stack-rail";
+      if (!railItems.length) {
+        const empty = document.createElement("span");
+        empty.className = "empty-note";
+        empty.textContent = app.mode === "build" ? "队列空" : "递归栈空";
+        queueRail.append(empty);
+      } else {
+        railItems.forEach((label) => {
+          const item = document.createElement("span");
+          item.className = app.mode === "build" ? "queue-token" : "stack-token";
+          item.textContent = label;
+          queueRail.append(item);
+        });
+      }
+      railState.textContent = railItems.length ? `${railItems.length} 项` : (app.mode === "build" ? "队列空" : "栈空");
+      railCount.textContent = railItems.length;
+    }
+
+    function renderTrace() {
+      traceList.innerHTML = "";
+      const start = Math.max(0, app.index - 8);
+      const slice = app.frames.slice(start, app.index + 1);
+      slice.forEach((frame, offset) => {
+        const li = document.createElement("li");
+        if (start + offset === app.index) li.className = "current";
+        const no = document.createElement("span");
+        no.className = "trace-no";
+        no.textContent = String(start + offset + 1).padStart(2, "0");
+        const text = document.createElement("span");
+        text.textContent = frame.log || frame.detail || frame.title;
+        li.append(no, text);
+        traceList.append(li);
+      });
+      traceMeta.textContent = `${Math.min(app.index + 1, app.frames.length)} / ${app.frames.length}`;
+    }
+
+    function render() {
+      const info = modeInfo[app.mode];
+      const frame = app.frames[app.index] || snapshotFrame({});
+      modeTitle.textContent = info.title;
+      modeSubtitle.textContent = info.subtitle;
+      railTitle.textContent = info.railTitle;
+      formulaText.textContent = info.formula;
+      detailText.textContent = frame.detail || "无步骤。";
+      nodeCount.textContent = frame.finalSize || app.tree.size || 0;
+      heightCount.textContent = frame.finalHeight || app.tree.height || 0;
+
+      tabs.forEach((tab) => {
+        tab.setAttribute("aria-pressed", String(tab.dataset.mode === app.mode));
+      });
+
+      stepSlider.max = Math.max(0, app.frames.length - 1);
+      stepSlider.value = app.index;
+      stepReadout.textContent = `${app.index + 1}/${Math.max(1, app.frames.length)}`;
+
+      drawTree(frame);
+      renderTokens(frame);
+      renderRail(frame);
+      renderTrace();
+    }
+
+    function setStep(index) {
+      app.index = Math.max(0, Math.min(index, app.frames.length - 1));
+      render();
+    }
+
+    function stopPlay() {
+      if (app.timer) {
+        clearInterval(app.timer);
+        app.timer = null;
+      }
+      playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    }
+
+    function togglePlay() {
+      if (app.timer) {
+        stopPlay();
+        return;
+      }
+      playIcon.innerHTML = '<path d="M8 5h3v14H8z"/><path d="M13 5h3v14h-3z"/>';
+      app.timer = setInterval(() => {
+        if (app.index >= app.frames.length - 1) {
+          stopPlay();
+          return;
+        }
+        setStep(app.index + 1);
+      }, 820);
+    }
+
+    samples.forEach((button) => {
+      button.addEventListener("click", () => {
+        sequenceInput.value = button.dataset.seq;
+        app.index = 0;
+        rebuild();
+      });
+    });
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        app.mode = tab.dataset.mode;
+        app.index = 0;
+        rebuild();
+      });
+    });
+
+    sequenceInput.addEventListener("input", () => {
+      app.index = 0;
+      rebuild();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      stopPlay();
+      setStep(0);
+    });
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      stopPlay();
+      setStep(app.index - 1);
+    });
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      stopPlay();
+      setStep(app.index + 1);
+    });
+    playBtn.addEventListener("click", togglePlay);
+    stepSlider.addEventListener("input", () => {
+      stopPlay();
+      setStep(Number(stepSlider.value));
+    });
+
+    rebuild();
+    setStep(Math.min(10, app.frames.length - 1));
+  </script>
+</body>
+</html>

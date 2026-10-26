@@ -1,0 +1,2953 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Equinumerosity of Function Spaces - N608</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #ffffff;
+      --paper-soft: #f7f9fc;
+      --ink: #111318;
+      --ink-2: #252a32;
+      --muted: #69707d;
+      --quiet: #8993a3;
+      --line: #d9e1ea;
+      --line-strong: #bcc9d8;
+      --teal: #008b8b;
+      --teal-soft: #e6f7f5;
+      --cobalt: #3157d5;
+      --cobalt-soft: #ebefff;
+      --coral: #e35d4f;
+      --coral-soft: #fff0ed;
+      --gold: #a87400;
+      --gold-soft: #fff7dc;
+      --green: #16895a;
+      --green-soft: #e9f7ef;
+      --shadow: 0 22px 55px rgba(38, 52, 75, 0.12);
+      --shadow-tight: 0 12px 28px rgba(38, 52, 75, 0.10);
+      --radius: 8px;
+      --mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+      --serif: "STIX Two Text", "Cambria Math", "Times New Roman", Georgia, serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--paper);
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        linear-gradient(rgba(220, 228, 238, 0.55) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(220, 228, 238, 0.55) 1px, transparent 1px),
+        linear-gradient(180deg, #ffffff 0%, #fbfcfe 52%, #f5f8fb 100%);
+      background-size: 28px 28px, 28px 28px, auto;
+      min-height: 100vh;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    .page {
+      width: min(1480px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 24px 0 42px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 62px;
+      margin: 0 -12px 22px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.88);
+      border-bottom: 1px solid rgba(205, 216, 229, 0.65);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: var(--cobalt);
+      background: #fff;
+      box-shadow: var(--shadow-tight);
+      flex: 0 0 auto;
+    }
+
+    .mark svg {
+      width: 25px;
+      height: 25px;
+    }
+
+    .brand-title {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .brand-title strong {
+      font-size: 15px;
+      line-height: 1.1;
+      letter-spacing: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-title span {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .top-actions a,
+    .mode-button {
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink-2);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 650;
+      box-shadow: 0 3px 12px rgba(20, 30, 48, 0.04);
+      cursor: pointer;
+    }
+
+    .top-actions a:hover,
+    .mode-button:hover {
+      border-color: var(--line-strong);
+      transform: translateY(-1px);
+    }
+
+    .mode-button[aria-pressed="true"] {
+      color: #fff;
+      border-color: var(--ink);
+      background: var(--ink);
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.72fr) minmax(560px, 1.42fr) minmax(320px, 0.86fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .intro > *,
+    .section-grid > * {
+      min-width: 0;
+    }
+
+    .panel,
+    .identity-card,
+    .micro-card,
+    .notation-item {
+      border: 1px solid rgba(198, 210, 224, 0.82);
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: var(--radius);
+      box-shadow: 0 18px 40px rgba(40, 55, 78, 0.08);
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .summary-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 668px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(31px, 2.4vw, 42px);
+      line-height: 1.03;
+      letter-spacing: 0;
+      font-weight: 820;
+      max-width: 9.6em;
+    }
+
+    .subtitle {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .source-row {
+      margin-top: 22px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-soft);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .source-pill strong {
+      color: var(--ink);
+      font-weight: 760;
+    }
+
+    .focus-equation {
+      margin: 22px 0 0;
+      padding: 16px;
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(49, 87, 213, 0.08), transparent 48%),
+        linear-gradient(315deg, rgba(0, 139, 139, 0.10), transparent 55%),
+        #fff;
+      border: 1px solid var(--line);
+    }
+
+    .focus-equation .label,
+    .mini-label,
+    .eyeless-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 760;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .math {
+      font-family: var(--serif);
+      letter-spacing: 0;
+    }
+
+    .focus-equation .math {
+      display: block;
+      margin-top: 7px;
+      font-size: clamp(23px, 2.3vw, 34px);
+      line-height: 1.12;
+      color: var(--ink);
+    }
+
+    .recipe-stack {
+      margin-top: auto;
+      padding-top: 20px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .recipe-step {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .recipe-step b {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--ink);
+      font-size: 12px;
+    }
+
+    .recipe-step span {
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .map-panel {
+      position: relative;
+      padding: 0;
+      overflow: hidden;
+      min-height: 668px;
+      background:
+        linear-gradient(90deg, rgba(49, 87, 213, 0.04), transparent 26%, rgba(0, 139, 139, 0.04) 70%, transparent),
+        #fff;
+    }
+
+    .map-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 18px 0;
+    }
+
+    .map-title h2 {
+      font-size: 18px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .map-title p {
+      color: var(--muted);
+      font-size: 12px;
+      max-width: 330px;
+      line-height: 1.45;
+      text-align: right;
+    }
+
+    .map-stage {
+      position: relative;
+      min-height: 592px;
+      padding: 18px;
+    }
+
+    .connector-svg {
+      position: absolute;
+      inset: 18px;
+      width: calc(100% - 36px);
+      height: calc(100% - 36px);
+      pointer-events: none;
+      opacity: 0.78;
+    }
+
+    .connector-svg path {
+      fill: none;
+      stroke: var(--line-strong);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-dasharray: 6 8;
+    }
+
+    .connector-svg .accent {
+      stroke: var(--cobalt);
+      stroke-dasharray: none;
+      opacity: 0.35;
+    }
+
+    .nucleus {
+      position: absolute;
+      left: 50%;
+      top: 49%;
+      transform: translate(-50%, -50%);
+      width: 168px;
+      height: 168px;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.96), rgba(247, 250, 253, 0.92) 54%, rgba(234, 240, 249, 0.92));
+      box-shadow: 0 24px 60px rgba(38, 52, 75, 0.16);
+      z-index: 2;
+    }
+
+    .nucleus strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 37px;
+      line-height: 1;
+    }
+
+    .nucleus span {
+      margin-top: 8px;
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 760;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .identity-card {
+      position: absolute;
+      z-index: 4;
+      width: min(236px, 30.5%);
+      min-height: 136px;
+      padding: 13px;
+      border-radius: 8px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .identity-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+    }
+
+    .identity-card.is-active {
+      border-color: var(--cobalt);
+      box-shadow: 0 20px 50px rgba(49, 87, 213, 0.18);
+      background:
+        linear-gradient(135deg, rgba(49, 87, 213, 0.08), transparent 58%),
+        #fff;
+    }
+
+    .identity-card:focus-visible {
+      outline: 3px solid rgba(49, 87, 213, 0.28);
+      outline-offset: 2px;
+    }
+
+    .identity-card .number {
+      color: var(--quiet);
+      font-size: 10px;
+      font-weight: 820;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .identity-card h3 {
+      margin-top: 7px;
+      font-size: 13px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .identity-card .formula {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(17px, 1.35vw, 21px);
+      line-height: 1.08;
+      color: var(--ink);
+    }
+
+    .identity-card .condition {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .card-relabel { left: 4%; top: 8%; }
+    .card-mono { right: 4%; top: 8%; }
+    .card-curry { left: 4%; top: 38%; }
+    .card-pairing { right: 4%; top: 38%; }
+    .card-binary { left: 3%; bottom: 5%; }
+    .card-power { left: 50%; bottom: 5%; transform: translateX(-50%); }
+    .card-power:hover { transform: translateX(-50%) translateY(-3px); }
+    .card-power.is-active { transform: translateX(-50%); }
+    .card-indicator { right: 3%; bottom: 5%; }
+
+    .construction-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 668px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+    }
+
+    .panel-head h2 {
+      font-size: 19px;
+      line-height: 1.1;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 0 9px;
+      border-radius: 7px;
+      color: var(--cobalt);
+      background: var(--cobalt-soft);
+      border: 1px solid rgba(49, 87, 213, 0.22);
+      font-size: 11px;
+      font-weight: 820;
+      white-space: nowrap;
+    }
+
+    .map-formula {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(0, 139, 139, 0.08), transparent 60%),
+        #fff;
+    }
+
+    .map-formula .math {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(23px, 2vw, 30px);
+      line-height: 1.12;
+    }
+
+    .explain {
+      color: var(--ink-2);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .motion-demo {
+      position: relative;
+      min-height: 144px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(231, 238, 247, 0.7) 1px, transparent 1px),
+        linear-gradient(rgba(231, 238, 247, 0.7) 1px, transparent 1px),
+        var(--paper-soft);
+      background-size: 18px 18px;
+      overflow: hidden;
+      padding: 14px;
+    }
+
+    .demo-lane {
+      display: grid;
+      grid-template-columns: 1fr 62px 1fr;
+      align-items: center;
+      gap: 10px;
+      height: 100%;
+    }
+
+    .demo-box {
+      min-height: 96px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 11px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 8px 20px rgba(32, 47, 70, 0.06);
+    }
+
+    .demo-box strong {
+      font-family: var(--serif);
+      font-size: 24px;
+      line-height: 1.05;
+    }
+
+    .demo-box span {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .demo-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--cobalt);
+    }
+
+    .demo-arrow svg {
+      width: 46px;
+      height: 24px;
+    }
+
+    .token {
+      position: absolute;
+      left: 26%;
+      top: 55%;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--coral);
+      box-shadow: 0 0 0 5px rgba(227, 93, 79, 0.14);
+      animation: shuttle 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes shuttle {
+      0%, 100% { transform: translate(0, 0); opacity: 0.65; }
+      45%, 55% { transform: translate(155px, -18px); opacity: 1; }
+    }
+
+    .checks {
+      display: grid;
+      gap: 8px;
+      padding: 2px 0 4px;
+    }
+
+    .check {
+      display: grid;
+      grid-template-columns: 23px 1fr;
+      align-items: start;
+      gap: 8px;
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .check svg {
+      width: 21px;
+      height: 21px;
+      color: var(--green);
+      margin-top: -1px;
+    }
+
+    .panel-foot {
+      margin-top: 4px;
+      display: grid;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .jump-button {
+      border: 1px solid var(--line);
+      background: #fff;
+      min-height: 40px;
+      border-radius: 8px;
+      padding: 0 12px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 760;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .jump-button:hover {
+      border-color: var(--cobalt);
+      color: var(--cobalt);
+    }
+
+    .study-route {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .route-step {
+      min-height: 150px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 12px 28px rgba(40, 55, 78, 0.06);
+    }
+
+    .route-step b {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .route-step strong {
+      font-size: 14px;
+      line-height: 1.18;
+    }
+
+    .route-step span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.48;
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .definition-card {
+      min-height: 164px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.96);
+      padding: 14px;
+      box-shadow: 0 12px 28px rgba(40, 55, 78, 0.06);
+      display: grid;
+      gap: 9px;
+      align-content: start;
+    }
+
+    .definition-card .math {
+      font-size: 24px;
+      line-height: 1.05;
+    }
+
+    .definition-card p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .theorem-panel {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(49, 87, 213, 0.06), transparent 42%),
+        linear-gradient(315deg, rgba(0, 139, 139, 0.07), transparent 46%),
+        #fff;
+      box-shadow: var(--shadow-tight);
+    }
+
+    .theorem-lead {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+      gap: 16px;
+      align-items: start;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .theorem-lead .math {
+      font-size: clamp(28px, 3vw, 46px);
+      line-height: 1.05;
+      display: block;
+      margin-top: 8px;
+    }
+
+    .theorem-lead p {
+      color: var(--ink-2);
+      font-size: 14px;
+      line-height: 1.58;
+    }
+
+    .statement-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      counter-reset: theoremItem;
+    }
+
+    .statement-item {
+      counter-increment: theoremItem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .statement-item::before {
+      content: counter(theoremItem);
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      background: var(--cobalt-soft);
+      color: var(--cobalt);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .statement-item strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.25;
+      margin-bottom: 5px;
+    }
+
+    .statement-item .math {
+      display: block;
+      font-size: 21px;
+      line-height: 1.1;
+    }
+
+    .statement-item p {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .proof-test {
+      margin-top: 4px;
+      padding: 12px;
+      border: 1px solid rgba(49, 87, 213, 0.20);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(49, 87, 213, 0.08), transparent 64%),
+        #fff;
+      display: grid;
+      gap: 8px;
+    }
+
+    .proof-test p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.48;
+    }
+
+    .proof-test b {
+      color: var(--ink);
+      font-weight: 820;
+    }
+
+    .section {
+      margin-top: 20px;
+    }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.72fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin: 0 0 12px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(24px, 2.2vw, 36px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      max-width: 510px;
+      text-align: right;
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .sanity-panel {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .slider-stack {
+      display: grid;
+      gap: 13px;
+    }
+
+    .slider-row {
+      display: grid;
+      grid-template-columns: 44px 1fr 38px;
+      gap: 11px;
+      align-items: center;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .slider-row label {
+      font-family: var(--serif);
+      font-size: 25px;
+      line-height: 1;
+    }
+
+    .slider-row input[type="range"] {
+      width: 100%;
+      accent-color: var(--cobalt);
+    }
+
+    .slider-value {
+      min-width: 34px;
+      height: 32px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .sanity-note {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(168, 116, 0, 0.24);
+      background: var(--gold-soft);
+      color: #6b4c07;
+      font-size: 13px;
+      line-height: 1.48;
+    }
+
+    .count-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .count-card {
+      min-height: 126px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 9px;
+      box-shadow: 0 12px 26px rgba(40, 55, 78, 0.06);
+    }
+
+    .count-card strong {
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .count-card .math {
+      display: block;
+      font-size: clamp(20px, 1.6vw, 27px);
+      line-height: 1.05;
+    }
+
+    .count-card p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.42;
+    }
+
+    .identity-ledger {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .ledger-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .ledger-row strong {
+      color: var(--ink);
+      font-size: 12px;
+    }
+
+    .ledger-row span {
+      color: var(--muted);
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .lab-card {
+      min-height: 238px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 12px 28px rgba(40, 55, 78, 0.07);
+    }
+
+    .lab-card h3 {
+      font-size: 15px;
+      line-height: 1.18;
+    }
+
+    .lab-card p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .prompt-line {
+      padding: 10px;
+      border: 1px dashed var(--line-strong);
+      border-radius: 8px;
+      background: var(--paper-soft);
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .answer {
+      display: none;
+      margin-top: auto;
+      padding: 11px;
+      border-radius: 8px;
+      background: var(--green-soft);
+      color: #165a3f;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .lab-card.is-open .answer,
+    .mastery-card.is-open .answer {
+      display: block;
+    }
+
+    .reveal-button {
+      min-height: 37px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 780;
+      cursor: pointer;
+      margin-top: auto;
+    }
+
+    .lab-card.is-open .reveal-button,
+    .mastery-card.is-open .reveal-button {
+      margin-top: 0;
+      color: var(--green);
+      border-color: rgba(22, 137, 90, 0.35);
+      background: var(--green-soft);
+    }
+
+    .reveal-button:hover {
+      border-color: var(--cobalt);
+      color: var(--cobalt);
+    }
+
+    .construction-ledger {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ledger-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(40, 55, 78, 0.06);
+    }
+
+    .ledger-card summary {
+      cursor: pointer;
+      list-style: none;
+      display: grid;
+      grid-template-columns: 190px 1fr 120px;
+      gap: 12px;
+      align-items: center;
+      padding: 13px 15px;
+      border-bottom: 1px solid transparent;
+    }
+
+    .ledger-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .ledger-card[open] summary {
+      border-bottom-color: var(--line);
+      background: var(--paper-soft);
+    }
+
+    .ledger-card summary strong {
+      font-size: 13px;
+      line-height: 1.22;
+    }
+
+    .ledger-card summary .math {
+      font-size: 21px;
+      line-height: 1.1;
+    }
+
+    .ledger-card summary span:last-child {
+      justify-self: end;
+      color: var(--cobalt);
+      font-size: 11px;
+      font-weight: 820;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .ledger-body {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .ledger-cell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      min-height: 112px;
+    }
+
+    .ledger-cell strong {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .ledger-cell p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.48;
+    }
+
+    .ledger-cell .math {
+      color: var(--ink);
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .worked-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .worked-card,
+    .mastery-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 15px;
+      box-shadow: 0 12px 28px rgba(40, 55, 78, 0.06);
+    }
+
+    .worked-card h3,
+    .mastery-card h3 {
+      font-size: 15px;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .worked-card p,
+    .mastery-card p,
+    .mastery-card li {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .worked-card ol,
+    .mastery-card ul {
+      margin: 10px 0 0 18px;
+      padding: 0;
+    }
+
+    .worked-card li {
+      margin: 7px 0;
+      color: var(--ink-2);
+      font-size: 12px;
+      line-height: 1.48;
+    }
+
+    .mastery-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .mastery-card .prompt-line {
+      margin-top: 9px;
+    }
+
+    .micro-card {
+      padding: 15px;
+      min-height: 166px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .micro-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-top: 4px solid var(--accent, var(--cobalt));
+      pointer-events: none;
+    }
+
+    .micro-card h3 {
+      margin-top: 4px;
+      font-size: 15px;
+      line-height: 1.15;
+    }
+
+    .micro-card .math {
+      font-size: 22px;
+      line-height: 1.1;
+    }
+
+    .micro-card p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.48;
+    }
+
+    .micro-card .line-art {
+      margin-top: auto;
+      height: 40px;
+      color: var(--accent, var(--cobalt));
+    }
+
+    .line-art svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .edge-panel {
+      padding: 16px;
+      max-width: 100%;
+    }
+
+    .edge-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .edge-table th,
+    .edge-table td {
+      padding: 12px 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.35;
+      vertical-align: top;
+    }
+
+    .edge-table th {
+      color: var(--muted);
+      background: var(--paper-soft);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-weight: 820;
+    }
+
+    .edge-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .edge-table .bad {
+      color: #9d2c20;
+      background: var(--coral-soft);
+      font-weight: 780;
+    }
+
+    .edge-table .ok {
+      color: var(--green);
+      background: var(--green-soft);
+      font-weight: 780;
+    }
+
+    .edge-note {
+      margin-top: 12px;
+      border-left: 4px solid var(--coral);
+      padding: 10px 11px;
+      background: #fff7f5;
+      color: #6f2b24;
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .notation-rail {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .notation-item {
+      padding: 14px;
+      display: grid;
+      gap: 7px;
+      min-height: 110px;
+      box-shadow: 0 12px 28px rgba(40, 55, 78, 0.07);
+    }
+
+    .notation-item .math {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .notation-item span:last-child {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .source-footer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .source-footer strong {
+      color: var(--ink);
+    }
+
+    .kbd {
+      font-family: var(--mono);
+      border: 1px solid var(--line-strong);
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      padding: 2px 6px;
+      background: var(--paper-soft);
+      color: var(--ink-2);
+      font-size: 11px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @media (max-width: 1180px) {
+      .intro,
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .proof-grid,
+      .lab-grid,
+      .notation-rail,
+      .count-grid,
+      .study-route,
+      .glossary-grid,
+      .worked-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .statement-list,
+      .mastery-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ledger-card summary {
+        grid-template-columns: 160px 1fr 92px;
+      }
+
+      .summary-panel,
+      .construction-panel,
+      .map-panel {
+        min-height: auto;
+      }
+
+      .summary-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.68fr);
+        gap: 18px;
+      }
+
+      .recipe-stack {
+        margin-top: 0;
+        padding-top: 0;
+      }
+
+      .map-stage {
+        min-height: 610px;
+      }
+
+      .section-title p {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 820px) {
+      .page {
+        width: min(100% - 24px, 720px);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        position: static;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .top-actions {
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .top-actions a,
+      .top-actions .mode-button {
+        flex: 0 0 auto;
+      }
+
+      .top-actions a[href="#exam-templates"] {
+        order: -2;
+      }
+
+      .top-actions .mode-button {
+        order: -1;
+      }
+
+      .summary-panel {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        max-width: none;
+      }
+
+      .map-title,
+      .section-title,
+      .source-footer {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .map-title p,
+      .section-title p {
+        max-width: none;
+        text-align: left;
+      }
+
+      .map-stage {
+        min-height: auto;
+        padding: 14px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .connector-svg,
+      .nucleus {
+        display: none;
+      }
+
+      .identity-card,
+      .card-relabel,
+      .card-mono,
+      .card-curry,
+      .card-pairing,
+      .card-binary,
+      .card-power,
+      .card-indicator {
+        position: relative;
+        left: auto;
+        right: auto;
+        top: auto;
+        bottom: auto;
+        width: 100%;
+        transform: none;
+      }
+
+      .card-power:hover,
+      .card-power.is-active {
+        transform: none;
+      }
+
+      .proof-grid,
+      .notation-rail,
+      .sanity-panel,
+      .count-grid,
+      .ledger-row,
+      .lab-grid,
+      .study-route,
+      .glossary-grid,
+      .worked-grid,
+      .theorem-lead,
+      .statement-list,
+      .mastery-grid,
+      .ledger-body {
+        grid-template-columns: 1fr;
+      }
+
+      .ledger-card summary {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .ledger-card summary span:last-child {
+        justify-self: start;
+      }
+
+      .edge-panel {
+        overflow-x: auto;
+      }
+
+      .edge-table {
+        min-width: 0;
+        border: 0;
+        background: transparent;
+      }
+
+      .edge-table,
+      .edge-table thead,
+      .edge-table tbody,
+      .edge-table tr,
+      .edge-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .edge-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+
+      .edge-table tr {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        margin-bottom: 10px;
+      }
+
+      .edge-table td {
+        display: grid;
+        grid-template-columns: 126px 1fr;
+        gap: 10px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .edge-table td::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 820;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .edge-table tr:last-child td {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .edge-table tr td:last-child {
+        border-bottom: 0;
+      }
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #0f131a;
+        --paper-soft: #151b24;
+        --ink: #eef3fb;
+        --ink-2: #cbd5e4;
+        --muted: #9aa7ba;
+        --quiet: #7f8da1;
+        --line: #2c3545;
+        --line-strong: #45546a;
+        --teal: #4bc6b8;
+        --teal-soft: #112a2b;
+        --cobalt: #83a8ff;
+        --cobalt-soft: #18233b;
+        --coral: #ff8c7c;
+        --coral-soft: #321f1d;
+        --gold: #e8b85d;
+        --gold-soft: #302619;
+        --green: #62d595;
+        --green-soft: #14291f;
+        --shadow: none;
+        --shadow-tight: none;
+      }
+
+      html,
+      body {
+        background:
+          linear-gradient(rgba(154, 167, 186, .08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(154, 167, 186, .08) 1px, transparent 1px),
+          linear-gradient(180deg, #0f131a 0%, #111722 52%, #0f131a 100%);
+        background-size: 28px 28px, 28px 28px, auto;
+      }
+
+      .topbar,
+      .panel,
+      .proof-card,
+      .notation-card,
+      .sanity-panel,
+      .count-card,
+      .ledger-card,
+      .lab-card,
+      .route-card,
+      .glossary-card,
+      .worked-card,
+      .theorem-lead,
+      .statement-card,
+      .mastery-card,
+      .floating-card,
+      .edge-panel,
+      .edge-table,
+      .edge-table tr,
+      .ledger-body {
+        border-color: var(--line) !important;
+        background: rgba(17, 23, 34, .94) !important;
+      }
+
+      .mark,
+      .top-actions a,
+      .mode-button,
+      .card,
+      .case-chip,
+      .badge,
+      .code-pill,
+      summary,
+      input,
+      button {
+        border-color: var(--line) !important;
+        background-color: #151b24 !important;
+        color: var(--ink-2);
+      }
+
+      .mode-button[aria-pressed="true"],
+      .is-active,
+      .card.is-active,
+      summary:hover {
+        background: var(--teal-soft) !important;
+        color: var(--ink);
+      }
+
+      .edge-table th,
+      .edge-table td {
+        border-color: var(--line) !important;
+      }
+
+      svg text {
+        fill: var(--ink-2);
+      }
+    }
+  </style>
+</head>
+<body><div style="padding:10px 16px;background:#153a43;color:#fff;font:14px/1.6 system-ui"><a style="color:#fff;text-decoration:none" href="/explore/">← Arietids Learn · 交互演示目录</a></div>
+  <main class="page">
+    <nav class="topbar" aria-label="Page controls">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M6 9.5h11.5c4.5 0 7.5 2.6 7.5 6.5s-3 6.5-7.5 6.5H6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/>
+            <path d="M7.5 16h17M13 10l-5.5 6 5.5 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <strong>Function-Space Equinumerosity</strong>
+          <span>Discrete Mathematics · N608 · Theorem 1</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="mode-button" id="motionToggle" type="button" aria-pressed="true">Motion on</button>
+        <a href="#study-route">Study route</a>
+        <a href="#glossary">Glossary</a>
+        <a href="#theorem-full">Theorem</a>
+        <a href="#construction-ledger">Ledger</a>
+        <a href="#worked-examples">Examples</a>
+        <a href="#exam-templates">Exam</a>
+        <a href="#mastery-checks">Checks</a>
+        <a href="#edge-case">Edge case</a>
+        <a href="#notation">Notation</a>
+      </div>
+    </nav>
+
+    <section class="intro" aria-label="Function space theorem map">
+      <aside class="panel summary-panel">
+        <div>
+          <h1>Equinumerosity of function spaces</h1>
+          <p class="subtitle">
+            Read each identity as a tool: define a map, preserve the data, and recover the original object.
+          </p>
+
+          <div class="source-row" aria-label="Self-contained learning scope">
+            <div class="source-pill"><span>Scope</span><strong>self-contained study file</strong></div>
+            <div class="source-pill"><span>Provenance</span><strong>DM_C3.md · N608</strong></div>
+            <div class="source-pill"><span>Study focus</span><strong>bijection construction</strong></div>
+          </div>
+
+          <div class="focus-equation" aria-label="Function space definition">
+            <span class="label">Base object</span>
+            <span class="math">(A → B) = all functions from A to B</span>
+          </div>
+        </div>
+
+        <div class="recipe-stack" aria-label="Proof recipe">
+          <div class="recipe-step">
+            <b>1</b>
+            <span>Define a map H between two function spaces, products, or power sets.</span>
+          </div>
+          <div class="recipe-step">
+            <b>2</b>
+            <span>Check that H is well-defined.</span>
+          </div>
+          <div class="recipe-step">
+            <b>3</b>
+            <span>Use injectivity or recovery to prove H works.</span>
+          </div>
+          <div class="recipe-step">
+            <b>4</b>
+            <span>Handle empty codomains separately; the monotonicity theorem has one real exception.</span>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel map-panel" aria-label="Interactive identity map">
+        <div class="map-title">
+          <h2>Identity map</h2>
+          <p>Click a tile: formula, recovery, and proof check appear on the right.</p>
+        </div>
+
+        <div class="map-stage" id="mapStage">
+          <svg class="connector-svg" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+            <path class="accent" d="M500 118 C430 168 380 220 318 260"/>
+            <path class="accent" d="M500 118 C568 166 620 220 682 260"/>
+            <path d="M500 306 C340 280 228 206 132 118"/>
+            <path d="M500 306 C660 280 770 206 868 118"/>
+            <path d="M500 306 C350 382 230 470 150 554"/>
+            <path d="M500 306 C500 416 500 482 500 554"/>
+            <path d="M500 306 C648 380 770 470 850 554"/>
+          </svg>
+
+          <div class="nucleus" aria-hidden="true">
+            <div>
+              <strong>A → B</strong>
+              <span>function space</span>
+            </div>
+          </div>
+
+          <button class="identity-card card-relabel is-active" type="button" data-id="relabel">
+            <span class="number">Identity 01</span>
+            <h3>Relabel domain and codomain</h3>
+            <span class="formula math">(A₁ → B₁) ≈ (A₂ → B₂)</span>
+            <span class="condition">when A₁≈A₂ and B₁≈B₂</span>
+          </button>
+
+          <button class="identity-card card-mono" type="button" data-id="mono">
+            <span class="number">Identity 02</span>
+            <h3>Monotone embedding</h3>
+            <span class="formula math">(A₁ → B₁) ≤ (A₂ → B₂)</span>
+            <span class="condition">when A₁≤A₂, B₁≤B₂, with empty-codomain caveat</span>
+          </button>
+
+          <button class="identity-card card-curry" type="button" data-id="curry">
+            <span class="number">Identity 03</span>
+            <h3>Currying</h3>
+            <span class="formula math">((A×B) → C) ≈ (A → (B → C))</span>
+            <span class="condition">turn a two-input function into a function returning functions</span>
+          </button>
+
+          <button class="identity-card card-pairing" type="button" data-id="pairing">
+            <span class="number">Identity 04</span>
+            <h3>Pairing</h3>
+            <span class="formula math">(A → B×C) ≈ (A → B) × (A → C)</span>
+            <span class="condition">split each output pair into two coordinate functions</span>
+          </button>
+
+          <button class="identity-card card-binary" type="button" data-id="binary">
+            <span class="number">Identity 05</span>
+            <h3>Binary sampling</h3>
+            <span class="formula math">({0,1} → A) ≈ A × A</span>
+            <span class="condition">a function on two points is exactly an ordered pair</span>
+          </button>
+
+          <button class="identity-card card-power" type="button" data-id="power">
+            <span class="number">Identity 06</span>
+            <h3>Power-set transport</h3>
+            <span class="formula math">A ≈ B ⇒ 𝒫(A) ≈ 𝒫(B)</span>
+            <span class="condition">move subsets along a bijection f: A → B</span>
+          </button>
+
+          <button class="identity-card card-indicator" type="button" data-id="indicator">
+            <span class="number">Identity 07</span>
+            <h3>Indicator map</h3>
+            <span class="formula math">(A → {0,1}) ≈ 𝒫(A)</span>
+            <span class="condition">a 0/1-valued function records exactly one subset</span>
+          </button>
+        </div>
+      </section>
+
+      <aside class="panel construction-panel" aria-live="polite">
+        <div class="panel-head">
+          <div>
+            <span class="mini-label">Selected construction</span>
+            <h2 id="detailTitle">Relabel domain and codomain</h2>
+          </div>
+          <span class="badge" id="detailBadge">bijection</span>
+        </div>
+
+        <div class="map-formula">
+          <span class="mini-label">Definition of H</span>
+          <span class="math" id="detailFormula">H(h)=g ∘ h ∘ f⁻¹</span>
+        </div>
+
+        <p class="explain" id="detailExplain">
+          Use bijections f:A₁→A₂ and g:B₁→B₂. Pull the input back by f⁻¹, then relabel the output by g.
+        </p>
+
+        <div class="motion-demo" aria-label="Construction visualization">
+          <div class="demo-lane">
+            <div class="demo-box">
+              <span id="demoLeftLabel">source function</span>
+              <strong class="math" id="demoLeft">h</strong>
+              <span id="demoLeftNote">A₁ → B₁</span>
+            </div>
+            <div class="demo-arrow" aria-hidden="true">
+              <svg viewBox="0 0 74 30" fill="none">
+                <path d="M4 15h58" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                <path d="M50 5l13 10-13 10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="demo-box">
+              <span id="demoRightLabel">transformed function</span>
+              <strong class="math" id="demoRight">H(h)</strong>
+              <span id="demoRightNote">A₂ → B₂</span>
+            </div>
+          </div>
+          <span class="token" aria-hidden="true"></span>
+        </div>
+
+        <div class="checks" id="detailChecks" aria-label="Proof checks"></div>
+
+        <div class="panel-foot">
+          <button class="jump-button" type="button" data-id="curry">Inspect currying next</button>
+          <button class="jump-button" type="button" data-id="indicator">Jump to the indicator map</button>
+          <button class="jump-button" type="button" data-id="mono">Check the empty-codomain caveat</button>
+          <div class="proof-test">
+            <span class="mini-label">Proof test</span>
+            <p><b>For ≈:</b> define H and show the original object can be recovered.</p>
+            <p><b>For ≤:</b> show different source functions cannot collapse after H.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="study-route" aria-labelledby="study-route-title">
+      <div class="section-title">
+        <h2 id="study-route-title">Study route / 学习路线</h2>
+        <p>Fast loop: symbols → theorem → construction H → recovery check → English exam template.</p>
+      </div>
+      <div class="study-route">
+        <article class="route-step">
+          <b>1</b>
+          <strong>Decode the symbols</strong>
+          <span>Most mistakes come from confusing a function, a pair, and a subset.</span>
+        </article>
+        <article class="route-step">
+          <b>2</b>
+          <strong>Read the full theorem</strong>
+          <span>Keep the seven statements separate. Each one transforms a different kind of mathematical object.</span>
+        </article>
+        <article class="route-step">
+          <b>3</b>
+          <strong>Click the identity map</strong>
+          <span>Ask: input of H, output of H, and recovery map.</span>
+        </article>
+        <article class="route-step">
+          <b>4</b>
+          <strong>Use finite counts only as intuition</strong>
+          <span>Use counts for intuition only; maps prove the theorem.</span>
+        </article>
+        <article class="route-step">
+          <b>5</b>
+          <strong>Finish with recovery tests</strong>
+          <span>If you can write the inverse or explain injectivity without looking, the theorem has become usable.</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="glossary" aria-labelledby="glossary-title">
+      <div class="section-title">
+        <h2 id="glossary-title">Prerequisite dictionary / 先修词典</h2>
+        <p>Only these terms are needed for the page.</p>
+      </div>
+      <div class="glossary-grid">
+        <article class="definition-card">
+          <span class="mini-label">Function space</span>
+          <span class="math">A → B</span>
+          <p>All functions with input set A and output set B. Each a∈A gets exactly one B-value.</p>
+        </article>
+        <article class="definition-card">
+          <span class="mini-label">Equinumerous</span>
+          <span class="math">A ≈ B</span>
+          <p>There exists a bijection A→B: no duplicates and no omissions.</p>
+        </article>
+        <article class="definition-card">
+          <span class="mini-label">Cardinal comparison</span>
+          <span class="math">A ≤ B</span>
+          <p>There exists an injection A↪B. B has room for a copy of A.</p>
+        </article>
+        <article class="definition-card">
+          <span class="mini-label">Cartesian product</span>
+          <span class="math">A × B</span>
+          <p>The set of ordered pairs (a,b) with a∈A and b∈B. A function A×B→C accepts a pair as one input.</p>
+        </article>
+        <article class="definition-card">
+          <span class="mini-label">Power set</span>
+          <span class="math">𝒫(A)</span>
+          <p>The set of all subsets of A. An element of 𝒫(A) is itself a set X with X⊆A.</p>
+        </article>
+        <article class="definition-card">
+          <span class="mini-label">Indicator function</span>
+          <span class="math">χX:A→{0,1}</span>
+          <p>χX(a)=1 when a∈X and χX(a)=0 when a∉X. It stores subset membership as yes/no data.</p>
+        </article>
+        <article class="definition-card">
+          <span class="mini-label">Well-defined</span>
+          <span class="math">H(x) has one legal value</span>
+          <p>The formula gives one legal output in the claimed target set.</p>
+        </article>
+        <article class="definition-card">
+          <span class="mini-label">Empty function</span>
+          <span class="math">∅ → B</span>
+          <p>There is exactly one function from ∅ to any set B. If A≠∅ and B=∅, there are no functions A→B.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="theorem-full" aria-labelledby="theorem-full-title">
+      <div class="section-title">
+        <h2 id="theorem-full-title">Theorem 1, uncompressed</h2>
+        <p>Do not memorize seven isolated facts. Each statement preserves the same data in a new shape.</p>
+      </div>
+      <div class="theorem-panel">
+        <div class="theorem-lead">
+          <div>
+            <span class="mini-label">Core slogan</span>
+            <span class="math">same information ⇒ same cardinality</span>
+          </div>
+          <p>
+            For S≈T, define H:S→T and recover the original object. For S≤T, define H:S→T and show distinct inputs do not collapse.
+          </p>
+        </div>
+        <div class="statement-list">
+          <article class="statement-item">
+            <div>
+              <strong>Relabel both sides</strong>
+              <span class="math">A₁≈A₂, B₁≈B₂ ⇒ (A₁→B₁)≈(A₂→B₂)</span>
+              <p>Bijections on the input and output sets induce a bijection between the function spaces.</p>
+            </div>
+          </article>
+          <article class="statement-item">
+            <div>
+              <strong>Monotone embedding</strong>
+              <span class="math">A₁≤A₂, B₁≤B₂ ⇒ (A₁→B₁)≤(A₂→B₂)</span>
+              <p>This holds when B₂≠∅; if B₂=∅, it fails exactly when A₁=∅ and A₂≠∅.</p>
+            </div>
+          </article>
+          <article class="statement-item">
+            <div>
+              <strong>Currying</strong>
+              <span class="math">((A×B)→C)≈(A→(B→C))</span>
+              <p>A two-input function can be read as: first choose a, then choose a function of b.</p>
+            </div>
+          </article>
+          <article class="statement-item">
+            <div>
+              <strong>Pairing</strong>
+              <span class="math">(A→B×C)≈(A→B)×(A→C)</span>
+              <p>One function returning pairs is the same as two coordinate functions with common domain A.</p>
+            </div>
+          </article>
+          <article class="statement-item">
+            <div>
+              <strong>Two-point sampling</strong>
+              <span class="math">({0,1}→A)≈A×A</span>
+              <p>A function on {0,1} is determined by the ordered pair of values (f(0),f(1)).</p>
+            </div>
+          </article>
+          <article class="statement-item">
+            <div>
+              <strong>Power-set transport</strong>
+              <span class="math">A≈B ⇒ 𝒫(A)≈𝒫(B)</span>
+              <p>A bijection f:A→B moves each subset X⊆A to its image f[X]⊆B.</p>
+            </div>
+          </article>
+          <article class="statement-item">
+            <div>
+              <strong>Indicator correspondence</strong>
+              <span class="math">(A→{0,1})≈𝒫(A)</span>
+              <p>A 0/1 function records exactly which elements of A are selected.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="proof-spine">
+      <div class="section-title">
+        <h2 id="proof-spine">Transferable proof spine</h2>
+        <p>Most proofs use the same spine: define H, preserve information, recover the object.</p>
+      </div>
+      <div class="proof-grid">
+        <article class="micro-card" style="--accent: var(--cobalt)">
+          <span class="mini-label">Relabel</span>
+          <h3>Conjugate a function by known bijections.</h3>
+          <span class="math">H(h)=g∘h∘f⁻¹</span>
+          <p>Changing the names of inputs and outputs does not change how many functions exist.</p>
+          <div class="line-art" aria-hidden="true">
+            <svg viewBox="0 0 220 42" fill="none">
+              <path d="M10 21h55M78 21h58M150 21h60" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M55 11l12 10-12 10M126 11l12 10-12 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="36" cy="21" r="8" fill="currentColor" opacity=".16"/>
+              <circle cx="104" cy="21" r="8" fill="currentColor" opacity=".16"/>
+              <circle cx="180" cy="21" r="8" fill="currentColor" opacity=".16"/>
+            </svg>
+          </div>
+        </article>
+
+        <article class="micro-card" style="--accent: var(--teal)">
+          <span class="mini-label">Curry</span>
+          <h3>Replace a pair input by staged inputs.</h3>
+          <span class="math">H(F)(a)(b)=F(a,b)</span>
+          <p>The same table of values is read by rows first, then columns; no value is lost.</p>
+          <div class="line-art" aria-hidden="true">
+            <svg viewBox="0 0 220 42" fill="none">
+              <rect x="16" y="8" width="54" height="26" rx="4" stroke="currentColor" stroke-width="2"/>
+              <path d="M86 21h40M116 11l12 10-12 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="144" y="7" width="24" height="28" rx="4" stroke="currentColor" stroke-width="2"/>
+              <rect x="174" y="7" width="24" height="28" rx="4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+        </article>
+
+        <article class="micro-card" style="--accent: var(--coral)">
+          <span class="mini-label">Split</span>
+          <h3>Turn paired outputs into two functions.</h3>
+          <span class="math">H(F)=(π₁∘F, π₂∘F)</span>
+          <p>Every A-input produces a B-coordinate and a C-coordinate, which can be stored separately.</p>
+          <div class="line-art" aria-hidden="true">
+            <svg viewBox="0 0 220 42" fill="none">
+              <path d="M20 21h60" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M80 21 C110 8 128 8 154 12M80 21 C110 34 128 34 154 30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="174" cy="12" r="8" fill="currentColor" opacity=".16"/>
+              <circle cx="174" cy="30" r="8" fill="currentColor" opacity=".16"/>
+            </svg>
+          </div>
+        </article>
+
+        <article class="micro-card" style="--accent: var(--gold)">
+          <span class="mini-label">Sample</span>
+          <h3>A two-point domain stores an ordered pair.</h3>
+          <span class="math">H(f)=(f(0),f(1))</span>
+          <p>There are only two inputs, so knowing the two sampled values determines the function.</p>
+          <div class="line-art" aria-hidden="true">
+            <svg viewBox="0 0 220 42" fill="none">
+              <circle cx="36" cy="21" r="13" stroke="currentColor" stroke-width="2"/>
+              <circle cx="86" cy="21" r="13" stroke="currentColor" stroke-width="2"/>
+              <path d="M112 21h40M142 11l12 10-12 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="170" y="8" width="36" height="26" rx="5" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+        </article>
+
+        <article class="micro-card" style="--accent: var(--green)">
+          <span class="mini-label">Transport</span>
+          <h3>Move a subset pointwise through f.</h3>
+          <span class="math">H(X)={f(a) | a∈X}</span>
+          <p>A bijection on elements automatically induces a bijection on collections of elements.</p>
+          <div class="line-art" aria-hidden="true">
+            <svg viewBox="0 0 220 42" fill="none">
+              <path d="M28 31 C8 16 28 3 52 10 C76 2 94 19 76 34 C58 43 42 41 28 31Z" stroke="currentColor" stroke-width="2"/>
+              <path d="M104 21h40M134 11l12 10-12 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M168 31 C148 16 168 3 192 10 C216 2 234 19 216 34 C198 43 182 41 168 31Z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+        </article>
+
+        <article class="micro-card" style="--accent: var(--ink)">
+          <span class="mini-label">Indicate</span>
+          <h3>Use 1 exactly on the selected elements.</h3>
+          <span class="math">H(f)={a∈A | f(a)=1}</span>
+          <p>A 0/1 function and a subset are two notations for the same information.</p>
+          <div class="line-art" aria-hidden="true">
+            <svg viewBox="0 0 220 42" fill="none">
+              <path d="M24 12h64M24 30h64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="48" cy="12" r="6" fill="currentColor" opacity=".25"/>
+              <circle cx="72" cy="30" r="6" fill="currentColor" opacity=".25"/>
+              <path d="M110 21h38M138 11l12 10-12 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M172 31 C152 16 172 3 196 10 C220 2 238 19 220 34 C202 43 186 41 172 31Z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="construction-ledger" aria-labelledby="construction-ledger-title">
+      <div class="section-title">
+        <h2 id="construction-ledger-title">Construction ledger / 构造账本</h2>
+        <p>Open each row for the forward map, recovery map, and proof check.</p>
+      </div>
+      <div class="construction-ledger">
+        <details class="ledger-card" open>
+          <summary>
+            <strong>Relabel domain and codomain</strong>
+            <span class="math">(A₁→B₁)≈(A₂→B₂)</span>
+            <span>bijective</span>
+          </summary>
+          <div class="ledger-body">
+            <div class="ledger-cell">
+              <strong>Forward map</strong>
+              <p class="math">H(h)=g∘h∘f⁻¹</p>
+              <p>Here f:A₁→A₂ and g:B₁→B₂ are bijections.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Recovery</strong>
+              <p class="math">h=g⁻¹∘H(h)∘f</p>
+              <p>Apply f to move into A₂, then undo g at the output.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Check</strong>
+              <p>f⁻¹ and g⁻¹ exist because f and g are bijections. This is the whole reason the construction is reversible.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="ledger-card">
+          <summary>
+            <strong>Monotone embedding</strong>
+            <span class="math">(A₁→B₁)≤(A₂→B₂)</span>
+            <span>injective</span>
+          </summary>
+          <div class="ledger-body">
+            <div class="ledger-cell">
+              <strong>Forward map</strong>
+              <p class="math">H(h)(a₂)=g(h(f⁻¹(a₂))) on f[A₁], else b</p>
+              <p>Use injections f:A₁↪A₂, g:B₁↪B₂ and a fixed b∈B₂.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Recovery test</strong>
+              <p>If H(h)=H(k), compare values on f(a₁). Then g(h(a₁))=g(k(a₁)), so h(a₁)=k(a₁).</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Check</strong>
+              <p>The fallback b exists only when B₂≠∅. If B₂=∅, use the edge-case table instead of this extension proof.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="ledger-card">
+          <summary>
+            <strong>Currying</strong>
+            <span class="math">((A×B)→C)≈(A→(B→C))</span>
+            <span>bijective</span>
+          </summary>
+          <div class="ledger-body">
+            <div class="ledger-cell">
+              <strong>Forward map</strong>
+              <p class="math">H(F)(a)(b)=F(a,b)</p>
+              <p>Turn one pair-input function into a function that returns B→C functions.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Recovery</strong>
+              <p class="math">F(a,b)=G(a)(b)</p>
+              <p>Given G:A→(B→C), evaluate at a, then at b.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Check</strong>
+              <p>No value changes. Only parentheses in the input process change: (a,b) versus a then b.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="ledger-card">
+          <summary>
+            <strong>Pairing</strong>
+            <span class="math">(A→B×C)≈(A→B)×(A→C)</span>
+            <span>bijective</span>
+          </summary>
+          <div class="ledger-body">
+            <div class="ledger-cell">
+              <strong>Forward map</strong>
+              <p class="math">H(F)=(π₁∘F,π₂∘F)</p>
+              <p>Split each pair F(a)=(b,c) into its B and C coordinates.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Recovery</strong>
+              <p class="math">F(a)=(u(a),v(a))</p>
+              <p>Given coordinate functions u:A→B and v:A→C, pair their values.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Check</strong>
+              <p>The two output coordinates share the same input a. Losing that shared domain would lose the original pairing.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="ledger-card">
+          <summary>
+            <strong>Binary sampling</strong>
+            <span class="math">({0,1}→A)≈A×A</span>
+            <span>bijective</span>
+          </summary>
+          <div class="ledger-body">
+            <div class="ledger-cell">
+              <strong>Forward map</strong>
+              <p class="math">H(f)=(f(0),f(1))</p>
+              <p>Read the two values of f as an ordered pair.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Recovery</strong>
+              <p class="math">f(0)=x, f(1)=y</p>
+              <p>Given (x,y)∈A×A, define the unique function with those two values.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Check</strong>
+              <p>Order matters. (x,y) and (y,x) can define different functions when x≠y.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="ledger-card">
+          <summary>
+            <strong>Power-set transport</strong>
+            <span class="math">A≈B⇒𝒫(A)≈𝒫(B)</span>
+            <span>bijective</span>
+          </summary>
+          <div class="ledger-body">
+            <div class="ledger-cell">
+              <strong>Forward map</strong>
+              <p class="math">H(X)={f(a) | a∈X}</p>
+              <p>Move every selected A-element through the bijection f:A→B.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Recovery</strong>
+              <p class="math">X={f⁻¹(b) | b∈Y}</p>
+              <p>Move each selected B-element back through f⁻¹.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Check</strong>
+              <p>Injectivity prevents merging two selected points; surjectivity ensures every B-subset can be reached.</p>
+            </div>
+          </div>
+        </details>
+
+        <details class="ledger-card">
+          <summary>
+            <strong>Indicator map</strong>
+            <span class="math">(A→{0,1})≈𝒫(A)</span>
+            <span>bijective</span>
+          </summary>
+          <div class="ledger-body">
+            <div class="ledger-cell">
+              <strong>Forward map</strong>
+              <p class="math">H(f)={a∈A | f(a)=1}</p>
+              <p>Keep exactly the points where f says yes.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Recovery</strong>
+              <p class="math">χX(a)=1 if a∈X, else 0</p>
+              <p>Every subset X⊆A has a characteristic function χX.</p>
+            </div>
+            <div class="ledger-cell">
+              <strong>Check</strong>
+              <p>A 0/1 function is determined pointwise by its 1-set, and every subset has exactly one 1-set function.</p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="sanity-title">
+      <div class="section-title">
+        <h2 id="sanity-title">Finite sanity check</h2>
+        <p>For finite sets, |A→B|=|B|<sup>|A|</sup>. Use counts as intuition, not proof.</p>
+      </div>
+      <div class="panel sanity-panel">
+        <aside>
+          <div class="slider-stack" aria-label="Finite set sizes">
+            <div class="slider-row">
+              <label for="sizeA">|A|</label>
+              <input id="sizeA" type="range" min="0" max="6" value="3">
+              <span class="slider-value" id="valueA">3</span>
+            </div>
+            <div class="slider-row">
+              <label for="sizeB">|B|</label>
+              <input id="sizeB" type="range" min="0" max="6" value="2">
+              <span class="slider-value" id="valueB">2</span>
+            </div>
+            <div class="slider-row">
+              <label for="sizeC">|C|</label>
+              <input id="sizeC" type="range" min="0" max="6" value="4">
+              <span class="slider-value" id="valueC">4</span>
+            </div>
+          </div>
+          <p class="sanity-note">
+            Convention used here: there is exactly one empty function ∅→∅, so 0<sup>0</sup>=1 in this counting model.
+          </p>
+        </aside>
+
+        <div>
+          <div class="count-grid" aria-live="polite">
+            <article class="count-card">
+              <strong>Function space count</strong>
+              <span class="math" id="countFunction">|A→B| = 2³ = 8</span>
+              <p>Each element of A independently chooses one element of B.</p>
+            </article>
+            <article class="count-card">
+              <strong>Currying count</strong>
+              <span class="math" id="countCurry">4^(3·2) = (4²)³ = 4096</span>
+              <p>Choosing a C-value for each pair (a,b) equals choosing a B→C function for each a.</p>
+            </article>
+            <article class="count-card">
+              <strong>Pairing count</strong>
+              <span class="math" id="countPairing">(2·4)³ = 2³·4³ = 512</span>
+              <p>A B×C-output is just two coordinated outputs stored side by side.</p>
+            </article>
+            <article class="count-card">
+              <strong>Indicator count</strong>
+              <span class="math" id="countIndicator">|A→{0,1}| = 2³ = |𝒫(A)|</span>
+              <p>Every yes/no membership pattern describes exactly one subset.</p>
+            </article>
+          </div>
+
+          <div class="identity-ledger" aria-label="What each identity preserves">
+            <div class="ledger-row">
+              <strong>What is preserved?</strong>
+              <span>The complete table of values of the function, only re-indexed, regrouped, split, or read as membership data.</span>
+            </div>
+            <div class="ledger-row">
+              <strong>How to prove it?</strong>
+              <span>Write the forward map H and the recovery map. If both recover the original object, H is a bijection.</span>
+            </div>
+            <div class="ledger-row">
+              <strong>Where to be careful?</strong>
+              <span>For ≤, extending outside f[A₁] needs a default b∈B₂; the empty-codomain caveat is not cosmetic.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="lab-title">
+      <div class="section-title">
+        <h2 id="lab-title">Recovery lab</h2>
+        <p>A bijection proof is not complete until the original object can be recovered.</p>
+      </div>
+      <div class="lab-grid">
+        <article class="lab-card">
+          <span class="mini-label">Currying inverse</span>
+          <h3>Given G:A→(B→C), recover F:(A×B)→C.</h3>
+          <div class="prompt-line math">F(a,b) = ?</div>
+          <p>Think: G first accepts a, then returns a B→C function.</p>
+          <button class="reveal-button" type="button" aria-expanded="false">Reveal recovery</button>
+          <div class="answer math">F(a,b)=G(a)(b). This exactly reverses H(F)(a)(b)=F(a,b).</div>
+        </article>
+
+        <article class="lab-card">
+          <span class="mini-label">Pairing inverse</span>
+          <h3>Given (u,v)∈(A→B)×(A→C), recover F:A→B×C.</h3>
+          <div class="prompt-line math">F(a) = ?</div>
+          <p>Think: the two coordinate functions share the same input a.</p>
+          <button class="reveal-button" type="button" aria-expanded="false">Reveal recovery</button>
+          <div class="answer math">F(a)=(u(a),v(a)). Projection then pairing are inverse operations.</div>
+        </article>
+
+        <article class="lab-card">
+          <span class="mini-label">Indicator inverse</span>
+          <h3>Given X⊆A, recover f:A→{0,1}.</h3>
+          <div class="prompt-line math">f(a) = ?</div>
+          <p>Think: the subset tells you exactly where the function should be 1.</p>
+          <button class="reveal-button" type="button" aria-expanded="false">Reveal recovery</button>
+          <div class="answer math">f(a)=1 if a∈X, and f(a)=0 if a∉X. This is the characteristic function χX.</div>
+        </article>
+
+        <article class="lab-card">
+          <span class="mini-label">Injection caveat</span>
+          <h3>Why does monotonicity ask for B₂≠∅?</h3>
+          <div class="prompt-line">Outside f[A₁], H(h) must output what?</div>
+          <p>Think: an extension over A₂ needs a legal value at every new point.</p>
+          <button class="reveal-button" type="button" aria-expanded="false">Reveal caveat</button>
+          <div class="answer">It needs a fixed fallback b∈B₂. If B₂=∅ and A₂ has points outside f[A₁], no legal output exists.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="worked-examples" aria-labelledby="worked-title">
+      <div class="section-title">
+        <h2 id="worked-title">Worked examples / 例题拆解</h2>
+        <p>Use these as short English proof patterns.</p>
+      </div>
+      <div class="worked-grid">
+        <article class="worked-card">
+          <span class="mini-label">Example 1</span>
+          <h3>Show that ({0,1}→A)≈A×A.</h3>
+          <ol>
+            <li>Object on the left: a function f with exactly two inputs, 0 and 1.</li>
+            <li>Forward map: send f to the ordered pair (f(0),f(1)).</li>
+            <li>Reverse map: given (x,y), define f(0)=x and f(1)=y.</li>
+            <li>Conclusion: the two procedures undo each other, so this is a bijection.</li>
+          </ol>
+        </article>
+
+        <article class="worked-card">
+          <span class="mini-label">Example 2</span>
+          <h3>Explain why (A→{0,1}) behaves like 𝒫(A).</h3>
+          <ol>
+            <li>A function f:A→{0,1} answers yes/no for each a∈A.</li>
+            <li>Collect the yes-points: H(f)={a∈A | f(a)=1}.</li>
+            <li>Given a subset X⊆A, recover f by setting f(a)=1 exactly on X.</li>
+            <li>Conclusion: choosing a subset is the same as choosing a 0/1-valued function.</li>
+          </ol>
+        </article>
+
+        <article class="worked-card">
+          <span class="mini-label">Example 3</span>
+          <h3>Use currying without changing any values.</h3>
+          <ol>
+            <li>Start with F:(A×B)→C. It accepts one input pair (a,b).</li>
+            <li>Define G=H(F) by G(a)(b)=F(a,b).</li>
+            <li>Given G, recover F by F(a,b)=G(a)(b).</li>
+            <li>Conclusion: currying changes the order of asking for inputs, not the table of C-values.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="exam-templates" aria-labelledby="exam-title">
+      <div class="section-title">
+        <h2 id="exam-title">English exam templates</h2>
+        <p>Use these as compact answer patterns. Replace the set names as needed.</p>
+      </div>
+      <div class="worked-grid">
+        <article class="worked-card">
+          <span class="mini-label">General bijection template</span>
+          <h3>To prove S≈T</h3>
+          <ol>
+            <li>Define a map H:S→T.</li>
+            <li>Define a recovery map R:T→S.</li>
+            <li>Check R(H(s))=s and H(R(t))=t.</li>
+            <li>Therefore H is a bijection.</li>
+          </ol>
+        </article>
+
+        <article class="worked-card">
+          <span class="mini-label">10-second final check</span>
+          <h3>Every answer must close the loop</h3>
+          <ol>
+            <li>Name the source and target of H.</li>
+            <li>Show how to recover the original object.</li>
+            <li>State the exact conclusion: bijection, injection, or cardinal inequality.</li>
+          </ol>
+        </article>
+
+        <article class="worked-card">
+          <span class="mini-label">Currying</span>
+          <h3>((A×B)→C)≈(A→(B→C))</h3>
+          <ol>
+            <li>Given F:(A×B)→C, define H(F)(a)(b)=F(a,b).</li>
+            <li>Given G:A→(B→C), recover F by F(a,b)=G(a)(b).</li>
+            <li>These two constructions undo each other.</li>
+          </ol>
+        </article>
+
+        <article class="worked-card">
+          <span class="mini-label">Pairing</span>
+          <h3>(A→B×C)≈(A→B)×(A→C)</h3>
+          <ol>
+            <li>Map F to (π₁∘F,π₂∘F).</li>
+            <li>Given (u,v), recover F by F(a)=(u(a),v(a)).</li>
+            <li>The shared input a preserves the original pairing.</li>
+          </ol>
+        </article>
+
+        <article class="worked-card">
+          <span class="mini-label">Indicator</span>
+          <h3>(A→{0,1})≈𝒫(A)</h3>
+          <ol>
+            <li>Map f to H(f)={a∈A | f(a)=1}.</li>
+            <li>Given X⊆A, recover f by setting f(a)=1 on X and 0 outside X.</li>
+            <li>This is exactly the characteristic function of X.</li>
+          </ol>
+        </article>
+
+        <article class="worked-card">
+          <span class="mini-label">Monotone embedding</span>
+          <h3>(A₁→B₁)≤(A₂→B₂)</h3>
+          <ol>
+            <li>Use injections f:A₁↪A₂ and g:B₁↪B₂.</li>
+            <li>Choose b₀∈B₂. Define H(h)(a₂)=g(h(f⁻¹(a₂))) on f[A₁], and b₀ outside f[A₁].</li>
+            <li>If H(h)=H(k), compare values on f(a₁); injectivity of g gives h(a₁)=k(a₁).</li>
+            <li>This construction needs B₂≠∅; otherwise use the edge-case table.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="mastery-checks" aria-labelledby="mastery-title">
+      <div class="section-title">
+        <h2 id="mastery-title">Mastery checks / 掌握度检查</h2>
+        <p>Mastery standard: you can write H, identify its target, and recover the input.</p>
+      </div>
+      <div class="mastery-grid">
+        <article class="mastery-card">
+          <span class="mini-label">Quick diagnostics</span>
+          <h3>Before revealing answers, say the missing construction aloud.</h3>
+          <div class="prompt-line">1. Given G:A→(B→C), what is the original F:(A×B)→C?</div>
+          <div class="prompt-line">2. Given X⊆A, what is the corresponding f:A→{0,1}?</div>
+          <div class="prompt-line">3. In the ≤ theorem, why can’t we ignore the case B₂=∅?</div>
+          <button class="reveal-button" type="button" aria-expanded="false">Reveal answers</button>
+          <div class="answer">
+            1. F(a,b)=G(a)(b). 2. f(a)=1 on X and 0 outside X. 3. The extension outside f[A₁] needs a default b∈B₂; if no such b exists, the construction may fail.
+          </div>
+        </article>
+        <article class="mastery-card">
+          <span class="mini-label">What you should now be able to do</span>
+          <h3>Completion checklist</h3>
+          <ul>
+            <li>Explain the difference between A≈B and A≤B.</li>
+            <li>Identify the source and target of H for each theorem item.</li>
+            <li>Write at least one inverse map for currying, pairing, and indicators.</li>
+            <li>Use the finite-count panel as intuition without mistaking it for proof.</li>
+            <li>Handle empty codomains in (A→B) without guessing.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section section-grid" id="edge-case" aria-labelledby="edge-title">
+      <div>
+        <div class="section-title">
+          <h2 id="edge-title">Empty-codomain microscope</h2>
+          <p>Monotonicity usually extends by choosing a fallback b∈B₂. If B₂=∅, split cases directly.</p>
+        </div>
+        <div class="panel edge-panel">
+          <table class="edge-table">
+            <thead>
+              <tr>
+                <th>Assuming B₂=∅</th>
+                <th>Source (A₁→B₁)</th>
+                <th>Target (A₂→B₂)</th>
+                <th>Injection?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-label="Assuming B₂=∅">A₁=∅ and A₂=∅</td>
+                <td data-label="Source">one empty function</td>
+                <td data-label="Target">one empty function</td>
+                <td class="ok" data-label="Injection?">yes</td>
+              </tr>
+              <tr>
+                <td data-label="Assuming B₂=∅">A₁≠∅ and A₁≤A₂</td>
+                <td data-label="Source">no functions</td>
+                <td data-label="Target">no functions</td>
+                <td class="ok" data-label="Injection?">yes, ∅ embeds into ∅</td>
+              </tr>
+              <tr>
+                <td data-label="Assuming B₂=∅">A₁=∅ and A₂≠∅</td>
+                <td data-label="Source">one empty function</td>
+                <td data-label="Target">no functions</td>
+                <td class="bad" data-label="Injection?">no: singleton cannot inject into ∅</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="edge-note">
+            Correct caveat: when B₂=∅, monotonicity fails exactly in the edge case A₁=∅ and A₂≠∅.
+          </p>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <span class="mini-label">Why the extension proof needs B₂≠∅</span>
+        <div class="focus-equation" style="margin-top: 10px;">
+          <span class="label">Extension outside f[A₁]</span>
+          <span class="math">H(h)(a₂)=g(h(f⁻¹(a₂))) or b</span>
+        </div>
+        <p class="subtitle" style="margin-top: 14px;">
+          On f[A₁], the definition is forced. Outside f[A₁], the proof needs a legal default b∈B₂.
+        </p>
+        <p class="subtitle" style="margin-top: 10px;">
+          If B₂=∅, that default does not exist.
+        </p>
+      </aside>
+    </section>
+
+    <section class="section" id="notation" aria-labelledby="notation-title">
+      <div class="section-title">
+        <h2 id="notation-title">Notation rail</h2>
+        <p>These abbreviations compress the theorem into the usual algebra of cardinals and function spaces.</p>
+      </div>
+      <div class="notation-rail">
+        <div class="notation-item">
+          <span class="mini-label">Product square</span>
+          <span class="math">A² := A × A</span>
+          <span>Ordered pairs of A-elements.</span>
+        </div>
+        <div class="notation-item">
+          <span class="mini-label">Product cube</span>
+          <span class="math">A³ := A × A × A</span>
+          <span>Ordered triples; continue similarly for higher powers.</span>
+        </div>
+        <div class="notation-item">
+          <span class="mini-label">Binary exponent</span>
+          <span class="math">2ᴬ := (A → {0,1})</span>
+          <span>Equivalent to choosing a subset of A.</span>
+        </div>
+        <div class="notation-item">
+          <span class="mini-label">Function exponent</span>
+          <span class="math">Bᴬ := (A → B)</span>
+          <span>The full function space from A to B.</span>
+        </div>
+      </div>
+    </section>
+
+    <footer class="source-footer">
+      <span><strong>Self-contained:</strong> definitions, theorem statements, proof templates, examples, and checks are included here. <span class="kbd">DM_C3.md</span> is provenance only.</span>
+      <span>Use <span class="kbd">Tab</span> to move through identity tiles.</span>
+    </footer>
+  </main>
+
+  <script>
+    const constructions = {
+      relabel: {
+        title: "Relabel domain and codomain",
+        badge: "bijection",
+        formula: "H(h)=g ∘ h ∘ f⁻¹",
+        explain: "Use bijections f:A₁→A₂ and g:B₁→B₂. Pull inputs back by f⁻¹, then relabel outputs by g.",
+        leftLabel: "source function",
+        left: "h",
+        leftNote: "A₁ → B₁",
+        rightLabel: "transformed function",
+        right: "H(h)",
+        rightNote: "A₂ → B₂",
+        checks: [
+          "f⁻¹ exists because f is a bijection.",
+          "g keeps outputs inside B₂.",
+          "The inverse uses f and g⁻¹, so no information is lost."
+        ]
+      },
+      mono: {
+        title: "Monotone embedding",
+        badge: "injection",
+        formula: "extend h over A₂ using b∈B₂",
+        explain: "Given injections f:A₁↪A₂ and g:B₁↪B₂, define H on f[A₁] by g(h(f⁻¹(a₂))). Outside f[A₁], use a fixed b∈B₂.",
+        leftLabel: "smaller function space",
+        left: "h",
+        leftNote: "A₁ → B₁",
+        rightLabel: "extended function",
+        right: "H(h)",
+        rightNote: "A₂ → B₂",
+        checks: [
+          "Injectivity of f makes f⁻¹ on f[A₁] well-defined.",
+          "Injectivity of g lets equality of H(h) recover h.",
+          "If B₂=∅, do the case split below; the A₁=∅, A₂≠∅ case fails."
+        ]
+      },
+      curry: {
+        title: "Currying",
+        badge: "bijection",
+        formula: "H(F)(a)(b)=F(a,b)",
+        explain: "A function on A×B is the same data as a function sending a∈A to a function B→C.",
+        leftLabel: "two-input function",
+        left: "F",
+        leftNote: "(A×B) → C",
+        rightLabel: "staged function",
+        right: "H(F)",
+        rightNote: "A → (B → C)",
+        checks: [
+          "For every a, H(F)(a) is a function B→C.",
+          "Recover F by evaluating the staged function at a and then b.",
+          "The value table is identical; only the input grouping changes."
+        ]
+      },
+      pairing: {
+        title: "Pairing",
+        badge: "bijection",
+        formula: "H(F)=(π₁∘F, π₂∘F)",
+        explain: "A function A→B×C is the same data as two functions with domain A.",
+        leftLabel: "paired-output function",
+        left: "F",
+        leftNote: "A → B×C",
+        rightLabel: "coordinate functions",
+        right: "(F₁,F₂)",
+        rightNote: "(A → B) × (A → C)",
+        checks: [
+          "Projection gives two legal functions from A.",
+          "Pairing the two coordinate values reconstructs F(a).",
+          "Both coordinates are necessary; together they are sufficient."
+        ]
+      },
+      binary: {
+        title: "Binary sampling",
+        badge: "bijection",
+        formula: "H(f)=(f(0),f(1))",
+        explain: "A function on {0,1} is determined by its values at 0 and 1.",
+        leftLabel: "two-point function",
+        left: "f",
+        leftNote: "{0,1} → A",
+        rightLabel: "ordered pair",
+        right: "(f(0),f(1))",
+        rightNote: "A × A",
+        checks: [
+          "Every function gives exactly one ordered pair.",
+          "Every ordered pair (x,y) defines f(0)=x and f(1)=y.",
+          "Injectivity follows because the two values determine the whole function."
+        ]
+      },
+      power: {
+        title: "Power-set transport",
+        badge: "bijection",
+        formula: "H(X)={f(a) | a∈X}",
+        explain: "A bijection f:A→B transports subsets forward; f⁻¹ transports them back.",
+        leftLabel: "subset of A",
+        left: "X",
+        leftNote: "X ∈ 𝒫(A)",
+        rightLabel: "transported subset",
+        right: "H(X)",
+        rightNote: "H(X) ∈ 𝒫(B)",
+        checks: [
+          "Every element f(a) lands in B.",
+          "Injectivity of f prevents two different subsets from merging.",
+          "Surjectivity of f ensures every subset of B is hit."
+        ]
+      },
+      indicator: {
+        title: "Indicator map",
+        badge: "bijection",
+        formula: "H(f)={a∈A | f(a)=1}",
+        explain: "A 0/1 function records membership: 1 means selected, 0 means not selected.",
+        leftLabel: "indicator function",
+        left: "f",
+        leftNote: "A → {0,1}",
+        rightLabel: "selected subset",
+        right: "H(f)",
+        rightNote: "𝒫(A)",
+        checks: [
+          "A subset is recovered from exactly the points mapped to 1.",
+          "Any subset X⊆A is hit by its characteristic function χX.",
+          "This proves 2ᴬ and 𝒫(A) are equinumerous."
+        ]
+      }
+    };
+
+    const cards = Array.from(document.querySelectorAll(".identity-card"));
+    const jumpButtons = Array.from(document.querySelectorAll(".jump-button"));
+    const detailTitle = document.getElementById("detailTitle");
+    const detailBadge = document.getElementById("detailBadge");
+    const detailFormula = document.getElementById("detailFormula");
+    const detailExplain = document.getElementById("detailExplain");
+    const detailChecks = document.getElementById("detailChecks");
+    const demoLeftLabel = document.getElementById("demoLeftLabel");
+    const demoLeft = document.getElementById("demoLeft");
+    const demoLeftNote = document.getElementById("demoLeftNote");
+    const demoRightLabel = document.getElementById("demoRightLabel");
+    const demoRight = document.getElementById("demoRight");
+    const demoRightNote = document.getElementById("demoRightNote");
+
+    function checkIcon() {
+      return `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20 6.5 9.4 17 4 11.7" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    }
+
+    function selectIdentity(id) {
+      const item = constructions[id];
+      if (!item) return;
+
+      cards.forEach(card => {
+        const active = card.dataset.id === id;
+        card.classList.toggle("is-active", active);
+        card.setAttribute("aria-pressed", String(active));
+      });
+
+      detailTitle.textContent = item.title;
+      detailBadge.textContent = item.badge;
+      detailFormula.textContent = item.formula;
+      detailExplain.textContent = item.explain;
+      demoLeftLabel.textContent = item.leftLabel;
+      demoLeft.textContent = item.left;
+      demoLeftNote.textContent = item.leftNote;
+      demoRightLabel.textContent = item.rightLabel;
+      demoRight.textContent = item.right;
+      demoRightNote.textContent = item.rightNote;
+      detailChecks.innerHTML = item.checks.map(text => `
+        <div class="check">
+          ${checkIcon()}
+          <span>${text}</span>
+        </div>
+      `).join("");
+    }
+
+    cards.forEach(card => {
+      card.setAttribute("aria-pressed", String(card.classList.contains("is-active")));
+      card.addEventListener("click", () => selectIdentity(card.dataset.id));
+    });
+
+    jumpButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        selectIdentity(button.dataset.id);
+        document.querySelector(".construction-panel").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    });
+
+    const motionToggle = document.getElementById("motionToggle");
+    motionToggle.addEventListener("click", () => {
+      const pressed = motionToggle.getAttribute("aria-pressed") === "true";
+      motionToggle.setAttribute("aria-pressed", String(!pressed));
+      motionToggle.textContent = pressed ? "Motion off" : "Motion on";
+      document.documentElement.style.setProperty("--motion-state", pressed ? "paused" : "running");
+      document.querySelectorAll(".token").forEach(token => {
+        token.style.animationPlayState = pressed ? "paused" : "running";
+      });
+    });
+
+    const sizeInputs = {
+      A: document.getElementById("sizeA"),
+      B: document.getElementById("sizeB"),
+      C: document.getElementById("sizeC")
+    };
+
+    const sizeValues = {
+      A: document.getElementById("valueA"),
+      B: document.getElementById("valueB"),
+      C: document.getElementById("valueC")
+    };
+
+    const countNodes = {
+      function: document.getElementById("countFunction"),
+      curry: document.getElementById("countCurry"),
+      pairing: document.getElementById("countPairing"),
+      indicator: document.getElementById("countIndicator")
+    };
+
+    function pow(base, exponent) {
+      if (base === 0 && exponent === 0) return 1;
+      return Math.pow(base, exponent);
+    }
+
+    function updateCounts() {
+      const a = Number(sizeInputs.A.value);
+      const b = Number(sizeInputs.B.value);
+      const c = Number(sizeInputs.C.value);
+      sizeValues.A.textContent = a;
+      sizeValues.B.textContent = b;
+      sizeValues.C.textContent = c;
+
+      const functionCount = pow(b, a);
+      const curryLeft = pow(c, a * b);
+      const curryInner = pow(c, b);
+      const curryRight = pow(curryInner, a);
+      const pairingLeft = pow(b * c, a);
+      const pairingRight = pow(b, a) * pow(c, a);
+      const indicator = pow(2, a);
+
+      countNodes.function.textContent = `|A→B| = ${b}^${a} = ${functionCount}`;
+      countNodes.curry.textContent = `${c}^(${a}·${b}) = (${c}^${b})^${a} = ${curryLeft}`;
+      countNodes.pairing.textContent = `(${b}·${c})^${a} = ${b}^${a}·${c}^${a} = ${pairingLeft}`;
+      countNodes.indicator.textContent = `|A→{0,1}| = 2^${a} = |𝒫(A)| = ${indicator}`;
+
+      if (curryLeft !== curryRight || pairingLeft !== pairingRight) {
+        countNodes.curry.textContent += " (check sizes)";
+      }
+    }
+
+    Object.values(sizeInputs).forEach(input => {
+      input.addEventListener("input", updateCounts);
+    });
+
+    document.querySelectorAll(".lab-card, .mastery-card").forEach(card => {
+      const button = card.querySelector(".reveal-button");
+      if (!button) return;
+      const closedText = button.textContent;
+      const openText = closedText.includes("answers") ? "Hide answers" : closedText.includes("caveat") ? "Hide caveat" : "Hide recovery";
+      button.addEventListener("click", () => {
+        const isOpen = card.classList.toggle("is-open");
+        button.setAttribute("aria-expanded", String(isOpen));
+        button.textContent = isOpen ? openText : closedText;
+      });
+    });
+
+    selectIdentity("relabel");
+    updateCounts();
+  </script>
+</body>
+</html>

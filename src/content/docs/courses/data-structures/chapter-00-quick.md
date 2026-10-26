@@ -1,0 +1,31 @@
+---
+title: "数据结构 · 第〇章 引言（速览）"
+description: "数据结构课程笔记：数据结构 · 第〇章 引言（速览）。"
+---
+
+<div class="note-meta"><a href="/courses/data-structures/">数据结构目录</a><a href="/courses/data-structures/chapter-00/">阅读详版</a><a href="/downloads/data-structures/chapter-00-quick.md" download>下载 Markdown</a></div>
+
+## 核心概念
+
+- **程序 = 数据结构 + 算法**（全章教师备注反复强调）。<!-- src: DS_C0#s002n + DS_C0#s016n; type: direct -->
+- **数据结构**：计算机中**存储、组织、管理**数据的方式；定义数据元素之间的**关系**与可执行的**操作**；目的不只是存，而是高效地**访问**与**修改**（课件引用 Gemini 3.1 Pro 与 DeepSeek 3.2 两个定义）。<!-- src: DS_C0#s006; type: compressed -->
+- 图书馆类比映射：书 ≈ 数据元素；放书 / 取书 ≈ 数据的存储 / 访问操作（算法）；书的字典序先后 ≈ 数据之间的关系（数据结构）。<!-- src: DS_C0#s016; type: compressed -->
+
+## 图书馆实例要点
+
+- 两个基本操作：放书（操作 1）与找书（操作 2）；找书优先级更高（图书馆服务于读者）。<!-- src: DS_C0#s007 + DS_C0#s008n; type: compressed -->
+- 三种方案：① 随便放（放书一次完成，找书最坏全部找一遍）；② 分组放（先定类别再顺序找）；③ 分组排序放（按字典序，可二分搜索）。<!-- src: DS_C0#s008 + DS_C0#s009 + DS_C0#s010 + DS_C0#s015; type: compressed -->
+- 二分搜索：每步取区间中点（本例向下取整）与目标比较、舍弃一半区间（演示：0–25 放 A–Z 找 P，12→M、19→T、15→P 三步命中）。<!-- src: DS_C0#s011 + DS_C0#s012 + DS_C0#s013; type: compressed -->
+- 核心结论：存放方式不同，放 / 找的复杂度截然不同；解决问题的方法效率与数据的组织方式紧密相关。<!-- src: DS_C0#s015; type: compressed -->
+
+## 为什么学
+
+- 效率：100 万条微博定位发言——数组逐条最坏 100 万次 vs 哈希表按键通常期望常数次找到入口；本例体现的是从 $O(n)$ 到期望 $O(1)$ 的显著提升。<!-- src: DS_C0#s019; type: one-step-inferred -->
+- 现实应用：微信表情包搜索用字典树；B 站推荐用图结构；王者碰撞检测用四叉树——熟悉的应用本质是数据结构的组合。<!-- src: DS_C0#s020; type: compressed -->
+- 必修课：从大一学习到求学、求职、工作、任教全程都要用 / 考，受益终身。<!-- src: DS_C0#s021; type: compressed -->
+
+## 课程结构与目标
+
+- 五大主题：链（即线性表）、树、图、查找、排序；其中链 / 树 / 图为数据组织方式（Chain / Tree / Graph），查找 / 排序为数据处理方式（Search / Sort）。<!-- src: DS_C0#s023 + DS_C0#s023n + DS_C0#s027g1; type: compressed -->
+- 基础目标：概念 + 逻辑结构 / 存储结构 / 基本操作及实现 / 典型应用 / 算法性能度量与计算；用 C++ 面向对象的「类」实现各结构；能把实际问题按元素间关系抽象为数据结构并求解。<!-- src: DS_C0#s025; type: compressed -->
+- 进阶目标：协同设计、高效实现、创新优化数据存储与处理方案，应对国家级科技竞赛真实难题。<!-- src: DS_C0#s026; type: compressed -->
